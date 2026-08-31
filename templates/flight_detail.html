@@ -1,0 +1,13 @@
+<h1>{{ flight.flight_number }}</h1>
+
+<h2>{{ flight.departure_airport.city }} → {{ flight.arrival_airport.city }}</h2>
+
+<p>Hãng: {{ flight.airline.name }}</p>
+
+<p>Khởi hành: {{ flight.departure_time }}</p>
+
+<p>Đến: {{ flight.arrival_time }}</p>
+
+<p>Giá: {{ flight.price }} VNĐ</p>
+
+<a href="#"> Chọn chuyến bay </a>

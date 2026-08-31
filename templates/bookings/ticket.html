@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Vé điện tử — {{ booking.booking_code }}{% endblock %}
+{% block content %}
+<div style="max-width:620px;margin:0 auto;">
+  <a href="{% url 'my_bookings' %}" class="back-link">← Vé của tôi</a>
+  <h1 style="margin-bottom:20px;">🎫 Vé điện tử</h1>
+
+  <div class="boarding-pass">
+    <div class="boarding-pass-top">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;">
+        <div>
+          <div class="boarding-pass-code">Mã đặt vé</div>
+          <div class="boarding-pass-number">{{ booking.booking_code }}</div>
+        </div>
+        <div style="text-align:right;">
+          {% if booking.status == "paid" %}<span class="badge badge-paid">Đã thanh toán</span>
+          {% elif booking.status == "pending" %}<span class="badge badge-pending">Chờ thanh toán</span>
+          {% else %}<span class="badge badge-cancelled">Đã huỷ</span>{% endif %}
+        </div>
+      </div>
+      {% if booking.flight %}
+      <div class="bp-route">
+        <div>
+          <div class="bp-airport-code">{{ booking.flight.departure_airport.code }}</div>
+          <div class="bp-city">{{ booking.flight.departure_airport.city }}</div>
+          <div class="bp-time">{{ booking.flight.departure_time|date:"H:i" }}</div>
+          <div class="bp-date">{{ booking.flight.departure_time|date:"d/m/Y" }}</div>
+        </div>
+        <div class="bp-arrow">✈</div>
+        <div>
+          <div class="bp-airport-code">{{ booking.flight.arrival_airport.code }}</div>
+          <div class="bp-city">{{ booking.flight.arrival_airport.city }}</div>
+          <div class="bp-time">{{ booking.flight.arrival_time|date:"H:i" }}</div>
+          <div class="bp-date">{{ booking.flight.arrival_time|date:"d/m/Y" }}</div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <hr class="divider divider-dashed" />
+
+    <div class="boarding-pass-bottom">
+      {% if booking.flight %}
+      <div class="bp-info-grid">
+        <div><div class="bp-info-label">Chuyến bay</div><div class="bp-info-value">{{ booking.flight.flight_number }}</div></div>
+        <div><div class="bp-info-label">Hãng bay</div><div class="bp-info-value">{{ booking.flight.airline.name }}</div></div>
+        <div><div class="bp-info-label">Ngày đặt</div><div class="bp-info-value">{{ booking.booking_date|date:"d/m/Y" }}</div></div>
+      </div>
+      {% endif %}
+
+      {% if booking.tickets.all %}
+      <hr class="divider" />
+      <div class="bp-passengers">
+        <div style="font-size:.72rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Hành khách</div>
+        {% for t in booking.tickets.all %}
+        <div class="bp-passenger-row">
+          <span style="font-weight:600;">{{ t.passenger.full_name }}</span>
+          <span>Ghế <strong style="color:var(--blue);font-size:1.05rem;">{{ t.seat_number }}</strong></span>
+        </div>
+        {% endfor %}
+      </div>
+      {% elif booking.passengers.all %}
+      <hr class="divider" />
+      {% for p in booking.passengers.all %}
+      <div class="bp-passenger-row"><span style="font-weight:600;">{{ p.full_name }}</span></div>
+      {% endfor %}
+      {% endif %}
+
+      <hr class="divider" />
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div style="font-size:.82rem;color:var(--muted);">Tổng tiền thanh toán</div>
+        <div style="font-size:1.5rem;font-weight:800;color:var(--blue);">{{ booking.total_price|floatformat:0 }} ₫</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:24px;"><a href="{% url 'my_bookings' %}" class="btn btn-secondary">← Vé của tôi</a></div>
+</div>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Khám phá chuyến bay — Flight Booking{% endblock %}
+{% block content %}
+<h1>🌟 Khám phá chuyến bay</h1>
+<p class="page-subtitle">Tất cả chuyến bay, sắp xếp theo giá từ thấp đến cao</p>
+
+{% for flight in flights %}
+<div class="flight-result">
+  <div class="fr-logo">{{ flight.airline.code|default:flight.airline.name|slice:":2"|upper }}</div>
+  <div class="fr-info">
+    <div class="fr-times">
+      <span class="fr-time">{{ flight.departure_time|date:"H:i" }}</span>
+      <div class="fr-duration-line">
+        <span>Non-stop · {{ flight.departure_airport.code }} → {{ flight.arrival_airport.code }}</span>
+        <div class="fr-line"></div>
+      </div>
+      <span class="fr-time">{{ flight.arrival_time|date:"H:i" }}</span>
+    </div>
+    <div class="fr-route">
+      <strong>{{ flight.departure_airport.city }}</strong> → <strong>{{ flight.arrival_airport.city }}</strong>
+      &nbsp;·&nbsp; {{ flight.airline.name }} {{ flight.flight_number }}
+      &nbsp;·&nbsp; {{ flight.departure_time|date:"d/m/Y" }}
+    </div>
+  </div>
+  <div class="fr-tags"><span class="fr-tag">{{ flight.get_status_display }}</span></div>
+  <div class="fr-price-block">
+    <a href="{% url 'create_booking' flight.id %}" class="fr-price-btn">{{ flight.price|floatformat:0 }} ₫</a>
+    <a href="{% url 'flight_detail' flight.id %}" class="fr-chevron">›</a>
+  </div>
+</div>
+{% empty %}
+<div class="empty-state">
+  <div class="empty-icon">✈</div>
+  <h3>Chưa có chuyến bay nào</h3>
+  <p>Vui lòng quay lại sau.</p>
+</div>
+{% endfor %}
+{% endblock %}

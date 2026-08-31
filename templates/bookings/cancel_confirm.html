@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Xác nhận huỷ — {{ booking.booking_code }}{% endblock %}
+{% block content %}
+<div style="max-width:500px;margin:0 auto;">
+  <a href="{% url 'my_bookings' %}" class="back-link">← Vé của tôi</a>
+  <h1>Huỷ booking</h1>
+
+  <div class="card" style="border-top:4px solid #dc2626;margin:20px 0;">
+    <div style="text-align:center;font-size:2.5rem;margin-bottom:14px;">⚠️</div>
+    <h2 style="text-align:center;margin-bottom:8px;">Bạn có chắc muốn huỷ?</h2>
+    <p style="text-align:center;color:var(--muted);margin-bottom:24px;">Hành động này không thể hoàn tác.</p>
+    <div style="background:var(--bg);border-radius:var(--radius-sm);padding:16px;">
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:.9rem;"><span style="color:var(--muted);">Mã booking</span><strong>{{ booking.booking_code }}</strong></div>
+      {% if booking.flight %}
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:.9rem;"><span style="color:var(--muted);">Chuyến bay</span><strong>{{ booking.flight.flight_number }}</strong></div>
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:.9rem;"><span style="color:var(--muted);">Hành trình</span><strong>{{ booking.flight.departure_airport.city }} → {{ booking.flight.arrival_airport.city }}</strong></div>
+      {% endif %}
+      <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:.9rem;"><span style="color:var(--muted);">Số tiền</span><strong style="color:#dc2626;">{{ booking.total_price|floatformat:0 }} ₫</strong></div>
+    </div>
+  </div>
+
+  <form method="POST" style="flex-direction:row;gap:12px;background:none;border:none;box-shadow:none;padding:0;max-width:100%;">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger btn-lg">Xác nhận huỷ</button>
+    <a href="{% url 'my_bookings' %}" class="btn btn-secondary btn-lg">Không, giữ lại</a>
+  </form>
+</div>
+{% endblock %}

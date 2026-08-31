@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Vé của tôi — Flight Booking{% endblock %}
+{% block content %}
+<h1>🎫 Vé của tôi</h1>
+<p class="page-subtitle">Lịch sử đặt vé của bạn</p>
+
+{% for booking in bookings %}
+<div class="flight-result">
+  <div class="fr-logo">
+    {% if booking.flight %}{{ booking.flight.airline.code|default:booking.flight.airline.name|slice:":2"|upper }}{% else %}??{% endif %}
+  </div>
+  <div class="fr-info">
+    {% if booking.flight %}
+    <div class="fr-times">
+      <span class="fr-time">{{ booking.flight.departure_time|date:"H:i" }}</span>
+      <div class="fr-duration-line">
+        <span>{{ booking.flight.departure_airport.code }} → {{ booking.flight.arrival_airport.code }}</span>
+        <div class="fr-line"></div>
+      </div>
+      <span class="fr-time">{{ booking.flight.arrival_time|date:"H:i" }}</span>
+    </div>
+    <div class="fr-route">
+      <strong>{{ booking.flight.departure_airport.city }}</strong> → <strong>{{ booking.flight.arrival_airport.city }}</strong>
+      &nbsp;·&nbsp; {{ booking.flight.flight_number }}
+      &nbsp;·&nbsp; Ngày đặt: {{ booking.booking_date|date:"d/m/Y" }}
+    </div>
+    {% else %}
+    <div class="fr-route"><strong>{{ booking.booking_code }}</strong> · Ngày đặt: {{ booking.booking_date|date:"d/m/Y" }}</div>
+    {% endif %}
+  </div>
+  <div class="fr-tags">
+    {% if booking.status == "paid" %}<span class="badge badge-paid">Đã thanh toán</span>
+    {% elif booking.status == "pending" %}<span class="badge badge-pending">Chờ TT</span>
+    {% else %}<span class="badge badge-cancelled">Đã huỷ</span>{% endif %}
+  </div>
+  <div class="fr-price-block">
+    <a href="{% url 'ticket' booking.id %}" class="fr-price-btn">{{ booking.total_price|floatformat:0 }} ₫</a>
+    {% if booking.status == "pending" %}
+    <a href="{% url 'cancel_booking' booking.id %}" class="fr-chevron" title="Huỷ" style="color:#dc2626;background:#fee2e2;">✕</a>
+    {% else %}
+    <a href="{% url 'ticket' booking.id %}" class="fr-chevron">›</a>
+    {% endif %}
+  </div>
+</div>
+{% empty %}
+<div class="empty-state">
+  <div class="empty-icon">🎫</div>
+  <h3>Bạn chưa có vé nào</h3>
+  <p>Hãy tìm và đặt chuyến bay đầu tiên!</p>
+  <a href="{% url 'home' %}" class="btn btn-primary" style="margin-top:16px;">Tìm chuyến bay</a>
+</div>
+{% endfor %}
+{% endblock %}

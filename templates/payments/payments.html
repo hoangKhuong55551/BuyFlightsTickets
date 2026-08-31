@@ -1,0 +1,34 @@
+{% load static %}
+
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+
+    <title>Thanh toán</title>
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+  </head>
+
+  <body>
+    <main>
+      <h1>Thanh toán</h1>
+
+      <p>
+        Mã booking:
+        <strong> {{ booking.booking_code }} </strong>
+      </p>
+
+      <p>
+        Tổng tiền:
+        <strong> {{ booking.total_price }} VNĐ </strong>
+      </p>
+
+      <form method="POST">
+        {% csrf_token %}
+
+        <button type="submit">Thanh toán</button>
+      </form>
+    </main>
+  </body>
+</html>

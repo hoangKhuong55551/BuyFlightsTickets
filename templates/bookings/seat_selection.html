@@ -1,0 +1,23 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Chon ghe — {{ flight.flight_number }}{% endblock %}
+
+{% block content %}
+<h1>Chon ghe</h1>
+<h2>Chuyen bay: {{ flight.flight_number }}</h2>
+<p>{{ flight.departure_airport.city }} &rarr; {{ flight.arrival_airport.city }}</p>
+
+<div class="seats">
+  {% for seat in all_seats %}
+  <button
+    type="button"
+    class="seat {% if seat.taken %}taken{% endif %}"
+    data-seat="{{ seat.code }}"
+    {% if seat.taken %}disabled{% endif %}
+  >{{ seat.code }}</button>
+  {% endfor %}
+</div>
+
+<p>Ghe da chon: <strong id="selected-seat">Chua chon</strong></p>
+<script src="{% static 'js/seat.js' %}"></script>
+{% endblock %}

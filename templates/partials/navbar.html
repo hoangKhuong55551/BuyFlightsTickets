@@ -1,0 +1,21 @@
+{% load static %}
+<header>
+  <div class="navbar-inner">
+    <a href="{% url 'home' %}" class="navbar-brand">
+      <div class="brand-icon">✈</div>
+      Flight Booking
+    </a>
+    <nav>
+      <a href="{% url 'home' %}">Trang chủ</a>
+      <a href="{% url 'recommendations' %}">Khám phá</a>
+      {% if user.is_authenticated %}
+        <a href="{% url 'my_bookings' %}">Vé của tôi</a>
+        <span class="nav-user">{{ user.username }}</span>
+        <a href="{% url 'logout' %}" class="nav-danger">Đăng xuất</a>
+      {% else %}
+        <a href="{% url 'login' %}">Đăng nhập</a>
+        <a href="{% url 'register' %}" class="nav-btn">Đăng ký</a>
+      {% endif %}
+    </nav>
+  </div>
+</header>

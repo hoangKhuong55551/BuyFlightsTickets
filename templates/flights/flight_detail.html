@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}{{ flight.flight_number }} — Flight Booking{% endblock %}
+{% block content %}
+<a href="{% url 'home' %}" class="back-link">← Quay lại kết quả tìm kiếm</a>
+
+<div class="card">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:16px;">
+    <div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+        <div class="fr-logo" style="width:44px;height:44px;font-size:.95rem;">{{ flight.airline.code|default:flight.airline.name|slice:":2"|upper }}</div>
+        <div>
+          <div style="font-weight:700;color:var(--navy);">{{ flight.airline.name }}</div>
+          <div style="font-size:.83rem;color:var(--muted);">{{ flight.flight_number }}</div>
+        </div>
+      </div>
+      <h1 style="font-size:1.9rem;">{{ flight.departure_airport.city }} → {{ flight.arrival_airport.city }}</h1>
+    </div>
+    <div style="text-align:right;">
+      <div style="font-size:.78rem;color:var(--muted);margin-bottom:4px;">Giá vé từ</div>
+      <div style="font-size:2.2rem;font-weight:800;color:var(--blue);">{{ flight.price|floatformat:0 }} ₫</div>
+    </div>
+  </div>
+
+  <hr class="divider" style="margin:20px 0;" />
+
+  <div class="route-display">
+    <div>
+      <div class="airport-code">{{ flight.departure_airport.code }}</div>
+      <div class="airport-name">{{ flight.departure_airport.city }}</div>
+      <div style="font-size:1.15rem;font-weight:800;margin-top:10px;color:var(--navy);">{{ flight.departure_time|date:"H:i" }}</div>
+      <div style="font-size:.83rem;color:var(--muted);">{{ flight.departure_time|date:"d/m/Y" }}</div>
+    </div>
+    <div class="route-icon">✈</div>
+    <div>
+      <div class="airport-code">{{ flight.arrival_airport.code }}</div>
+      <div class="airport-name">{{ flight.arrival_airport.city }}</div>
+      <div style="font-size:1.15rem;font-weight:800;margin-top:10px;color:var(--navy);">{{ flight.arrival_time|date:"H:i" }}</div>
+      <div style="font-size:.83rem;color:var(--muted);">{{ flight.arrival_time|date:"d/m/Y" }}</div>
+    </div>
+  </div>
+
+  <hr class="divider" />
+
+  <div class="info-grid" style="margin-bottom:28px;">
+    <div><div class="info-label">Hãng bay</div><div class="info-value">{{ flight.airline.name }}</div></div>
+    <div><div class="info-label">Máy bay</div><div class="info-value">{{ flight.aircraft.model }}</div></div>
+    <div><div class="info-label">Trạng thái</div><div class="info-value">{{ flight.get_status_display }}</div></div>
+    <div><div class="info-label">Tổng số ghế</div><div class="info-value">{{ flight.aircraft.total_seats }} ghế</div></div>
+  </div>
+
+  <a href="{% url 'create_booking' flight.id %}" class="btn btn-primary btn-lg">🎫 Chọn ghế & Đặt vé ngay</a>
+</div>
+{% endblock %}

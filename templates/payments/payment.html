@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Thanh toán — {{ booking.booking_code }}{% endblock %}
+{% block content %}
+<div style="max-width:640px;margin:0 auto;">
+  <a href="{% url 'my_bookings' %}" class="back-link">← Vé của tôi</a>
+  <h1>Xác nhận & Thanh toán</h1>
+
+  <!-- Flight summary -->
+  {% if booking.flight %}
+  <div class="flight-result" style="margin:20px 0;">
+    <div class="fr-logo">{{ booking.flight.airline.code|default:booking.flight.airline.name|slice:":2"|upper }}</div>
+    <div class="fr-info">
+      <div class="fr-times">
+        <span class="fr-time">{{ booking.flight.departure_time|date:"H:i" }}</span>
+        <div class="fr-duration-line">
+          <span>{{ booking.flight.departure_airport.code }} → {{ booking.flight.arrival_airport.code }}</span>
+          <div class="fr-line"></div>
+        </div>
+        <span class="fr-time">{{ booking.flight.arrival_time|date:"H:i" }}</span>
+      </div>
+      <div class="fr-route">
+        <strong>{{ booking.flight.departure_airport.city }}</strong> → <strong>{{ booking.flight.arrival_airport.city }}</strong>
+        &nbsp;·&nbsp; {{ booking.flight.flight_number }} · {{ booking.flight.departure_time|date:"d/m/Y" }}
+      </div>
+    </div>
+    <div></div>
+    <div class="fr-price-block">
+      <div style="font-size:1.15rem;font-weight:800;color:var(--blue);">{{ booking.total_price|floatformat:0 }} ₫</div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Passengers -->
+  {% if booking.tickets.all %}
+  <div class="card" style="margin-bottom:16px;">
+    <h2 style="margin-bottom:14px;">Hành khách</h2>
+    {% for t in booking.tickets.all %}
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);">
+      <span style="font-weight:500;">👤 {{ t.passenger.full_name }}</span>
+      <span style="color:var(--muted);">Ghế <strong style="color:var(--navy);">{{ t.seat_number }}</strong></span>
+    </div>
+    {% endfor %}
+    <div class="payment-total">
+      <span class="payment-total-label">Tổng cộng</span>
+      <span class="payment-total-amount">{{ booking.total_price|floatformat:0 }} ₫</span>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Payment method -->
+  <div class="card" style="background:var(--navy);border-color:var(--navy);">
+    <h2 style="color:#fff;margin-bottom:16px;">Phương thức thanh toán</h2>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px;">
+      <div style="background:rgba(255,255,255,.12);border-radius:var(--radius-sm);padding:12px 16px;display:flex;align-items:center;gap:12px;color:#fff;cursor:pointer;border:1px solid rgba(255,255,255,.2);">
+        <span>💳</span><span style="font-weight:500;">Thẻ tín dụng / Ghi nợ</span><span style="margin-left:auto;">›</span>
+      </div>
+      <div style="background:rgba(255,255,255,.12);border-radius:var(--radius-sm);padding:12px 16px;display:flex;align-items:center;gap:12px;color:#fff;cursor:pointer;">
+        <span>📱</span><span style="font-weight:500;">Ví điện tử (Momo, ZaloPay)</span><span style="margin-left:auto;">›</span>
+      </div>
+      <div style="background:rgba(255,255,255,.12);border-radius:var(--radius-sm);padding:12px 16px;display:flex;align-items:center;gap:12px;color:#fff;cursor:pointer;">
+        <span>🏦</span><span style="font-weight:500;">Chuyển khoản ngân hàng</span><span style="margin-left:auto;">›</span>
+      </div>
+    </div>
+    <form method="POST" style="background:none;border:none;box-shadow:none;padding:0;gap:0;max-width:100%;">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-full btn-lg" style="background:#fff;color:var(--navy);font-weight:800;">
+        🔒 Xác nhận thanh toán {{ booking.total_price|floatformat:0 }} ₫
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

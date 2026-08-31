@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Chọn ghế — {{ flight.flight_number }}{% endblock %}
+{% block content %}
+<a href="{% url 'flight_detail' flight.id %}" class="back-link">← Quay lại chi tiết</a>
+
+<div style="display:grid;grid-template-columns:1fr 300px;gap:24px;align-items:start;">
+
+  <!-- Sơ đồ ghế -->
+  <div class="card">
+    <h1 style="margin-bottom:4px;">Chọn ghế ngồi</h1>
+    <p style="color:var(--muted);margin-bottom:24px;">{{ flight.flight_number }} · {{ flight.departure_airport.city }} → {{ flight.arrival_airport.city }}</p>
+
+    <!-- Mô phỏng đầu máy bay -->
+    <div style="text-align:center;margin-bottom:12px;">
+      <div style="display:inline-block;background:var(--navy);color:#fff;padding:8px 40px;border-radius:99px 99px 0 0;font-size:.78rem;font-weight:700;">✈ Đầu máy bay</div>
+    </div>
+    <div style="border:2px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px;">
+      <div class="seat-legend" style="margin-bottom:14px;">
+        <div class="legend-item"><span class="legend-dot" style="background:#5b9bf8;border-color:#5b9bf8;"></span><span>Còn trống</span></div>
+        <div class="legend-item"><span class="legend-dot" style="background:var(--navy);border-color:var(--navy);"></span><span>Đang chọn</span></div>
+        <div class="legend-item"><span class="legend-dot" style="background:#cbd5e1;border-color:#cbd5e1;"></span><span>Đã đặt</span></div>
+      </div>
+      <form method="POST" id="booking-form">
+        {% csrf_token %}
+        <input type="hidden" name="seat_number" id="seat_number_input" value="" />
+        <div class="seats">
+          {% for seat in all_seats %}
+          <button type="button" class="seat {% if seat.taken %}taken{% endif %}"
+            data-seat="{{ seat.code }}" {% if seat.taken %}disabled{% endif %}
+            onclick="selectSeat('{{ seat.code }}')">{{ seat.code }}</button>
+          {% endfor %}
+        </div>
+      </form>
+    </div>
+    <div style="text-align:center;font-size:.75rem;color:var(--muted);">🛬 Cuối máy bay</div>
+  </div>
+
+  <!-- Sidebar tóm tắt -->
+  <div style="position:sticky;top:80px;display:flex;flex-direction:column;gap:14px;">
+    <div class="card" style="background:var(--navy);border-color:var(--navy);color:#fff;">
+      <div style="font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.6);margin-bottom:8px;">Phương thức thanh toán</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="background:rgba(255,255,255,.12);border-radius:8px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;">
+          <span style="font-size:.88rem;">💳 Thẻ tín dụng</span><span>›</span>
+        </div>
+        <div style="background:rgba(255,255,255,.12);border-radius:8px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;">
+          <span style="font-size:.88rem;">💰 Ví điện tử</span><span>›</span>
+        </div>
+        <div style="background:rgba(255,255,255,.12);border-radius:8px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;">
+          <span style="font-size:.88rem;">🏦 Chuyển khoản</span><span>›</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div style="font-size:.78rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;">Tóm tắt</div>
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:.88rem;"><span style="color:var(--muted);">Chuyến bay</span><strong>{{ flight.flight_number }}</strong></div>
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:.88rem;"><span style="color:var(--muted);">Từ</span><strong>{{ flight.departure_airport.code }}</strong></div>
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:.88rem;"><span style="color:var(--muted);">Đến</span><strong>{{ flight.arrival_airport.code }}</strong></div>
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:.88rem;"><span style="color:var(--muted);">Ghế</span><strong id="selected-seat-display" style="color:var(--blue);">Chưa chọn</strong></div>
+      <div style="display:flex;justify-content:space-between;padding:12px 0 0;align-items:center;">
+        <span style="color:var(--muted);font-size:.88rem;">Tổng tiền</span>
+        <strong style="font-size:1.3rem;color:var(--blue);">{{ flight.price|floatformat:0 }} ₫</strong>
+      </div>
+      <button type="submit" form="booking-form" id="submit-btn" class="btn btn-primary btn-full" style="margin-top:16px;" disabled>Xác nhận đặt vé</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+function selectSeat(code) {
+  document.getElementById('seat_number_input').value = code;
+  document.getElementById('selected-seat-display').textContent = code;
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = false; btn.textContent = 'Đặt ghế ' + code;
+  document.querySelectorAll('.seat').forEach(b => b.classList.remove('selected'));
+  document.querySelector('[data-seat="' + code + '"]').classList.add('selected');
+}
+</script>
+{% endblock %}
