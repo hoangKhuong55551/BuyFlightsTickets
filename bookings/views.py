@@ -1,4 +1,4 @@
-﻿import uuid
+import uuid
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -165,10 +165,42 @@ def ticket(request, booking_id):
 
 @login_required(login_url="/users/login/")
 def my_bookings(request):
-    bookings = Booking.objects.filter(
+    from django.utils import timezone
+    now = timezone.now()
+    all_bookings = Booking.objects.filter(
         user=request.user
-    ).select_related("flight").order_by("-booking_date")
-    return render(request, "bookings/my_bookings.html", {"bookings": bookings})
+    ).select_related(
+        "flight__departure_airport",
+        "flight__arrival_airport",
+        "flight__airline"
+    ).order_by("-booking_date")
+
+    # Count for each tab
+    upcoming_qs   = all_bookings.filter(status__in=["pending", "paid"], flight__departure_time__gte=now)
+    completed_qs  = all_bookings.filter(status="paid", flight__departure_time__lt=now)
+    cancelled_qs  = all_bookings.filter(status="cancelled")
+
+    count_upcoming  = upcoming_qs.count()
+    count_completed = completed_qs.count()
+    count_cancelled = cancelled_qs.count()
+
+    # Active tab from query param
+    active_tab = request.GET.get("tab", "upcoming")
+    if active_tab == "completed":
+        bookings = completed_qs
+    elif active_tab == "cancelled":
+        bookings = cancelled_qs
+    else:
+        active_tab = "upcoming"
+        bookings = upcoming_qs
+
+    return render(request, "bookings/my_bookings.html", {
+        "bookings": bookings,
+        "active_tab": active_tab,
+        "count_upcoming": count_upcoming,
+        "count_completed": count_completed,
+        "count_cancelled": count_cancelled,
+    })
 
 
 @login_required

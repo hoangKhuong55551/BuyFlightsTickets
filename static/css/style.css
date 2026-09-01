@@ -803,3 +803,98 @@ main .page-subtitle {
     .plane-wrapper { overflow-x: clip; max-width: 100vw; }
     .booking-layout { margin-top: 20px !important; }
 }
+
+/* =====================
+   BOOKING TABS
+===================== */
+.booking-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 24px;
+    border-bottom: 2px solid var(--border);
+    overflow-x: auto;
+}
+.booking-tab {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 10px 20px 12px;
+    font-size: .88rem; font-weight: 600;
+    color: var(--muted);
+    text-decoration: none !important;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    transition: color .15s, border-color .15s;
+    white-space: nowrap;
+}
+.booking-tab:hover { color: var(--blue); text-decoration: none !important; }
+.booking-tab.active { color: var(--blue); border-bottom-color: var(--blue); font-weight: 700; }
+.tab-count {
+    background: #e2e8f0; color: #64748b;
+    border-radius: 99px; font-size: .72rem; font-weight: 700;
+    padding: 1px 8px; min-width: 22px; text-align: center;
+}
+.booking-tab.active .tab-count { background: var(--blue-lt); color: var(--blue); }
+.booking-tab.tab-cancelled .tab-count { background: #fee2e2; color: #dc2626; }
+.booking-tab.tab-cancelled.active { color: #dc2626; border-bottom-color: #dc2626; }
+
+/* =====================
+   AIRLINE LOGO (my_bookings)
+===================== */
+.fr-logo-img {
+    width: 48px; height: 48px; border-radius: 50%;
+    object-fit: contain; background: #fff;
+    border: 2px solid #e2e8f0; padding: 4px; flex-shrink: 0;
+}
+.fr-logo-fallback {
+    width: 48px; height: 48px;
+    background: linear-gradient(135deg, #e0f2fe, #bae6fd);
+    color: #0369a1; border-radius: 12px; font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem; flex-shrink: 0;
+}
+
+/* =====================
+   IMPROVED STATUS BADGES
+===================== */
+.badge-cancelled-bold {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: #dc2626; color: #fff;
+    font-size: .78rem; font-weight: 800; letter-spacing: .08em;
+    text-transform: uppercase; padding: 5px 14px; border-radius: 99px;
+}
+
+/* =====================
+   REBOOK BUTTON
+===================== */
+.btn-rebook {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 9px 16px;
+    background: #f1f5f9; color: #64748b;
+    border: 1.5px solid #cbd5e1; border-radius: 10px;
+    font-size: .85rem; font-weight: 600;
+    text-decoration: none !important;
+    transition: background .15s, border-color .15s, color .15s;
+}
+.btn-rebook:hover { background: #e2e8f0; border-color: #94a3b8; color: #475569; text-decoration: none !important; }
+.btn-rebook-note { font-size: .66rem; color: #94a3b8; margin-top: 3px; text-align: center; }
+
+/* =====================
+   IMPROVEMENT PANEL
+===================== */
+.improve-panel {
+    background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+    border: 1.5px solid #86efac; border-radius: 14px;
+    padding: 16px 20px; margin-bottom: 24px;
+    font-size: .82rem; color: #166534;
+}
+.improve-panel h4 {
+    font-size: .85rem; font-weight: 800; color: #15803d;
+    margin-bottom: 10px; display: flex; align-items: center; gap: 6px;
+}
+.improve-panel ul { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 5px; }
+.improve-panel li::before { content: "✅ "; }
+
+/* =====================
+   FORMATTED PRICE
+===================== */
+.fr-price-formatted { font-size: 1.05rem; font-weight: 800; color: var(--navy); white-space: nowrap; }
+.fr-duration-label { font-size: .7rem; color: #94a3b8; font-weight: 600; letter-spacing: .03em; text-align: center; }

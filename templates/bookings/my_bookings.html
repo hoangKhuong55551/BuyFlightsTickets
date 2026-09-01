@@ -1,20 +1,148 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
+{% load static flight_extras %}
 {% block title %}Vé của tôi — SkyBook{% endblock %}
+
+{% block extra_css %}
+<style>
+/* == Booking Tabs == */
+.booking-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 0;
+}
+.booking-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 20px 12px;
+  font-size: .88rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-decoration: none !important;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  transition: color .15s, border-color .15s;
+  white-space: nowrap;
+}
+.booking-tab:hover { color: var(--blue); text-decoration: none !important; }
+.booking-tab.active { color: var(--blue); border-bottom-color: var(--blue); font-weight: 700; }
+.tab-count {
+  background: #e2e8f0; color: #64748b; border-radius: 99px;
+  font-size: .72rem; font-weight: 700; padding: 1px 8px;
+  min-width: 22px; text-align: center;
+}
+.booking-tab.active .tab-count { background: var(--blue-lt); color: var(--blue); }
+.booking-tab.tab-cancelled .tab-count { background: #fee2e2; color: #dc2626; }
+.booking-tab.tab-cancelled.active { color: #dc2626; border-bottom-color: #dc2626; }
+
+/* == Airline logo == */
+.fr-logo-img {
+  width: 48px; height: 48px; border-radius: 50%;
+  object-fit: contain; background: #fff;
+  border: 2px solid #e2e8f0; padding: 4px; flex-shrink: 0;
+}
+.fr-logo-fallback {
+  width: 48px; height: 48px;
+  background: linear-gradient(135deg, #e0f2fe, #bae6fd);
+  color: #0369a1; border-radius: 12px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem; flex-shrink: 0;
+}
+
+/* == Duration label == */
+.fr-duration-label {
+  font-size: .7rem; color: #94a3b8;
+  font-weight: 600; letter-spacing: .03em; text-align: center;
+}
+
+/* == Big cancelled badge == */
+.badge-cancelled-bold {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: #dc2626; color: #fff;
+  font-size: .78rem; font-weight: 800; letter-spacing: .08em;
+  text-transform: uppercase; padding: 5px 14px; border-radius: 99px;
+}
+
+/* == Rebook button == */
+.btn-rebook {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 9px 16px;
+  background: #f1f5f9; color: #64748b;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 10px; font-size: .85rem; font-weight: 600;
+  text-decoration: none !important;
+  transition: background .15s, border-color .15s, color .15s;
+}
+.btn-rebook:hover { background: #e2e8f0; border-color: #94a3b8; color: #475569; text-decoration: none !important; }
+.btn-rebook-note { font-size: .66rem; color: #94a3b8; margin-top: 3px; text-align: center; }
+
+/* == Improvement panel == */
+.improve-panel {
+  background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+  border: 1.5px solid #86efac; border-radius: 14px;
+  padding: 16px 20px; margin-bottom: 24px;
+  font-size: .82rem; color: #166534;
+}
+.improve-panel h4 {
+  font-size: .85rem; font-weight: 800; color: #15803d;
+  margin-bottom: 10px; display: flex; align-items: center; gap: 6px;
+}
+.improve-panel ul { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 5px; }
+.improve-panel li::before { content: "✅ "; }
+
+/* == Formatted price == */
+.fr-price-formatted { font-size: 1.05rem; font-weight: 800; color: var(--navy); white-space: nowrap; }
+</style>
+{% endblock %}
+
 {% block content %}
 <h1>🎫 Vé của tôi</h1>
 <p class="page-subtitle">Lịch sử đặt vé và quản lý hoàn tiền</p>
 
+{% comment %} Improvement notes panel {% endcomment %}
+<div class="improve-panel">
+  <h4>🛠 Các cải tiến trong trang này</h4>
+  <ul>
+    <li>Định dạng giá tiền: <strong>15.000.000 đ</strong> (dấu chấm phân cách hàng nghìn, dễ đọc)</li>
+    <li>Thêm thông tin thời lượng bay ngay dưới tuyến đường</li>
+    <li>Phân nhóm trạng thái vé theo Tab: <strong>Sắp bay / Đã hoàn thành / Đã huỷ</strong></li>
+    <li>Nút bấm vé đã huỷ đổi thành <strong>"Đặt lại chuyến bay"</strong> — tránh nhầm là nút thanh toán</li>
+  </ul>
+</div>
+
+{% comment %} Tabs {% endcomment %}
+<div class="booking-tabs">
+  <a href="?tab=upcoming" class="booking-tab {% if active_tab == 'upcoming' %}active{% endif %}">
+    ✈️ Sắp bay <span class="tab-count">{{ count_upcoming }}</span>
+  </a>
+  <a href="?tab=completed" class="booking-tab {% if active_tab == 'completed' %}active{% endif %}">
+    ✅ Đã hoàn thành <span class="tab-count">{{ count_completed }}</span>
+  </a>
+  <a href="?tab=cancelled" class="booking-tab tab-cancelled {% if active_tab == 'cancelled' %}active{% endif %}">
+    ❌ Đã huỷ <span class="tab-count">{{ count_cancelled }}</span>
+  </a>
+</div>
+
+{% comment %} Booking list {% endcomment %}
 {% for booking in bookings %}
 <div class="flight-result" style="position:relative;">
 
-  <!-- Logo hãng -->
-  <div class="fr-logo">
-    {% if booking.flight %}
-      {{ booking.flight.airline.code|default:booking.flight.airline.name|slice:":2"|upper }}
-    {% else %}??{% endif %}
+  {% comment %} Logo hãng hàng không {% endcomment %}
+  <div>
+    {% if booking.flight and booking.flight.airline.logo %}
+      <img src="{{ booking.flight.airline.logo }}"
+           alt="{{ booking.flight.airline.name }}"
+           class="fr-logo-img">
+    {% else %}
+      <div class="fr-logo-fallback">
+        {% if booking.flight %}{{ booking.flight.airline.code|default:booking.flight.airline.name|slice:":2"|upper }}{% else %}??{% endif %}
+      </div>
+    {% endif %}
   </div>
 
-  <!-- Thông tin chuyến -->
+  {% comment %} Thông tin chuyến bay {% endcomment %}
   <div class="fr-info">
     {% if booking.flight %}
     <div class="fr-times">
@@ -22,6 +150,7 @@
       <div class="fr-duration-line">
         <span>{{ booking.flight.departure_airport.code }} → {{ booking.flight.arrival_airport.code }}</span>
         <div class="fr-line"></div>
+        <span class="fr-duration-label">Thời lượng: {{ booking.flight.departure_time|flight_duration:booking.flight.arrival_time }}</span>
       </div>
       <span class="fr-time">{{ booking.flight.arrival_time|date:"H:i" }}</span>
     </div>
@@ -39,17 +168,16 @@
     {% endif %}
   </div>
 
-  <!-- Status + Refund badge -->
+  {% comment %} Status badges {% endcomment %}
   <div class="fr-tags" style="flex-direction:column;align-items:flex-start;gap:6px;">
     {% if booking.status == "paid" %}
       <span class="badge badge-paid">✅ Đã thanh toán</span>
     {% elif booking.status == "pending" %}
       <span class="badge badge-pending">⏳ Chờ thanh toán</span>
     {% else %}
-      <span class="badge badge-cancelled">❌ Đã huỷ</span>
+      <span class="badge-cancelled-bold">✕ ĐÃ HUỶ</span>
     {% endif %}
 
-    {# Hiện trạng thái refund nếu có #}
     {% if booking.status == "paid" %}
       {% if booking.refund_request.status == "pending" %}
         <span class="badge" style="background:#eff6ff;color:#1d4ed8;border:1px solid #93c5fd;">🔄 Đang xử lý hoàn tiền</span>
@@ -65,30 +193,26 @@
     {% endif %}
   </div>
 
-  <!-- Giá + Actions -->
+  {% comment %} Giá + Actions {% endcomment %}
   <div class="fr-price-block" style="flex-direction:column;align-items:flex-end;gap:8px;">
-    <a href="{% url 'ticket' booking.id %}" class="fr-price-btn">
-      {{ booking.total_price|floatformat:0 }} ₫
-    </a>
-
-    <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">
-      {# Xem vé #}
-      <a href="{% url 'ticket' booking.id %}" class="fr-chevron" title="Xem vé">›</a>
-
-      {# Huỷ: chỉ khi pending #}
+    <span class="fr-price-formatted" data-price="{{ booking.total_price|floatformat:0 }}">
+      {{ booking.total_price|floatformat:0 }} đ
+    </span>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;align-items:flex-start;">
+      <a href="{% url 'ticket' booking.id %}" class="fr-chevron" title="Xem vé điện tử">›</a>
       {% if booking.status == "pending" %}
-        <a href="{% url 'cancel_booking' booking.id %}"
-           class="fr-chevron"
-           title="Huỷ vé"
-           style="color:#dc2626;background:#fee2e2;">✕</a>
+        <a href="{% url 'cancel_booking' booking.id %}" class="fr-chevron" title="Huỷ vé" style="color:#dc2626;background:#fee2e2;">✕</a>
       {% endif %}
-
-      {# Hoàn tiền: chỉ khi paid và chưa có refund request #}
       {% if booking.status == "paid" and not booking.refund_request %}
-        <a href="{% url 'request_refund' booking.id %}"
-           class="fr-chevron"
-           title="Yêu cầu hoàn tiền"
-           style="color:#1d4ed8;background:#dbeafe;">↩</a>
+        <a href="{% url 'request_refund' booking.id %}" class="fr-chevron" title="Yêu cầu hoàn tiền" style="color:#1d4ed8;background:#dbeafe;">↩</a>
+      {% endif %}
+      {% if booking.status == "cancelled" and booking.flight %}
+        <div style="display:flex;flex-direction:column;align-items:center;gap:3px;">
+          <a href="{% url 'create_booking' booking.flight.id %}" class="btn-rebook" title="Đặt lại chuyến bay này">
+            ↺ Đặt lại chuyến bay
+          </a>
+          <span class="btn-rebook-note">Cải tiến: tránh nhầm là nút thanh toán</span>
+        </div>
       {% endif %}
     </div>
   </div>
@@ -97,19 +221,39 @@
 {% empty %}
 <div class="empty-state">
   <div class="empty-icon">🎫</div>
-  <h3>Bạn chưa có vé nào</h3>
-  <p>Hãy tìm và đặt chuyến bay đầu tiên!</p>
-  <a href="{% url 'home' %}" class="btn btn-primary" style="margin-top:16px;">Tìm chuyến bay</a>
+  {% if active_tab == "upcoming" %}
+    <h3>Không có vé sắp bay</h3>
+    <p>Hãy tìm và đặt chuyến bay ngay!</p>
+    <a href="{% url 'home' %}" class="btn btn-primary" style="margin-top:16px;">Tìm chuyến bay</a>
+  {% elif active_tab == "completed" %}
+    <h3>Chưa có chuyến bay nào hoàn thành</h3>
+    <p>Các chuyến đã bay xong sẽ xuất hiện ở đây.</p>
+  {% else %}
+    <h3>Không có vé nào đã huỷ 🎉</h3>
+    <p>Tốt lắm — không có vé nào bị huỷ!</p>
+  {% endif %}
 </div>
 {% endfor %}
 
-{# Legend hướng dẫn nút #}
 {% if bookings %}
 <div style="margin-top:24px;padding:14px 18px;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0;font-size:.8rem;color:#6b7fa8;display:flex;gap:20px;flex-wrap:wrap;">
   <span><strong style="font-family:monospace;background:#fff;border:1px solid #e2e8f0;border-radius:6px;padding:1px 7px;">›</strong> Xem vé điện tử</span>
   <span><strong style="font-family:monospace;background:#fee2e2;color:#dc2626;border-radius:6px;padding:1px 7px;">✕</strong> Huỷ vé (chỉ khi chờ TT)</span>
   <span><strong style="font-family:monospace;background:#dbeafe;color:#1d4ed8;border-radius:6px;padding:1px 7px;">↩</strong> Yêu cầu hoàn tiền (vé đã TT)</span>
+  <span><strong style="font-family:monospace;background:#f1f5f9;color:#64748b;border-radius:6px;padding:1px 7px;">↺</strong> Đặt lại chuyến (vé đã huỷ)</span>
 </div>
 {% endif %}
 
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Format price voi dau cham phan nghin (VD: 1500000 → 1.500.000)
+document.querySelectorAll('[data-price]').forEach(function(el) {
+  var raw = parseInt(el.dataset.price, 10);
+  if (!isNaN(raw)) {
+    el.textContent = raw.toLocaleString('vi-VN') + ' đ';
+  }
+});
+</script>
 {% endblock %}

@@ -1,3 +1,4 @@
+﻿{% load flight_extras %}
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -5,64 +6,152 @@
     <style>
         body { font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #f4f7fc; margin: 0; padding: 20px; color: #333; }
         .container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .header { background: #0F1F3D; color: #ffffff; padding: 30px 20px; text-align: center; }
-        .header h1 { margin: 0; font-size: 24px; letter-spacing: 2px; text-transform: uppercase; }
-        .header p { margin: 5px 0 0; color: #00B4D8; font-size: 14px; }
-        .content { padding: 30px; }
-        .greeting { font-size: 18px; font-weight: bold; margin-bottom: 20px; }
-        .booking-code { text-align: center; background: #f8fafc; border: 2px dashed #cbd5e1; padding: 15px; border-radius: 8px; font-size: 22px; font-weight: 800; letter-spacing: 4px; color: #1E5FBE; margin-bottom: 30px; }
+        .header { background: linear-gradient(135deg, #0F1F3D 0%, #1a3a7a 100%); color: #ffffff; padding: 30px 20px; text-align: center; }
+        .header h1 { margin: 0; font-size: 28px; letter-spacing: 3px; text-transform: uppercase; }
+        .header p { margin: 5px 0 0; color: #00B4D8; font-size: 14px; letter-spacing: 1px; }
+        .airline-row { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 16px; }
+        .airline-logo { width: 40px; height: 40px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; color: #0F1F3D; overflow: hidden; }
+        .airline-logo img { width: 100%; height: 100%; object-fit: contain; }
+        .airline-name { color: rgba(255,255,255,0.85); font-size: 14px; font-weight: 600; }
+        .content { padding: 32px; }
+        .greeting { font-size: 18px; font-weight: bold; margin-bottom: 8px; color: #0F1F3D; }
+        .booking-code { text-align: center; background: #f8fafc; border: 2px dashed #cbd5e1; padding: 18px; border-radius: 12px; font-size: 24px; font-weight: 900; letter-spacing: 5px; color: #1E5FBE; margin: 20px 0 28px; }
+        .booking-code small { display: block; font-size: 11px; color: #94a3b8; letter-spacing: 1px; margin-bottom: 6px; font-weight: 600; }
+        /* Route display */
+        .route-box { background: linear-gradient(135deg, #eff6ff, #e0f2fe); border: 1px solid #bfdbfe; border-radius: 12px; padding: 20px; margin-bottom: 24px; }
+        .route-row { display: flex; align-items: center; justify-content: center; gap: 16px; }
+        .route-airport { text-align: center; }
+        .route-code { font-size: 28px; font-weight: 900; color: #0F1F3D; letter-spacing: -1px; }
+        .route-time { font-size: 18px; font-weight: 700; color: #1E5FBE; margin-top: 2px; }
+        .route-city { font-size: 12px; color: #64748b; margin-top: 3px; }
+        .route-middle { text-align: center; flex: 1; }
+        .route-arrow { font-size: 22px; color: #3b82f6; }
+        .route-duration { font-size: 11px; color: #64748b; font-weight: 600; margin-top: 4px; background: #fff; border-radius: 99px; padding: 3px 10px; display: inline-block; }
+        .route-date { font-size: 12px; color: #64748b; margin-top: 4px; }
+        /* Info table */
         .ticket-info { margin-bottom: 20px; }
         .info-row { display: flex; justify-content: space-between; border-bottom: 1px solid #f1f5f9; padding: 12px 0; }
-        .info-label { color: #64748b; font-size: 14px; }
-        .info-value { font-weight: 600; font-size: 15px; text-align: right; }
-        .total-row { display: flex; justify-content: space-between; padding: 20px 0 0; margin-top: 10px; border-top: 2px solid #e2e8f0; font-size: 18px; font-weight: bold; color: #0F1F3D; }
-        .footer { background: #f8fafc; text-align: center; padding: 20px; font-size: 12px; color: #94a3b8; border-top: 1px solid #f1f5f9; }
+        .info-row:last-child { border-bottom: none; }
+        .info-label { color: #64748b; font-size: 13px; }
+        .info-value { font-weight: 600; font-size: 14px; text-align: right; color: #0F1F3D; }
+        .passenger-row { background: #f8fafc; padding: 12px 14px; border-radius: 8px; margin-top: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .passenger-name { font-size: 14px; font-weight: 600; color: #0F1F3D; }
+        .seat-badge { background: #d1fae5; color: #065f46; border-radius: 6px; padding: 3px 10px; font-size: 12px; font-weight: 700; }
+        /* Total */
+        .total-box { background: #0F1F3D; color: #fff; border-radius: 12px; padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; margin-top: 20px; }
+        .total-label { font-size: 13px; color: rgba(255,255,255,0.7); letter-spacing: 1px; text-transform: uppercase; }
+        .total-amount { font-size: 22px; font-weight: 900; color: #00B4D8; letter-spacing: -0.5px; }
+        /* Status */
+        .status-cancelled { background: #fee2e2; border: 1.5px solid #fca5a5; border-radius: 10px; padding: 14px 18px; margin-bottom: 20px; }
+        .status-cancelled h3 { color: #dc2626; font-size: 16px; margin: 0 0 4px; }
+        .status-cancelled p { color: #991b1b; font-size: 13px; margin: 0; }
+        /* Footer */
+        .footer { background: #f8fafc; text-align: center; padding: 24px; font-size: 12px; color: #94a3b8; border-top: 1px solid #f1f5f9; }
+        .footer .help { color: #64748b; margin-bottom: 8px; font-size: 13px; }
+        .divider { border: none; border-top: 1px solid #e2e8f0; margin: 16px 0; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>SkyBook</h1>
+            <h1>✈ SkyBook</h1>
             <p>VÉ MÁY BAY ĐIỆN TỬ (E-TICKET)</p>
+            {% if booking.flight %}
+            <div class="airline-row">
+                <div class="airline-logo">
+                    {% if booking.flight.airline.logo %}
+                        <img src="{{ booking.flight.airline.logo }}" alt="{{ booking.flight.airline.name }}">
+                    {% else %}
+                        {{ booking.flight.airline.code|default:booking.flight.airline.name|slice:":2"|upper }}
+                    {% endif %}
+                </div>
+                <span class="airline-name">{{ booking.flight.airline.name }}</span>
+            </div>
+            {% endif %}
         </div>
-        
+
         <div class="content">
             <div class="greeting">Xin chào {{ booking.user.get_full_name|default:booking.user.username }},</div>
-            <p>Cảm ơn bạn đã lựa chọn SkyBook. Đặt vé và thanh toán của bạn đã thành công!</p>
-            
-            <p>MÃ ĐẶT CHỖ (BOOKING CODE):</p>
+            {% if booking.status == "cancelled" %}
+            <div class="status-cancelled">
+                <h3>✕ Vé đã bị huỷ</h3>
+                <p>Đặt vé <strong>{{ booking.booking_code }}</strong> đã bị huỷ. Nếu bạn có thắc mắc về hoàn tiền, vui lòng liên hệ bộ phận hỗ trợ.</p>
+            </div>
+            {% else %}
+            <p style="color:#64748b;margin-bottom:20px;">Cảm ơn bạn đã lựa chọn SkyBook. Đặt vé và thanh toán của bạn đã thành công!</p>
+            {% endif %}
+
+            <p style="font-size:12px;color:#94a3b8;text-transform:uppercase;font-weight:700;letter-spacing:1px;margin-bottom:8px;">Mã đặt chỗ</p>
             <div class="booking-code">{{ booking.booking_code }}</div>
-            
+
+            {% if booking.flight %}
+            <!-- Route display -->
+            <div class="route-box">
+                <div class="route-row">
+                    <div class="route-airport">
+                        <div class="route-code">{{ booking.flight.departure_airport.code }}</div>
+                        <div class="route-time">{{ booking.flight.departure_time|date:"H:i" }}</div>
+                        <div class="route-city">{{ booking.flight.departure_airport.city }}</div>
+                    </div>
+                    <div class="route-middle">
+                        <div class="route-arrow">✈</div>
+                        <div class="route-duration">{{ booking.flight.departure_time|flight_duration:booking.flight.arrival_time }}</div>
+                        <div class="route-date">{{ booking.flight.departure_time|date:"d/m/Y" }}</div>
+                    </div>
+                    <div class="route-airport">
+                        <div class="route-code">{{ booking.flight.arrival_airport.code }}</div>
+                        <div class="route-time">{{ booking.flight.arrival_time|date:"H:i" }}</div>
+                        <div class="route-city">{{ booking.flight.arrival_airport.city }}</div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
             <div class="ticket-info">
                 <div class="info-row">
-                    <span class="info-label">Chuyến bay</span>
+                    <span class="info-label">Số chuyến bay</span>
                     <span class="info-value">{{ booking.flight.flight_number }}</span>
                 </div>
                 <div class="info-row">
-                    <span class="info-label">Hành trình</span>
-                    <span class="info-value">{{ booking.flight.departure_airport.city }} ✈ {{ booking.flight.arrival_airport.city }}</span>
+                    <span class="info-label">Ngày khởi hành</span>
+                    <span class="info-value">{{ booking.flight.departure_time|date:"d/m/Y" }}</span>
                 </div>
                 <div class="info-row">
-                    <span class="info-label">Khởi hành</span>
-                    <span class="info-value">{{ booking.flight.departure_time|date:"H:i - d/m/Y" }}</span>
+                    <span class="info-label">Trạng thái</span>
+                    <span class="info-value">
+                        {% if booking.status == "paid" %}✅ Đã thanh toán
+                        {% elif booking.status == "pending" %}⏳ Chờ thanh toán
+                        {% else %}❌ Đã huỷ{% endif %}
+                    </span>
                 </div>
-                
-                {% for ticket in booking.tickets.all %}
-                <div class="info-row" style="background: #f8fafc; padding: 12px 10px; border-radius: 6px; margin-top: 10px;">
-                    <span class="info-label">Hành khách: {{ ticket.passenger.full_name }}</span>
-                    <span class="info-value" style="color: #059669;">Ghế: {{ ticket.seat_number }}</span>
+            </div>
+
+            {% for ticket in booking.tickets.all %}
+            <div class="passenger-row">
+                <span class="passenger-name">👤 {{ ticket.passenger.full_name }}</span>
+                <span class="seat-badge">Ghế {{ ticket.seat_number }}</span>
+            </div>
+            {% endfor %}
+
+            <div class="total-box">
+                <div>
+                    <div class="total-label">Tổng tiền đã thanh toán</div>
                 </div>
-                {% endfor %}
+                <div class="total-amount" id="email-total" data-price="{{ booking.total_price|floatformat:0 }}">
+                    {{ booking.total_price|floatformat:0 }} VNĐ
+                </div>
             </div>
-            
-            <div class="total-row">
-                <span>TỔNG TIỀN ĐÃ THANH TOÁN</span>
-                <span style="color: #1E5FBE;">{{ booking.total_price|floatformat:0 }} VNĐ</span>
-            </div>
+
+            <hr class="divider">
+            <p style="font-size:12px;color:#94a3b8;text-align:center;">
+                Vui lòng xuất trình mã đặt chỗ hoặc vé điện tử này tại quầy check-in.<br>
+                Có mặt tại sân bay ít nhất <strong>2 tiếng trước giờ khởi hành</strong>.
+            </p>
         </div>
-        
+
         <div class="footer">
-            Đây là email tự động, vui lòng không trả lời. Xin cảm ơn!<br>
+            <p class="help">Cần hỗ trợ? Liên hệ: <strong>support@skybook.vn</strong></p>
+            Đây là email tự động, vui lòng không trả lời.<br>
             © 2026 SkyBook Airlines. All rights reserved.
         </div>
     </div>
