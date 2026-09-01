@@ -1,5 +1,5 @@
-{% extends "base.html" %}
-{% block title %}Đổi ghế — {{ flight.flight_number }}{% endblock %}
+﻿{% extends "base.html" %}
+{% block title %}Äá»•i gháº¿ â€” {{ flight.flight_number }}{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -8,7 +8,7 @@ main.contained { max-width: 100% !important; padding: 0 !important; margin: 0 !i
 body { background: linear-gradient(to bottom, #7DD3FC, #BAE6FD) no-repeat center center fixed; background-size: cover; }
 .booking-layout { display: grid; grid-template-columns: 1fr 320px; gap: 40px; max-width: 1200px; margin: 100px auto 40px; padding: 0 20px; align-items: start; }
 @media (max-width: 900px) { .booking-layout { grid-template-columns: 1fr; } }
-.plane-wrapper { position: relative; display: flex; justify-content: center; padding: 40px 0; }
+.plane-wrapper { position: relative; display: flex; justify-content: center; padding: 40px 0; overflow-x: clip; max-width: 100vw; }
 .plane-wings { position: absolute; top: 300px; left: 50%; transform: translateX(-50%); width: 900px; height: 400px; z-index: 0; pointer-events: none; background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 400"><path d="M 340 100 L 50 300 Q 20 310 30 330 L 340 260 Z" fill="%23ffffff" opacity="0.6"/><rect x="220" y="220" width="50" height="90" rx="25" fill="%23ffffff" opacity="0.7"/><path d="M 660 100 L 950 300 Q 980 310 970 330 L 660 260 Z" fill="%23ffffff" opacity="0.6"/><rect x="730" y="220" width="50" height="90" rx="25" fill="%23ffffff" opacity="0.7"/></svg>') no-repeat center center; background-size: contain; }
 .plane-fuselage { position: relative; width: 320px; background: #ffffff; border-radius: 160px 160px 40px 40px; padding: 80px 20px 40px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); z-index: 1; }
 .cockpit { position: absolute; top: -20px; left: 50%; transform: translateX(-50%); width: 60px; height: 40px; background: #e2e8f0; border-radius: 30px 30px 10px 10px; border: 2px solid #cbd5e1; }
@@ -47,7 +47,7 @@ body { background: linear-gradient(to bottom, #7DD3FC, #BAE6FD) no-repeat center
                 
                 {% for row in all_seats %}
                     {% if row.is_exit %}
-                        <div class="exit-row"><span class="exit-arrow">&larr;</span><span>Lối thoát hiểm</span><span class="exit-arrow">&rarr;</span></div>
+                        <div class="exit-row"><span class="exit-arrow">&larr;</span><span>Lá»‘i thoÃ¡t hiá»ƒm</span><span class="exit-arrow">&rarr;</span></div>
                     {% endif %}
                     
                     <div class="seat-row">
@@ -69,30 +69,30 @@ body { background: linear-gradient(to bottom, #7DD3FC, #BAE6FD) no-repeat center
     </div>
     
     <div class="summary-sidebar">
-        <a href="{% url 'ticket' ticket.booking.id %}" style="display:inline-block; margin-bottom: 16px; color: var(--navy); font-weight: 600; text-decoration: none;">&larr; Hủy đổi ghế</a>
+        <a href="{% url 'ticket' ticket.booking.id %}" style="display:inline-block; margin-bottom: 16px; color: var(--navy); font-weight: 600; text-decoration: none;">&larr; Há»§y Ä‘á»•i gháº¿</a>
         
         <div class="seat-legend-card">
-            <div class="legend-item"><div class="legend-box" style="background:#9333ea;"></div> Cao cấp</div>
-            <div class="legend-item"><div class="legend-box" style="background:#059669;"></div> Phía trước</div>
-            <div class="legend-item"><div class="legend-box" style="background:#0ea5e9;"></div> Tiêu chuẩn</div>
-            <div class="legend-item"><div class="legend-box" style="background:#f59e0b;"></div> Ghế của bạn</div>
-            <div class="legend-item"><div class="legend-box" style="background:#e2e8f0; position:relative;"><span style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:10px;color:#94a3b8;font-weight:bold;">X</span></div> Đã đặt</div>
+            <div class="legend-item"><div class="legend-box" style="background:#9333ea;"></div> Cao cáº¥p</div>
+            <div class="legend-item"><div class="legend-box" style="background:#059669;"></div> PhÃ­a trÆ°á»›c</div>
+            <div class="legend-item"><div class="legend-box" style="background:#0ea5e9;"></div> TiÃªu chuáº©n</div>
+            <div class="legend-item"><div class="legend-box" style="background:#f59e0b;"></div> Gháº¿ cá»§a báº¡n</div>
+            <div class="legend-item"><div class="legend-box" style="background:#e2e8f0; position:relative;"><span style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:10px;color:#94a3b8;font-weight:bold;">X</span></div> ÄÃ£ Ä‘áº·t</div>
         </div>
         
         <div class="summary-card">
-            <div class="summary-title">Đổi ghế ngồi</div>
-            <div class="summary-route">Hành khách: {{ ticket.passenger.full_name }}</div>
+            <div class="summary-title">Äá»•i gháº¿ ngá»“i</div>
+            <div class="summary-route">HÃ nh khÃ¡ch: {{ ticket.passenger.full_name }}</div>
             
             <div class="summary-row">
-                <span style="color:#64748b;">Ghế hiện tại</span>
+                <span style="color:#64748b;">Gháº¿ hiá»‡n táº¡i</span>
                 <strong style="color:var(--navy);">{{ ticket.seat_number }}</strong>
             </div>
             <div class="summary-row">
-                <span style="color:#64748b;">Ghế mới</span>
+                <span style="color:#64748b;">Gháº¿ má»›i</span>
                 <strong id="selected-seat-display" style="color:#10b981; font-size:1.1rem;">{{ ticket.seat_number }}</strong>
             </div>
             
-            <button type="submit" form="change-seat-form" id="submit-btn" class="btn btn-primary btn-full" style="margin-top:24px; padding: 14px; border-radius: 99px; font-size:1.05rem;" disabled>Giữ nguyên ghế</button>
+            <button type="submit" form="change-seat-form" id="submit-btn" class="btn btn-primary btn-full" style="margin-top:24px; padding: 14px; border-radius: 99px; font-size:1.05rem;" disabled>Giá»¯ nguyÃªn gháº¿</button>
         </div>
     </div>
 </div>
@@ -108,10 +108,10 @@ function selectSeat(code) {
   
   if(code === currentSeat) {
       btn.disabled = true;
-      btn.textContent = 'Giữ nguyên ghế';
+      btn.textContent = 'Giá»¯ nguyÃªn gháº¿';
   } else {
       btn.disabled = false;
-      btn.textContent = 'Xác nhận đổi sang ' + code;
+      btn.textContent = 'XÃ¡c nháº­n Ä‘á»•i sang ' + code;
   }
   
   document.querySelectorAll('.seat').forEach(b => b.classList.remove('selected'));
