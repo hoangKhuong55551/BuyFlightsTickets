@@ -1,5 +1,6 @@
 ﻿from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404
+from django.utils import timezone
 
 from .models import Flight
 
@@ -16,7 +17,7 @@ def flight_detail(request, flight_id):
 def home(request):
     flights = Flight.objects.select_related(
         "airline", "departure_airport", "arrival_airport"
-    ).all()
+    ).filter(departure_time__gte=timezone.now())
 
     departure = request.GET.get("departure", "").strip()
     arrival = request.GET.get("arrival", "").strip()
@@ -46,6 +47,7 @@ def home(request):
             "date": date,
         }
     )
+
 def help_center(request):
     return render(request, 'flights/help_center.html')
 
