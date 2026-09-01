@@ -1,13 +1,20 @@
-﻿{% extends "base.html" %}
+{% extends "base.html" %}
 
 {% block title %}Liên hệ chúng tôi - SkyBook{% endblock %}
 
 {% block content %}
 <div style="max-width: 800px; margin: 0 auto; padding: 40px 20px; text-align: center;">
-    <h1 style="font-weight: 800; color: var(--navy); margin-bottom: 16px;">Xin chào, chúng tôi có thể giúp gì cho bạn?</h1>
+    <style>
+        .contact-h1 { font-weight: 800; color: var(--navy); margin-bottom: 16px; font-size: 2.2rem; }
+        @media (max-width: 480px) {
+            .contact-h1 { font-size: 1.6rem; }
+            .contact-grid { grid-template-columns: 1fr !important; }
+        }
+    </style>
+    <h1 class="contact-h1">Xin chào, chúng tôi có thể giúp gì cho bạn?</h1>
     <p style="font-size: 1.1rem; color: var(--muted); margin-bottom: 40px;">Vui lòng liên hệ với chúng tôi qua các đường dẫn sau:</p>
     
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; max-width: 600px; margin: 0 auto;">
+    <div class="contact-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; max-width: 600px; margin: 0 auto;">
         
         <a href="#" style="background: white; border: 1px solid var(--border); border-radius: 16px; padding: 24px; text-align: center; text-decoration: none; color: var(--text); box-shadow: var(--shadow); transition: transform 0.2s;">
             <div style="font-size: 2rem; margin-bottom: 12px; color: #1877F2;">📘</div>

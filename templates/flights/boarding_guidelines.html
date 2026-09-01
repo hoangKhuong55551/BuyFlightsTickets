@@ -1,10 +1,16 @@
-﻿{% extends "base.html" %}
+{% extends "base.html" %}
 
 {% block title %}Những lưu ý khi lên máy bay - SkyBook{% endblock %}
 
 {% block content %}
 <div style="max-width: 800px; margin: 0 auto; padding: 40px 20px;">
-    <h1 style="font-weight: 800; color: var(--navy); margin-bottom: 16px; text-align: center;">Những lưu ý khi lên máy bay</h1>
+    <style>
+        .boarding-h1 { font-weight: 800; color: var(--navy); margin-bottom: 16px; text-align: center; font-size: 2.2rem; }
+        @media (max-width: 480px) {
+            .boarding-h1 { font-size: 1.6rem; }
+        }
+    </style>
+    <h1 class="boarding-h1">Những lưu ý khi lên máy bay</h1>
     
     <div style="background: white; border: 1px solid var(--border); border-radius: 16px; padding: 32px; box-shadow: var(--shadow); min-height: 300px;">
         <p style="color: var(--muted); text-align: center;">Đang cập nhật nội dung...</p>

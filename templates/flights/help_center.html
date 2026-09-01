@@ -1,4 +1,4 @@
-﻿{% extends "base.html" %}
+{% extends "base.html" %}
 
 {% block title %}Trợ giúp - SkyBook{% endblock %}
 
@@ -7,9 +7,29 @@
     <h1 style="font-weight: 800; color: var(--navy); margin-bottom: 16px;">Trung tâm Hỗ trợ khách hàng SkyBook</h1>
     <p style="font-size: 1.1rem; color: var(--muted); margin-bottom: 32px;">Chúng tôi có thể giúp gì cho bạn?</p>
     
-    <div style="max-width: 600px; margin: 0 auto; position: relative;">
-        <input type="text" placeholder="Nhập vấn đề bạn cần được hỗ trợ..." style="width: 100%; padding: 16px 24px; font-size: 1rem; border-radius: 99px; border: 2px solid var(--border); box-shadow: var(--shadow); outline: none;">
-        <button style="position: absolute; right: 8px; top: 8px; bottom: 8px; border: none; background: var(--blue); color: white; border-radius: 99px; padding: 0 24px; font-weight: 600; cursor: pointer;">Tìm kiếm</button>
+    <style>
+        .search-container {
+            max-width: 600px; margin: 0 auto; display: flex; gap: 12px;
+        }
+        .search-input {
+            flex: 1; padding: 16px 24px; font-size: 1rem; border-radius: 99px; 
+            border: 2px solid var(--border); box-shadow: var(--shadow); outline: none;
+            width: 100%;
+        }
+        .search-btn {
+            border: none; background: var(--blue); color: white; border-radius: 99px; 
+            padding: 0 28px; font-weight: 600; cursor: pointer; white-space: nowrap;
+        }
+        @media (max-width: 480px) {
+            .search-container { flex-direction: column; }
+            .search-btn { padding: 16px; width: 100%; }
+            h1 { font-size: 1.5rem; }
+        }
+    </style>
+    
+    <div class="search-container">
+        <input type="text" class="search-input" placeholder="Nhập vấn đề bạn cần được hỗ trợ...">
+        <button class="search-btn">Tìm kiếm</button>
     </div>
 </div>
 {% endblock %}
