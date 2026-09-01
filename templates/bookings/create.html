@@ -1,81 +1,297 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 {% block title %}Chọn ghế — {{ flight.flight_number }}{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Reset main padding to allow full background */
+main.contained { max-width: 100% !important; padding: 0 !important; margin: 0 !important; background: transparent !important; }
+body { background: linear-gradient(to bottom, #7DD3FC, #BAE6FD) no-repeat center center fixed; background-size: cover; }
+
+/* Plane Layout Container */
+.booking-layout {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 40px;
+    max-width: 1200px;
+    margin: 100px auto 40px;
+    padding: 0 20px;
+    align-items: start;
+}
+
+@media (max-width: 900px) {
+    .booking-layout { grid-template-columns: 1fr; }
+}
+
+/* Plane Design */
+.plane-wrapper {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    padding: 40px 0;
+}
+
+/* Wings SVG */
+.plane-wings {
+    position: absolute;
+    top: 250px; /* Adjust based on where wings should be */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 800px; /* Wide enough for wings */
+    height: 400px;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 400"><path d="M 340 100 L 50 300 Q 20 310 30 330 L 340 260 Z" fill="%23ffffff" opacity="0.6"/><rect x="220" y="220" width="50" height="90" rx="25" fill="%23ffffff" opacity="0.7"/><path d="M 660 100 L 950 300 Q 980 310 970 330 L 660 260 Z" fill="%23ffffff" opacity="0.6"/><rect x="730" y="220" width="50" height="90" rx="25" fill="%23ffffff" opacity="0.7"/></svg>') no-repeat center center;
+    background-size: contain;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.85;
+}
+
+.plane-fuselage {
+    position: relative;
+    width: 320px;
+    background: #ffffff;
+    border-radius: 160px 160px 40px 40px; /* Nose shape */
+    padding: 80px 20px 40px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    z-index: 1;
+}
+
+.cockpit { position: absolute; top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 40px;
+    background: #e2e8f0;
+    border-radius: 30px 30px 10px 10px;
+    border: 2px solid #cbd5e1;
+}
+
+.seat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.seat-group {
+    display: flex;
+    gap: 6px;
+}
+
+.aisle-number {
+    width: 30px;
+    text-align: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #94a3b8;
+}
+
+.seat {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px 6px 4px 4px; /* Shape looks like a seat back */
+    border: none;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #ffffff;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+/* Add a little line to simulate the seat cushion */
+.seat::after {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    left: 4px;
+    right: 4px;
+    height: 2px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 1px;
+}
+
+/* Seat Classes */
+.seat.premium { background: #9333ea; } /* Purple */
+.seat.premium:hover:not(.disabled) { background: #7e22ce; transform: scale(1.1); }
+.seat.premium.selected { background: #581c87; box-shadow: 0 0 0 3px #d8b4fe; }
+
+.seat.front { background: #059669; } /* Green */
+.seat.front:hover:not(.disabled) { background: #047857; transform: scale(1.1); }
+.seat.front.selected { background: #064e3b; box-shadow: 0 0 0 3px #6ee7b7; }
+
+.seat.standard { background: #0ea5e9; } /* Blue */
+.seat.standard:hover:not(.disabled) { background: #0284c7; transform: scale(1.1); }
+.seat.standard.selected { background: #0c4a6e; box-shadow: 0 0 0 3px #7dd3fc; }
+
+.seat.taken {
+    background: #e2e8f0;
+    color: #cbd5e1;
+    cursor: not-allowed;
+}
+.seat.taken::after { display: none; }
+.seat.taken::before {
+    content: 'X';
+    position: absolute;
+    font-size: 1.2rem;
+    color: #94a3b8;
+}
+
+.exit-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 16px -10px;
+    padding: 8px 0;
+    border-top: 2px dashed #ef4444;
+    border-bottom: 2px dashed #ef4444;
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: #ef4444;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.exit-arrow {
+    font-size: 1rem;
+    line-height: 1;
+}
+
+/* Legend */
+.seat-legend-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    margin-bottom: 24px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+.legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; font-weight: 500; color: #475569; }
+.legend-box { width: 16px; height: 16px; border-radius: 4px; }
+
+/* Sidebar Summary */
+.summary-sidebar {
+    position: sticky;
+    top: 90px;
+}
+.summary-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+.summary-title { font-size: 1.2rem; font-weight: 800; color: var(--navy); margin-bottom: 8px; }
+.summary-route { color: var(--muted); font-size: 0.9rem; margin-bottom: 20px; font-weight: 500; }
+.summary-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; }
+.summary-row.total { border-bottom: none; padding-top: 20px; font-weight: 800; font-size: 1.2rem; color: var(--blue); align-items: flex-end; }
+</style>
+{% endblock %}
+
 {% block content %}
-<a href="{% url 'flight_detail' flight.id %}" class="back-link">← Quay lại chi tiết</a>
-
-<div style="display:grid;grid-template-columns:1fr 300px;gap:24px;align-items:start;">
-
-  <!-- Sơ đồ ghế -->
-  <div class="card">
-    <h1 style="margin-bottom:4px;">Chọn ghế ngồi</h1>
-    <p style="color:var(--muted);margin-bottom:24px;">{{ flight.flight_number }} · {{ flight.departure_airport.city }} → {{ flight.arrival_airport.city }}</p>
-
-    <!-- Mô phỏng đầu máy bay -->
-    <div style="text-align:center;margin-bottom:12px;">
-      <div style="display:inline-block;background:var(--navy);color:#fff;padding:8px 40px;border-radius:99px 99px 0 0;font-size:.78rem;font-weight:700;">✈ Đầu máy bay</div>
-    </div>
-    <div style="border:2px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px;">
-      <div class="seat-legend" style="margin-bottom:14px;">
-        <div class="legend-item"><span class="legend-dot" style="background:#5b9bf8;border-color:#5b9bf8;"></span><span>Còn trống</span></div>
-        <div class="legend-item"><span class="legend-dot" style="background:var(--navy);border-color:var(--navy);"></span><span>Đang chọn</span></div>
-        <div class="legend-item"><span class="legend-dot" style="background:#cbd5e1;border-color:#cbd5e1;"></span><span>Đã đặt</span></div>
-      </div>
-      <form method="POST" id="booking-form">
-        {% csrf_token %}
-        <input type="hidden" name="seat_number" id="seat_number_input" value="" />
-        <div class="seats">
-          {% for seat in all_seats %}
-          <button type="button" class="seat {% if seat.taken %}taken{% endif %}"
-            data-seat="{{ seat.code }}" {% if seat.taken %}disabled{% endif %}
-            onclick="selectSeat('{{ seat.code }}')">{{ seat.code }}</button>
-          {% endfor %}
+<div class="booking-layout">
+    
+    <!-- Airplane Seat Map -->
+    <div class="plane-wrapper">
+        <!-- SVG background for wings can go here if needed, but the fuselage is the main part -->
+        <div class="plane-fuselage">
+            <div class="cockpit"></div>
+            
+            <form method="POST" id="booking-form">
+                {% csrf_token %}
+                <input type="hidden" name="seat_number" id="seat_number_input" value="" />
+                
+                {% for row in all_seats %}
+                    
+                    {% if row.is_exit %}
+                        <div class="exit-row">
+                            <span class="exit-arrow">&larr;</span>
+                            <span>Lối thoát hiểm</span>
+                            <span class="exit-arrow">&rarr;</span>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="seat-row">
+                        <!-- Left Seats -->
+                        <div class="seat-group left">
+                            {% for seat in row.seats|slice:":3" %}
+                                <button type="button" 
+                                    class="seat {{ row.type }} {% if seat.taken %}taken{% endif %}" 
+                                    data-seat="{{ seat.code }}" 
+                                    {% if seat.taken %}disabled{% endif %}
+                                    onclick="selectSeat('{{ seat.code }}')">{{ seat.code }}</button>
+                            {% endfor %}
+                        </div>
+                        
+                        <!-- Aisle -->
+                        <div class="aisle-number">{{ row.row_number }}</div>
+                        
+                        <!-- Right Seats -->
+                        <div class="seat-group right">
+                            {% for seat in row.seats|slice:"3:" %}
+                                <button type="button" 
+                                    class="seat {{ row.type }} {% if seat.taken %}taken{% endif %}" 
+                                    data-seat="{{ seat.code }}" 
+                                    {% if seat.taken %}disabled{% endif %}
+                                    onclick="selectSeat('{{ seat.code }}')">{{ seat.code }}</button>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </form>
         </div>
-      </form>
     </div>
-    <div style="text-align:center;font-size:.75rem;color:var(--muted);">🛬 Cuối máy bay</div>
-  </div>
+    
+    <!-- Sidebar -->
+    <div class="summary-sidebar">
+        <a href="{% url 'flight_detail' flight.id %}" style="display:inline-block; margin-bottom: 16px; color: var(--navy); font-weight: 600; text-decoration: none;">&larr; Quay lại chuyến bay</a>
+        
+        <div class="seat-legend-card">
+            <div class="legend-item"><div class="legend-box" style="background:#9333ea;"></div> Ghế cao cấp</div>
+            <div class="legend-item"><div class="legend-box" style="background:#059669;"></div> Phía trước</div>
+            <div class="legend-item"><div class="legend-box" style="background:#0ea5e9;"></div> Tiêu chuẩn</div>
+            <div class="legend-item"><div class="legend-box" style="background:#e2e8f0; position:relative;"><span style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:10px;color:#94a3b8;font-weight:bold;">X</span></div> Đã đặt</div>
+        </div>
+        
+        <div class="summary-card">
+            <div class="summary-title">Tóm tắt đặt vé</div>
+            <div class="summary-route">{{ flight.departure_airport.city }} &rarr; {{ flight.arrival_airport.city }}</div>
+            
+            <div class="summary-row">
+                <span style="color:#64748b;">Chuyến bay</span>
+                <strong style="color:var(--navy);">{{ flight.flight_number }}</strong>
+            </div>
+            <div class="summary-row">
+                <span style="color:#64748b;">Ghế đã chọn</span>
+                <strong id="selected-seat-display" style="color:var(--blue); font-size:1.1rem;">Chưa chọn</strong>
+            </div>
+            <div class="summary-row total">
+                <span style="color:#64748b; font-size:0.9rem; font-weight:600;">Tổng tiền</span>
+                <span>{{ flight.price|floatformat:0 }} đ</span>
+            </div>
+            
+            <button type="submit" form="booking-form" id="submit-btn" class="btn btn-primary btn-full" style="margin-top:24px; padding: 14px; border-radius: 99px; font-size:1.05rem;" disabled>Xác nhận ghế</button>
+        </div>
+    </div>
 
-  <!-- Sidebar tóm tắt -->
-  <div style="position:sticky;top:80px;display:flex;flex-direction:column;gap:14px;">
-    <div class="card" style="background:var(--navy);border-color:var(--navy);color:#fff;">
-      <div style="font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.6);margin-bottom:8px;">Phương thức thanh toán</div>
-      <div style="display:flex;flex-direction:column;gap:8px;">
-        <div style="background:rgba(255,255,255,.12);border-radius:8px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;">
-          <span style="font-size:.88rem;">💳 Thẻ tín dụng</span><span>›</span>
-        </div>
-        <div style="background:rgba(255,255,255,.12);border-radius:8px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;">
-          <span style="font-size:.88rem;">💰 Ví điện tử</span><span>›</span>
-        </div>
-        <div style="background:rgba(255,255,255,.12);border-radius:8px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;">
-          <span style="font-size:.88rem;">🏦 Chuyển khoản</span><span>›</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div style="font-size:.78rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;">Tóm tắt</div>
-      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:.88rem;"><span style="color:var(--muted);">Chuyến bay</span><strong>{{ flight.flight_number }}</strong></div>
-      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:.88rem;"><span style="color:var(--muted);">Từ</span><strong>{{ flight.departure_airport.code }}</strong></div>
-      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:.88rem;"><span style="color:var(--muted);">Đến</span><strong>{{ flight.arrival_airport.code }}</strong></div>
-      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:.88rem;"><span style="color:var(--muted);">Ghế</span><strong id="selected-seat-display" style="color:var(--blue);">Chưa chọn</strong></div>
-      <div style="display:flex;justify-content:space-between;padding:12px 0 0;align-items:center;">
-        <span style="color:var(--muted);font-size:.88rem;">Tổng tiền</span>
-        <strong style="font-size:1.3rem;color:var(--blue);">{{ flight.price|floatformat:0 }} ₫</strong>
-      </div>
-      <button type="submit" form="booking-form" id="submit-btn" class="btn btn-primary btn-full" style="margin-top:16px;" disabled>Xác nhận đặt vé</button>
-    </div>
-  </div>
 </div>
 {% endblock %}
+
 {% block extra_js %}
 <script>
 function selectSeat(code) {
   document.getElementById('seat_number_input').value = code;
   document.getElementById('selected-seat-display').textContent = code;
   const btn = document.getElementById('submit-btn');
-  btn.disabled = false; btn.textContent = 'Đặt ghế ' + code;
+  btn.disabled = false;
+  btn.textContent = 'Xác nhận ghế ' + code;
   document.querySelectorAll('.seat').forEach(b => b.classList.remove('selected'));
   document.querySelector('[data-seat="' + code + '"]').classList.add('selected');
 }
 </script>
 {% endblock %}
+
+
+

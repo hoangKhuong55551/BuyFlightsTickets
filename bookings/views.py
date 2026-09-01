@@ -1,4 +1,4 @@
-import uuid
+﻿import uuid
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -11,29 +11,54 @@ from flights.models import Flight
 
 
 def _generate_seats(flight):
-    """Tạo danh sách ghế, đánh dấu taken nếu ghế thuộc booking pending hoặc paid.
-    Ghế của booking đã cancelled được coi là trống lại.
     """
+    Tạo danh sách ghế có cấu trúc theo hàng, phân chia loại ghế và lối thoát hiểm.
+    """
+    from bookings.models import Ticket
     taken = set(
         Ticket.objects.filter(
             flight=flight,
             booking__status__in=["pending", "paid"]
         ).values_list("seat_number", flat=True)
     )
-    total = getattr(getattr(flight, "aircraft", None), "total_seats", 30)
+    total = getattr(getattr(flight, "aircraft", None), "total_seats", 180) # default 180 seats for A320
     seat_letters = ["A", "B", "C", "D", "E", "F"]
-    seats = []
+    seats_per_row = len(seat_letters)
+    total_rows = (total + seats_per_row - 1) // seats_per_row
+    
+    rows = []
     count = 0
-    row = 1
-    while count < total:
+    for row in range(1, total_rows + 1):
+        # Determine seat type for coloring
+        if row <= 3:
+            seat_type = "premium"
+        elif row <= 11:
+            seat_type = "front"
+        else:
+            seat_type = "standard"
+            
+        is_exit = row in [11, 12, 26, 27]
+        
+        row_seats = []
         for letter in seat_letters:
             if count >= total:
                 break
             code = f"{row:02d}{letter}"
-            seats.append({"code": code, "taken": code in taken})
+            row_seats.append({
+                "code": code,
+                "letter": letter,
+                "taken": code in taken,
+            })
             count += 1
-        row += 1
-    return seats
+            
+        rows.append({
+            "row_number": row,
+            "type": seat_type,
+            "is_exit": is_exit,
+            "seats": row_seats
+        })
+        
+    return rows
 
 
 @login_required
@@ -45,10 +70,10 @@ def create_booking(request, flight_id):
         seat_number = request.POST.get("seat_number", "").strip()
 
         if not seat_number:
-            messages.error(request, "Vui lòng chọn ghế trước khi đặt vé.")
+            messages.error(request, "Vui lÃ²ng chá»n gháº¿ trÆ°á»›c khi Ä‘áº·t vÃ©.")
             return redirect("create_booking", flight_id=flight.id)
 
-        # Khoá dòng để tránh race condition — hai user chọn cùng ghế đồng thời
+        # KhoÃ¡ dÃ²ng Ä‘á»ƒ trÃ¡nh race condition â€” hai user chá»n cÃ¹ng gháº¿ Ä‘á»“ng thá»i
         already_taken = (
             Ticket.objects
             .select_for_update()
@@ -62,7 +87,7 @@ def create_booking(request, flight_id):
         if already_taken:
             messages.error(
                 request,
-                f"Ghế {seat_number} vừa được người khác đặt. Vui lòng chọn ghế khác."
+                f"Gháº¿ {seat_number} vá»«a Ä‘Æ°á»£c ngÆ°á»i khÃ¡c Ä‘áº·t. Vui lÃ²ng chá»n gháº¿ khÃ¡c."
             )
             return redirect("create_booking", flight_id=flight.id)
 
@@ -154,9 +179,10 @@ def cancel_booking(request, booking_id):
         if booking.status == "pending":
             booking.status = "cancelled"
             booking.save()
-            messages.success(request, f"Đã huỷ vé {booking.booking_code}. Ghế đã được giải phóng.")
+            messages.success(request, f"ÄÃ£ huá»· vÃ© {booking.booking_code}. Gháº¿ Ä‘Ã£ Ä‘Æ°á»£c giáº£i phÃ³ng.")
         else:
-            messages.error(request, "Chỉ có thể huỷ vé đang ở trạng thái chờ thanh toán.")
+            messages.error(request, "Chá»‰ cÃ³ thá»ƒ huá»· vÃ© Ä‘ang á»Ÿ tráº¡ng thÃ¡i chá» thanh toÃ¡n.")
         return redirect("my_bookings")
 
     return render(request, "bookings/cancel_confirm.html", {"booking": booking})
+
