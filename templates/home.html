@@ -1,282 +1,586 @@
-{% extends "base.html" %}
-{% load static %}
-{% block title %}SkyBook — Hành trình của bạn bắt đầu từ đây{% endblock %}
-
-{% block extra_css %}
+﻿{% extends "base.html" %} {% load static %} {% block title %}SkyBook — Hành
+trình của bạn bắt đầu từ đây{% endblock %} {% block extra_css %}
 <script>
-  window.addEventListener('DOMContentLoaded', function() {
-    var nav = document.getElementById('main-nav');
+  window.addEventListener("DOMContentLoaded", function () {
+    var nav = document.getElementById("main-nav");
     if (nav) {
-      nav.classList.add('is-home');
-      
-      var checkScroll = function() {
+      nav.classList.add("is-home");
+
+      var checkScroll = function () {
         if (window.scrollY > 10) {
-          nav.classList.add('scrolled');
+          nav.classList.add("scrolled");
         } else {
-          nav.classList.remove('scrolled');
+          nav.classList.remove("scrolled");
         }
       };
-      
-      window.addEventListener('scroll', checkScroll);
+
+      window.addEventListener("scroll", checkScroll);
       checkScroll(); // trigger immediately
     }
   });
 </script>
 <style>
-/* Override global body padding for home page */
-body { padding-top: 0 !important; }
-main.contained { padding: 0 !important; margin: 0 !important; max-width: 100% !important; background: var(--c-navy) !important; color: #fff; border: none !important; }
+  /* Override global body padding for home page */
+  body {
+    padding-top: 0 !important;
+  }
+  main.contained {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+    background: var(--c-navy) !important;
+    color: #fff;
+    border: none !important;
+  }
 
-/* Navbar overrides for home page */
-header.navbar-glass.is-home:not(.scrolled) {
-  background: transparent !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
-  backdrop-filter: none !important;
-  box-shadow: none !important;
-}
+  /* Navbar overrides for home page */
+  header.navbar-glass.is-home:not(.scrolled) {
+    background: transparent !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+    backdrop-filter: none !important;
+    box-shadow: none !important;
+  }
 
-/* Modern Glassmorphism Home Styles */
-:root {
-  --c-navy: #0F1F3D;
-  --c-blue: #1E5FBE;
-  --c-cyan: #00B4D8;
-  --c-dark-input: #162a52;
-}
+  /* Modern Glassmorphism Home Styles */
+  :root {
+    --c-navy: #0f1f3d;
+    --c-blue: #1e5fbe;
+    --c-cyan: #00b4d8;
+    --c-dark-input: #162a52;
+  }
 
-.hero-v3 {
-  position: relative;
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  padding: 140px 5% 120px;
-  background: linear-gradient(135deg, var(--c-navy) 0%, #0a1529 100%);
-  overflow: hidden;
-}
-.hero-pattern {
-  position: absolute; inset: 0;
-  background-image: radial-gradient(rgba(255,255,255,0.1) 1.5px, transparent 1.5px);
-  background-size: 32px 32px;
-  opacity: 0.15;
-  z-index: 1;
-}
-.hero-content {
-  position: relative; z-index: 10;
-  display: grid; grid-template-columns: 1fr 1fr; gap: 40px;
-  width: 100%; max-width: 1280px; margin: 0 auto;
-  align-items: center;
-}
-.hero-tag {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: rgba(0, 180, 216, 0.15); border: 1px solid rgba(0, 180, 216, 0.3);
-  padding: 6px 16px; border-radius: 99px; color: var(--c-cyan); font-size: 0.85rem; font-weight: 600; margin-bottom: 24px;
-}
-.hero-title {
-  font-size: 3.5rem; font-weight: 800; line-height: 1.2; margin-bottom: 20px;
-}
-.hero-title span { color: var(--c-cyan); }
-.hero-desc {
-  font-size: 1.1rem; color: rgba(255,255,255,0.7); margin-bottom: 40px; line-height: 1.6; max-width: 500px;
-}
-.hero-badges {
-  display: flex; gap: 24px;
-}
-.h-badge {
-  display: flex; align-items: center; gap: 12px;
-}
-.h-badge-icon {
-  width: 44px; height: 44px; border-radius: 12px; background: rgba(255,255,255,0.05);
-  display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
-  border: 1px solid rgba(255,255,255,0.1);
-}
-.h-badge-info strong { display: block; font-size: 1.1rem; font-weight: 800; }
-.h-badge-info span { font-size: 0.8rem; color: rgba(255,255,255,0.6); }
+  .hero-v3 {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 140px 5% 120px;
+    background: linear-gradient(135deg, var(--c-navy) 0%, #0a1529 100%);
+    overflow: hidden;
+  }
+  .hero-pattern {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(
+      rgba(255, 255, 255, 0.1) 1.5px,
+      transparent 1.5px
+    );
+    background-size: 32px 32px;
+    opacity: 0.15;
+    z-index: 1;
+  }
+  .hero-content {
+    position: relative;
+    z-index: 10;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    align-items: center;
+  }
+  .hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0, 180, 216, 0.15);
+    border: 1px solid rgba(0, 180, 216, 0.3);
+    padding: 6px 16px;
+    border-radius: 99px;
+    color: var(--c-cyan);
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 24px;
+  }
+  .hero-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 20px;
+  }
+  .hero-title span {
+    color: var(--c-cyan);
+  }
+  .hero-desc {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 40px;
+    line-height: 1.6;
+    max-width: 500px;
+  }
+  .hero-badges {
+    display: flex;
+    gap: 24px;
+  }
+  .h-badge {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .h-badge-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .h-badge-info strong {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 800;
+  }
+  .h-badge-info span {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.6);
+  }
 
-.hero-img {
-  position: relative; z-index: 10;
-  display: flex; justify-content: flex-end;
-  animation: floatUp 4s ease-in-out infinite;
-}
-.hero-img svg { width: 100%; max-width: 500px; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.4)); }
-@keyframes floatUp {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-20px); }
-}
+  .hero-img {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    justify-content: flex-end;
+    animation: floatUp 4s ease-in-out infinite;
+  }
+  .hero-img svg {
+    width: 100%;
+    max-width: 500px;
+    filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.4));
+  }
+  @keyframes floatUp {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-20px);
+    }
+  }
 
-/* Search Box */
-.search-wrapper {
-  position: relative; z-index: 20;
-  max-width: 1080px; margin: -100px auto 60px;
-  padding: 0 5%;
-}
-.search-card {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 24px;
-  padding: 32px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-}
-.s-tabs {
-  display: flex; gap: 12px; margin-bottom: 24px;
-}
-.s-tab {
-  padding: 8px 24px; border-radius: 99px; font-weight: 600; font-size: 0.9rem;
-  color: rgba(255,255,255,0.7); cursor: pointer; transition: all 0.2s;
-  background: transparent; border: 1px solid rgba(255,255,255,0.2);
-}
-.s-tab.active {
-  background: var(--c-cyan); color: #fff; border-color: var(--c-cyan);
-}
-.search-grid {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;
-}
-.s-input-group {
-  display: flex; flex-direction: column; gap: 6px; position: relative;
-}
-.s-label {
-  font-size: 0.75rem; font-weight: 700; color: rgba(255,255,255,0.6); text-transform: uppercase;
-}
-.s-input-wrapper {
-  position: relative; display: flex; align-items: center; width: 100%;
-}
-.s-icon {
-  position: absolute; left: 16px; color: var(--c-cyan); font-size: 1.1rem;
-}
-.s-input {
-  width: 100%; padding: 14px 16px 14px 44px;
-  background: var(--c-dark-input); border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 12px; color: #fff; font-size: 0.95rem; font-weight: 500;
-  transition: all 0.2s; box-sizing: border-box;
-}
-.s-input:focus { outline: none; border-color: var(--c-cyan); }
-.s-input::placeholder { color: rgba(255,255,255,0.4); }
-.s-swap {
-  position: absolute; right: -20px; top: 50%; transform: translateY(-50%);
-  width: 36px; height: 36px; border-radius: 50%; background: var(--c-navy);
-  border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center;
-  z-index: 5; cursor: pointer; color: var(--c-cyan); transition: all 0.2s;
-}
-.s-swap:hover { background: var(--c-cyan); color: #fff; }
-.btn-search {
-  width: 100%; padding: 16px; border-radius: 12px; font-weight: 700; font-size: 1rem;
-  background: var(--c-blue); color: #fff; border: none; cursor: pointer;
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-  margin-top: 24px; transition: all 0.2s;
-}
-.btn-search:hover { background: #164b99; transform: scale(1.02); }
-.s-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.s-input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
+  /* Search Box */
+  .search-wrapper {
+    position: relative;
+    z-index: 20;
+    max-width: 1080px;
+    margin: -100px auto 60px;
+    padding: 0 5%;
+  }
+  .search-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 24px;
+    padding: 32px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  }
+  .s-tabs {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .s-tab {
+    padding: 8px 24px;
+    border-radius: 99px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    transition: all 0.2s;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  .s-tab.active {
+    background: var(--c-cyan);
+    color: #fff;
+    border-color: var(--c-cyan);
+  }
+  .search-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .s-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    position: relative;
+  }
+  .s-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+  }
+  .s-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+  }
+  .s-icon {
+    position: absolute;
+    left: 16px;
+    color: var(--c-cyan);
+    font-size: 1.1rem;
+  }
+  .s-input {
+    width: 100%;
+    padding: 14px 16px 14px 44px;
+    background: var(--c-dark-input);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: #fff;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    box-sizing: border-box;
+  }
+  .s-input:focus {
+    outline: none;
+    border-color: var(--c-cyan);
+  }
+  .s-input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+  }
+  .s-swap {
+    position: absolute;
+    right: -20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--c-navy);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+    cursor: pointer;
+    color: var(--c-cyan);
+    transition: all 0.2s;
+  }
+  .s-swap:hover {
+    background: var(--c-cyan);
+    color: #fff;
+  }
+  .btn-search {
+    width: 100%;
+    padding: 16px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1rem;
+    background: var(--c-blue);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 24px;
+    transition: all 0.2s;
+  }
+  .btn-search:hover {
+    background: #164b99;
+    transform: scale(1.02);
+  }
+  .s-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .s-input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    cursor: pointer;
+  }
 
-/* Sections */
-.section { padding: 80px 5%; max-width: 1280px; margin: 0 auto; }
-.sec-title { text-align: center; margin-bottom: 48px; }
-.sec-subtitle { font-size: 0.85rem; font-weight: 700; color: var(--c-cyan); text-transform: uppercase; margin-bottom: 8px; display: block; }
-.sec-title h2 { font-size: 2.2rem; font-weight: 800; color: #fff; }
+  /* Sections */
+  .section {
+    padding: 80px 5%;
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+  .sec-title {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+  .sec-subtitle {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--c-cyan);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: block;
+  }
+  .sec-title h2 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #fff;
+  }
 
-/* Destinations */
-.dest-grid {
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
-}
-.dest-card {
-  position: relative; border-radius: 16px; overflow: hidden; height: 280px;
-  cursor: pointer; transition: all 0.3s;
-}
-.dest-card:hover { transform: translateY(-5px); box-shadow: 0 12px 24px rgba(0,0,0,0.3); }
-.dest-img { width: 100%; height: 100%; object-fit: cover; transition: all 0.5s; }
-.dest-card:hover .dest-img { transform: scale(1.05); }
-.dest-overlay {
-  position: absolute; inset: 0; background: linear-gradient(to top, rgba(15,31,61,0.9) 0%, transparent 60%);
-  display: flex; flex-direction: column; justify-content: flex-end; padding: 20px;
-}
-.dest-badge {
-  position: absolute; top: 16px; right: 16px; padding: 4px 10px; border-radius: 8px;
-  font-size: 0.75rem; font-weight: 700;
-}
-.badge-hot { background: #ff4757; color: #fff; }
-.badge-new { background: #2ed573; color: #fff; }
-.badge-deal { background: #ffa502; color: #fff; }
-.dest-info { display: flex; justify-content: space-between; align-items: flex-end; }
-.dest-name { font-size: 1.2rem; font-weight: 700; color: #fff; }
-.dest-sub { font-size: 0.8rem; color: rgba(255,255,255,0.7); }
-.dest-price { text-align: right; }
-.dest-price span { display: block; font-size: 0.75rem; color: rgba(255,255,255,0.6); }
-.dest-price strong { font-size: 1.1rem; color: var(--c-cyan); }
+  /* Destinations */
+  .dest-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+  }
+  .dest-card {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    height: 280px;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .dest-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+  }
+  .dest-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: all 0.5s;
+  }
+  .dest-card:hover .dest-img {
+    transform: scale(1.05);
+  }
+  .dest-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      rgba(15, 31, 61, 0.9) 0%,
+      transparent 60%
+    );
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 20px;
+  }
+  .dest-badge {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+  .badge-hot {
+    background: #ff4757;
+    color: #fff;
+  }
+  .badge-new {
+    background: #2ed573;
+    color: #fff;
+  }
+  .badge-deal {
+    background: #ffa502;
+    color: #fff;
+  }
+  .dest-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  .dest-name {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #fff;
+  }
+  .dest-sub {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.7);
+  }
+  .dest-price {
+    text-align: right;
+  }
+  .dest-price span {
+    display: block;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.6);
+  }
+  .dest-price strong {
+    font-size: 1.1rem;
+    color: var(--c-cyan);
+  }
 
-/* Features */
-.feat-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px;
-}
-.feat-card {
-  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 20px; padding: 32px; text-align: left;
-}
-.feat-icon {
-  width: 56px; height: 56px; border-radius: 14px; background: rgba(0,180,216,0.1);
-  color: var(--c-cyan); display: flex; align-items: center; justify-content: center;
-  font-size: 1.5rem; margin-bottom: 24px;
-}
-.feat-card h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 12px; }
-.feat-card p { font-size: 0.95rem; color: rgba(255,255,255,0.6); line-height: 1.6; }
+  /* Features */
+  .feat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+  }
+  .feat-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 32px;
+    text-align: left;
+  }
+  .feat-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    background: rgba(0, 180, 216, 0.1);
+    color: var(--c-cyan);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 24px;
+  }
+  .feat-card h3 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .feat-card p {
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1.6;
+  }
 
-/* Newsletter */
-.newsletter {
-  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 24px; padding: 60px 5%; text-align: center;
-  margin: 60px auto 100px; max-width: 1080px;
-}
-.nl-icon { font-size: 2rem; margin-bottom: 16px; }
-.newsletter h2 { font-size: 2rem; font-weight: 800; margin-bottom: 12px; }
-.newsletter p { color: rgba(255,255,255,0.6); margin-bottom: 32px; max-width: 500px; margin-inline: auto; }
-.nl-form {
-  display: flex; gap: 12px; max-width: 480px; margin: 0 auto;
-}
-.nl-input {
-  flex: 1; padding: 14px 20px; border-radius: 12px;
-  background: var(--c-dark-input); border: 1px solid rgba(255,255,255,0.1);
-  color: #fff; font-size: 0.95rem; outline: none;
-}
-.btn-nl {
-  padding: 14px 28px; border-radius: 12px; background: var(--c-cyan); color: #fff;
-  font-weight: 700; border: none; cursor: pointer; transition: 0.2s;
-}
-.btn-nl:hover { background: #0099b8; }
+  /* Newsletter */
+  .newsletter {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    padding: 60px 5%;
+    text-align: center;
+    margin: 60px auto 100px;
+    max-width: 1080px;
+  }
+  .nl-icon {
+    font-size: 2rem;
+    margin-bottom: 16px;
+  }
+  .newsletter h2 {
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 12px;
+  }
+  .newsletter p {
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 32px;
+    max-width: 500px;
+    margin-inline: auto;
+  }
+  .nl-form {
+    display: flex;
+    gap: 12px;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+  .nl-input {
+    flex: 1;
+    padding: 14px 20px;
+    border-radius: 12px;
+    background: var(--c-dark-input);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    font-size: 0.95rem;
+    outline: none;
+  }
+  .btn-nl {
+    padding: 14px 28px;
+    border-radius: 12px;
+    background: var(--c-cyan);
+    color: #fff;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  .btn-nl:hover {
+    background: #0099b8;
+  }
 
-@media (max-width: 1024px) {
-  .hero-content { grid-template-columns: 1fr; text-align: center; }
-  .hero-img { display: none; }
-  .hero-badges { justify-content: center; }
-  .hero-desc { margin-inline: auto; }
-  .dest-grid { grid-template-columns: repeat(2, 1fr); }
-  .feat-grid { grid-template-columns: repeat(2, 1fr); }
-}
-@media (max-width: 768px) {
-  .search-grid, .s-grid-2 { grid-template-columns: 1fr; }
-  .s-swap { display: none; }
-  .feat-grid { grid-template-columns: 1fr; }
-  .dest-grid { grid-template-columns: 1fr; }
-  .hero-title { font-size: 2.5rem; }
-  .nl-form { flex-direction: column; }
-  .hero-badges { flex-direction: column; align-items: center; gap: 16px; }
-  .s-input-group:first-child .s-input-wrapper { margin-bottom: 10px; }
-}
+  @media (max-width: 1024px) {
+    .hero-content {
+      grid-template-columns: 1fr;
+      text-align: center;
+    }
+    .hero-img {
+      display: none;
+    }
+    .hero-badges {
+      justify-content: center;
+    }
+    .hero-desc {
+      margin-inline: auto;
+    }
+    .dest-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .feat-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 768px) {
+    .search-grid,
+    .s-grid-2 {
+      grid-template-columns: 1fr;
+    }
+    .s-swap {
+      display: none;
+    }
+    .feat-grid {
+      grid-template-columns: 1fr;
+    }
+    .dest-grid {
+      grid-template-columns: 1fr;
+    }
+    .hero-title {
+      font-size: 2.5rem;
+    }
+    .nl-form {
+      flex-direction: column;
+    }
+    .hero-badges {
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+    .s-input-group:first-child .s-input-wrapper {
+      margin-bottom: 10px;
+    }
+  }
 </style>
-{% endblock %}
-
-{% block content %}
+{% endblock %} {% block content %}
 
 <!-- Hero Section -->
 <section class="hero-v3">
   <div class="hero-pattern"></div>
   <div class="hero-content">
-    
     <div class="hero-text">
       <div class="hero-tag">
-        <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:currentColor;"></span>
+        <span
+          style="
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+          "
+        ></span>
         Đặt vé máy bay nhanh chóng & an toàn
       </div>
-      <h1 class="hero-title">Hành trình <span>của bạn</span><br>bắt đầu từ đây</h1>
-      <p class="hero-desc">Tìm kiếm và đặt vé máy bay với giá tốt nhất. Hơn 150 đường bay nội địa và quốc tế đang chờ bạn khám phá.</p>
-      
+      <h1 class="hero-title">
+        Hành trình <span>của bạn</span><br />bắt đầu từ đây
+      </h1>
+      <p class="hero-desc">
+        Tìm kiếm và đặt vé máy bay với giá tốt nhất. Hơn 150 đường bay nội địa
+        và quốc tế đang chờ bạn khám phá.
+      </p>
+
       <div class="hero-badges">
         <div class="h-badge">
           <div class="h-badge-icon">✈️</div>
@@ -301,17 +605,21 @@ header.navbar-glass.is-home:not(.scrolled) {
         </div>
       </div>
     </div>
-    
+
     <div class="hero-img">
       <svg viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M120 180 L280 120 L350 130 L280 160 Z" fill="#E2E8F0"/>
-        <path d="M120 180 L180 220 L220 180 Z" fill="#94A3B8"/>
-        <path d="M280 120 L250 80 L210 120 Z" fill="#94A3B8"/>
-        <circle cx="230" cy="140" r="15" fill="#00B4D8"/>
-        <path d="M60 160 C100 150 150 160 200 180" stroke="#00B4D8" stroke-width="4" stroke-dasharray="8 8"/>
+        <path d="M120 180 L280 120 L350 130 L280 160 Z" fill="#E2E8F0" />
+        <path d="M120 180 L180 220 L220 180 Z" fill="#94A3B8" />
+        <path d="M280 120 L250 80 L210 120 Z" fill="#94A3B8" />
+        <circle cx="230" cy="140" r="15" fill="#00B4D8" />
+        <path
+          d="M60 160 C100 150 150 160 200 180"
+          stroke="#00B4D8"
+          stroke-width="4"
+          stroke-dasharray="8 8"
+        />
       </svg>
     </div>
-    
   </div>
 </section>
 
@@ -322,17 +630,23 @@ header.navbar-glass.is-home:not(.scrolled) {
       <button class="s-tab active">⇄ Khứ hồi</button>
       <button class="s-tab">→ Một chiều</button>
     </div>
-    
+
     <form method="GET" action="{% url 'home' %}">
       <!-- 2 Columns Grid -->
       <div class="search-grid">
         <!-- Col 1: Locations -->
-        <div class="s-grid-2" style="position:relative;">
+        <div class="s-grid-2" style="position: relative">
           <div class="s-input-group">
             <label class="s-label">ĐIỂM ĐI</label>
             <div class="s-input-wrapper">
               <span class="s-icon">🛫</span>
-              <input type="text" class="s-input" name="departure" placeholder="Hà Nội (HAN)" value="{{ departure }}">
+              <input
+                type="text"
+                class="s-input"
+                name="departure"
+                placeholder="Hà Nội (HAN)"
+                value="{{ departure }}"
+              />
             </div>
             <div class="s-swap">⇄</div>
           </div>
@@ -340,37 +654,56 @@ header.navbar-glass.is-home:not(.scrolled) {
             <label class="s-label">ĐIỂM ĐẾN</label>
             <div class="s-input-wrapper">
               <span class="s-icon">🛬</span>
-              <input type="text" class="s-input" name="arrival" placeholder="TP. Hồ Chí Minh (SGN)" value="{{ arrival }}">
+              <input
+                type="text"
+                class="s-input"
+                name="arrival"
+                placeholder="TP. Hồ Chí Minh (SGN)"
+                value="{{ arrival }}"
+              />
             </div>
           </div>
         </div>
-        
+
         <!-- Col 2: Dates -->
         <div class="s-grid-2">
           <div class="s-input-group">
             <label class="s-label">NGÀY ĐI</label>
             <div class="s-input-wrapper">
               <span class="s-icon">📅</span>
-              <input type="date" class="s-input" name="date" value="{{ date }}">
+              <input
+                type="date"
+                class="s-input"
+                name="date"
+                value="{{ date }}"
+              />
             </div>
           </div>
           <div class="s-input-group">
             <label class="s-label">NGÀY VỀ</label>
             <div class="s-input-wrapper">
               <span class="s-icon">📅</span>
-              <input type="date" class="s-input" name="return_date" placeholder="dd/mm/yyyy">
+              <input
+                type="date"
+                class="s-input"
+                name="return_date"
+                placeholder="dd/mm/yyyy"
+              />
             </div>
           </div>
         </div>
       </div>
-      
+
       <!-- 3 Columns Grid (Passengers, Class, Button) -->
-      <div class="search-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+      <div class="search-grid" style="grid-template-columns: 1fr 1fr 1fr">
         <div class="s-input-group">
           <label class="s-label">HÀNH KHÁCH</label>
           <div class="s-input-wrapper">
             <span class="s-icon">👤</span>
-            <select class="s-input" style="appearance:none; padding-right:16px;">
+            <select
+              class="s-input"
+              style="appearance: none; padding-right: 16px"
+            >
               <option>1 người lớn</option>
               <option>2 người lớn</option>
               <option>1 người lớn, 1 trẻ em</option>
@@ -381,22 +714,34 @@ header.navbar-glass.is-home:not(.scrolled) {
           <label class="s-label">HẠNG GHẾ</label>
           <div class="s-input-wrapper">
             <span class="s-icon">💺</span>
-            <select class="s-input" style="appearance:none; padding-right:16px;">
+            <select
+              class="s-input"
+              style="appearance: none; padding-right: 16px"
+            >
               <option>Phổ thông</option>
               <option>Thương gia</option>
               <option>Hạng nhất</option>
             </select>
           </div>
         </div>
-        <div class="s-input-group" style="justify-content:flex-end;">
+        <div class="s-input-group" style="justify-content: flex-end">
           <button type="submit" class="btn-search">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
             Tìm chuyến bay
           </button>
         </div>
       </div>
     </form>
-    
   </div>
 </div>
 
@@ -408,7 +753,11 @@ header.navbar-glass.is-home:not(.scrolled) {
   </div>
   <div class="dest-grid">
     <div class="dest-card">
-      <img src="https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?w=500&q=80" alt="Đà Nẵng" class="dest-img">
+      <img
+        src="https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?w=500&q=80"
+        alt="Đà Nẵng"
+        class="dest-img"
+      />
       <div class="dest-overlay">
         <span class="dest-badge badge-hot">Hot</span>
         <div class="dest-info">
@@ -423,9 +772,13 @@ header.navbar-glass.is-home:not(.scrolled) {
         </div>
       </div>
     </div>
-    
+
     <div class="dest-card">
-      <img src="https://images.unsplash.com/photo-1583417646736-22a36b330349?w=500&q=80" alt="Phú Quốc" class="dest-img">
+      <img
+        src="https://www.vntrip.vn/cam-nang/chum-anh-bien-dao-phu-quoc-qua-ong-kinh-nhiep-anh-743"
+        alt="Phú Quốc"
+        class="dest-img"
+      />
       <div class="dest-overlay">
         <span class="dest-badge badge-new">Mới</span>
         <div class="dest-info">
@@ -442,12 +795,16 @@ header.navbar-glass.is-home:not(.scrolled) {
     </div>
 
     <div class="dest-card">
-      <img src="https://images.unsplash.com/photo-1579705915233-a3d8b375bde1?w=500&q=80" alt="Hội An" class="dest-img">
+      <img
+        src="https://images.unsplash.com/photo-1579705915233-a3d8b375bde1?w=500&q=80"
+        alt="Hội An"
+        class="dest-img"
+      />
       <div class="dest-overlay">
         <span class="dest-badge badge-hot">Hot</span>
         <div class="dest-info">
           <div>
-            <div class="dest-name">Hội An</div>
+            <div class="dest-name">Đà Lạt</div>
             <div class="dest-sub">Việt Nam · VCS</div>
           </div>
           <div class="dest-price">
@@ -459,7 +816,11 @@ header.navbar-glass.is-home:not(.scrolled) {
     </div>
 
     <div class="dest-card">
-      <img src="https://images.unsplash.com/photo-1555513681-4eb75be351b6?w=500&q=80" alt="Nha Trang" class="dest-img">
+      <img
+        src="https://images.unsplash.com/photo-1555513681-4eb75be351b6?w=500&q=80"
+        alt="Nha Trang"
+        class="dest-img"
+      />
       <div class="dest-overlay">
         <span class="dest-badge badge-deal">Ưu đãi</span>
         <div class="dest-info">
@@ -487,17 +848,26 @@ header.navbar-glass.is-home:not(.scrolled) {
     <div class="feat-card">
       <div class="feat-icon">✔️</div>
       <h3>Giá tốt nhất</h3>
-      <p>Cam kết giá vé rẻ nhất thị trường. Nếu bạn tìm thấy giá thấp hơn, chúng tôi sẽ hoàn tiền chênh lệch.</p>
+      <p>
+        Cam kết giá vé rẻ nhất thị trường. Nếu bạn tìm thấy giá thấp hơn, chúng
+        tôi sẽ hoàn tiền chênh lệch.
+      </p>
     </div>
     <div class="feat-card">
       <div class="feat-icon">⚡</div>
       <h3>Đặt vé nhanh chóng</h3>
-      <p>Chỉ mất 3 bước để hoàn tất đặt vé. Thanh toán an toàn, nhận vé ngay qua email trong vài giây.</p>
+      <p>
+        Chỉ mất 3 bước để hoàn tất đặt vé. Thanh toán an toàn, nhận vé ngay qua
+        email trong vài giây.
+      </p>
     </div>
     <div class="feat-card">
       <div class="feat-icon">💬</div>
       <h3>Hỗ trợ 24/7</h3>
-      <p>Đội ngũ hỗ trợ luôn sẵn sàng giải đáp mọi thắc mắc. Chat trực tiếp, gọi điện hoặc email bất kỳ lúc nào.</p>
+      <p>
+        Đội ngũ hỗ trợ luôn sẵn sàng giải đáp mọi thắc mắc. Chat trực tiếp, gọi
+        điện hoặc email bất kỳ lúc nào.
+      </p>
     </div>
   </div>
 </section>
@@ -506,12 +876,13 @@ header.navbar-glass.is-home:not(.scrolled) {
 <div class="newsletter">
   <div class="nl-icon">✉️</div>
   <h2>Nhận ưu đãi độc quyền</h2>
-  <p>Đăng ký ngay để nhận thông báo giá vé rẻ và ưu đãi đặc biệt trước mọi người.</p>
+  <p>
+    Đăng ký ngay để nhận thông báo giá vé rẻ và ưu đãi đặc biệt trước mọi người.
+  </p>
   <div class="nl-form">
-    <input type="email" class="nl-input" placeholder="email@example.com">
+    <input type="email" class="nl-input" placeholder="email@example.com" />
     <button class="btn-nl">Đăng ký ngay</button>
   </div>
 </div>
 
 {% endblock %}
-

@@ -1,6 +1,7 @@
-from django.contrib import messages
+﻿from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.core.mail import send_mail
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 
@@ -13,6 +14,10 @@ def payment(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id, user=request.user)
 
     if request.method == "POST":
+        if booking.status == "paid" or Payment.objects.filter(booking=booking).exists():
+            messages.info(request, "Vé này đã được thanh toán rồi!")
+            return redirect("ticket", booking_id=booking.id)
+            
         Payment.objects.create(
             booking=booking,
             amount=booking.total_price,
@@ -23,19 +28,18 @@ def payment(request, booking_id):
         booking.status = "paid"
         booking.save()
 
-        send_mail(
-            subject=f"Xác nhận đặt vé — {booking.booking_code}",
-            message=(
-                f"Xin chào {booking.user.username},\n\n"
-                f"Đặt vé của bạn đã thành công!\n"
-                f"Mã booking: {booking.booking_code}\n"
-                f"Tổng tiền: {booking.total_price:,.0f} VNĐ\n\n"
-                f"Cảm ơn bạn đã sử dụng SkyBook."
-            ),
-            from_email=None,
-            recipient_list=[booking.user.email or "noreply@dev.null"],
-            fail_silently=True,
-        )
+        # Gửi email xác nhận kèm E-Ticket HTML
+        subject = f"SkyBook - Xác nhận đặt vé {booking.booking_code}"
+        from_email = None
+        to_email = booking.user.email or "noreply@dev.null"
+        
+        context = {"booking": booking}
+        text_content = render_to_string("emails/ticket_email.txt", context)
+        html_content = render_to_string("emails/ticket_email.html", context)
+        
+        msg = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
+        msg.attach_alternative(html_content, "text/html")
+        msg.send(fail_silently=True)
 
         messages.success(
             request,
@@ -87,8 +91,8 @@ def request_refund(request, booking_id):
 
         messages.success(
             request,
-            f"Yêu cầu hoàn tiền {refund_amount:,.0f} ₫ cho booking "
-            f"{booking.booking_code} đã được gửi. Admin sẽ xử lý trong 1–3 ngày làm việc."
+            f"Yêu cầu hoàn tiền {refund_amount:,.0f} đ cho booking "
+            f"{booking.booking_code} đã được gửi. Admin sẽ xử lý trong 1-3 ngày làm việc."
         )
         return redirect("my_bookings")
 
@@ -99,4 +103,3 @@ def request_refund(request, booking_id):
         "hours_left": hours_left,
     }
     return render(request, "payments/refund_request.html", context)
-

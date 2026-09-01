@@ -179,9 +179,9 @@ def cancel_booking(request, booking_id):
         if booking.status == "pending":
             booking.status = "cancelled"
             booking.save()
-            messages.success(request, f"ÄÃ£ huá»· vÃ© {booking.booking_code}. Gháº¿ Ä‘Ã£ Ä‘Æ°á»£c giáº£i phÃ³ng.")
+            messages.success(request, f"Đã huỷ vé {booking.booking_code}. Ghế đã được giải phóng.")
         else:
-            messages.error(request, "Chá»‰ cÃ³ thá»ƒ huá»· vÃ© Ä‘ang á»Ÿ tráº¡ng thÃ¡i chá» thanh toÃ¡n.")
+            messages.error(request, "Chỉ có thể huỷ vé đang ở trạng thái chờ thanh toán.")
         return redirect("my_bookings")
 
     return render(request, "bookings/cancel_confirm.html", {"booking": booking})

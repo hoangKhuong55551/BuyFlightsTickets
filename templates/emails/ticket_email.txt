@@ -1,0 +1,20 @@
+﻿VÉ MÁY BAY ĐIỆN TỬ - SKYBOOK
+
+Xin chào {{ booking.user.get_full_name|default:booking.user.username }},
+Cảm ơn bạn đã lựa chọn SkyBook. Đặt vé và thanh toán của bạn đã thành công!
+
+MÃ ĐẶT CHỖ (BOOKING CODE): {{ booking.booking_code }}
+
+THÔNG TIN CHUYẾN BAY:
+- Chuyến bay: {{ booking.flight.flight_number }}
+- Hành trình: {{ booking.flight.departure_airport.city }} -> {{ booking.flight.arrival_airport.city }}
+- Khởi hành: {{ booking.flight.departure_time|date:"H:i - d/m/Y" }}
+
+THÔNG TIN HÀNH KHÁCH & GHẾ:
+{% for ticket in booking.tickets.all %}
+- Hành khách: {{ ticket.passenger.full_name }} | Ghế: {{ ticket.seat_number }}
+{% endfor %}
+
+TỔNG TIỀN ĐÃ THANH TOÁN: {{ booking.total_price|floatformat:0 }} VNĐ
+
+Cảm ơn bạn đã sử dụng SkyBook!

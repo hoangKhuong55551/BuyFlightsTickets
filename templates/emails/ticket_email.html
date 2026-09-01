@@ -1,0 +1,70 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #f4f7fc; margin: 0; padding: 20px; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .header { background: #0F1F3D; color: #ffffff; padding: 30px 20px; text-align: center; }
+        .header h1 { margin: 0; font-size: 24px; letter-spacing: 2px; text-transform: uppercase; }
+        .header p { margin: 5px 0 0; color: #00B4D8; font-size: 14px; }
+        .content { padding: 30px; }
+        .greeting { font-size: 18px; font-weight: bold; margin-bottom: 20px; }
+        .booking-code { text-align: center; background: #f8fafc; border: 2px dashed #cbd5e1; padding: 15px; border-radius: 8px; font-size: 22px; font-weight: 800; letter-spacing: 4px; color: #1E5FBE; margin-bottom: 30px; }
+        .ticket-info { margin-bottom: 20px; }
+        .info-row { display: flex; justify-content: space-between; border-bottom: 1px solid #f1f5f9; padding: 12px 0; }
+        .info-label { color: #64748b; font-size: 14px; }
+        .info-value { font-weight: 600; font-size: 15px; text-align: right; }
+        .total-row { display: flex; justify-content: space-between; padding: 20px 0 0; margin-top: 10px; border-top: 2px solid #e2e8f0; font-size: 18px; font-weight: bold; color: #0F1F3D; }
+        .footer { background: #f8fafc; text-align: center; padding: 20px; font-size: 12px; color: #94a3b8; border-top: 1px solid #f1f5f9; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>SkyBook</h1>
+            <p>VÉ MÁY BAY ĐIỆN TỬ (E-TICKET)</p>
+        </div>
+        
+        <div class="content">
+            <div class="greeting">Xin chào {{ booking.user.get_full_name|default:booking.user.username }},</div>
+            <p>Cảm ơn bạn đã lựa chọn SkyBook. Đặt vé và thanh toán của bạn đã thành công!</p>
+            
+            <p>MÃ ĐẶT CHỖ (BOOKING CODE):</p>
+            <div class="booking-code">{{ booking.booking_code }}</div>
+            
+            <div class="ticket-info">
+                <div class="info-row">
+                    <span class="info-label">Chuyến bay</span>
+                    <span class="info-value">{{ booking.flight.flight_number }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Hành trình</span>
+                    <span class="info-value">{{ booking.flight.departure_airport.city }} ✈ {{ booking.flight.arrival_airport.city }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Khởi hành</span>
+                    <span class="info-value">{{ booking.flight.departure_time|date:"H:i - d/m/Y" }}</span>
+                </div>
+                
+                {% for ticket in booking.tickets.all %}
+                <div class="info-row" style="background: #f8fafc; padding: 12px 10px; border-radius: 6px; margin-top: 10px;">
+                    <span class="info-label">Hành khách: {{ ticket.passenger.full_name }}</span>
+                    <span class="info-value" style="color: #059669;">Ghế: {{ ticket.seat_number }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <div class="total-row">
+                <span>TỔNG TIỀN ĐÃ THANH TOÁN</span>
+                <span style="color: #1E5FBE;">{{ booking.total_price|floatformat:0 }} VNĐ</span>
+            </div>
+        </div>
+        
+        <div class="footer">
+            Đây là email tự động, vui lòng không trả lời. Xin cảm ơn!<br>
+            © 2026 SkyBook Airlines. All rights reserved.
+        </div>
+    </div>
+</body>
+</html>
