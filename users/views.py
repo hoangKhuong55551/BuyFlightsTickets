@@ -1,4 +1,4 @@
-﻿from django.contrib import messages
+from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
@@ -10,11 +10,18 @@ def register(request):
     if request.method == "POST":
         form = RegisterForm(request.POST)
         if form.is_valid():
-            User.objects.create_user(
+            user = User.objects.create_user(
                 username=form.cleaned_data["username"],
+                email=form.cleaned_data["email"],
                 password=form.cleaned_data["password"]
             )
-            messages.success(request, "Dang ky thanh cong! Vui long dang nhap.")
+            # Lưu số điện thoại vào profile (signal đã tạo profile tự động)
+            phone = form.cleaned_data.get("phone", "")
+            if phone:
+                user.profile.phone = phone
+                user.profile.save()
+
+            messages.success(request, "Đăng ký thành công! Vui lòng đăng nhập.")
             return redirect("login")
     else:
         form = RegisterForm()
@@ -32,10 +39,10 @@ def login_view(request):
             )
             if user is not None:
                 login(request, user)
-                messages.success(request, f"Chao mung, {user.username}!")
+                messages.success(request, f"Chào mừng, {user.username}!")
                 return redirect("home")
             else:
-                messages.error(request, "Ten dang nhap hoac mat khau khong dung.")
+                messages.error(request, "Tên đăng nhập hoặc mật khẩu không đúng.")
     else:
         form = LoginForm()
     return render(request, "users/login.html", {"form": form})
@@ -43,5 +50,5 @@ def login_view(request):
 
 def logout_view(request):
     logout(request)
-    messages.info(request, "Ban da dang xuat.")
+    messages.info(request, "Bạn đã đăng xuất.")
     return redirect("home")

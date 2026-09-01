@@ -1,14 +1,20 @@
-{% extends "base.html" %}
-{% block title %}Vé của tôi — Flight Booking{% endblock %}
+﻿{% extends "base.html" %}
+{% block title %}Vé của tôi — SkyBook{% endblock %}
 {% block content %}
 <h1>🎫 Vé của tôi</h1>
-<p class="page-subtitle">Lịch sử đặt vé của bạn</p>
+<p class="page-subtitle">Lịch sử đặt vé và quản lý hoàn tiền</p>
 
 {% for booking in bookings %}
-<div class="flight-result">
+<div class="flight-result" style="position:relative;">
+
+  <!-- Logo hãng -->
   <div class="fr-logo">
-    {% if booking.flight %}{{ booking.flight.airline.code|default:booking.flight.airline.name|slice:":2"|upper }}{% else %}??{% endif %}
+    {% if booking.flight %}
+      {{ booking.flight.airline.code|default:booking.flight.airline.name|slice:":2"|upper }}
+    {% else %}??{% endif %}
   </div>
+
+  <!-- Thông tin chuyến -->
   <div class="fr-info">
     {% if booking.flight %}
     <div class="fr-times">
@@ -20,27 +26,73 @@
       <span class="fr-time">{{ booking.flight.arrival_time|date:"H:i" }}</span>
     </div>
     <div class="fr-route">
-      <strong>{{ booking.flight.departure_airport.city }}</strong> → <strong>{{ booking.flight.arrival_airport.city }}</strong>
+      <strong>{{ booking.flight.departure_airport.city }}</strong>
+      → <strong>{{ booking.flight.arrival_airport.city }}</strong>
       &nbsp;·&nbsp; {{ booking.flight.flight_number }}
-      &nbsp;·&nbsp; Ngày đặt: {{ booking.booking_date|date:"d/m/Y" }}
+      &nbsp;·&nbsp; {{ booking.flight.departure_time|date:"d/m/Y" }}
     </div>
     {% else %}
-    <div class="fr-route"><strong>{{ booking.booking_code }}</strong> · Ngày đặt: {{ booking.booking_date|date:"d/m/Y" }}</div>
+    <div class="fr-route">
+      <strong>{{ booking.booking_code }}</strong>
+      · Ngày đặt: {{ booking.booking_date|date:"d/m/Y" }}
+    </div>
     {% endif %}
   </div>
-  <div class="fr-tags">
-    {% if booking.status == "paid" %}<span class="badge badge-paid">Đã thanh toán</span>
-    {% elif booking.status == "pending" %}<span class="badge badge-pending">Chờ TT</span>
-    {% else %}<span class="badge badge-cancelled">Đã huỷ</span>{% endif %}
-  </div>
-  <div class="fr-price-block">
-    <a href="{% url 'ticket' booking.id %}" class="fr-price-btn">{{ booking.total_price|floatformat:0 }} ₫</a>
-    {% if booking.status == "pending" %}
-    <a href="{% url 'cancel_booking' booking.id %}" class="fr-chevron" title="Huỷ" style="color:#dc2626;background:#fee2e2;">✕</a>
+
+  <!-- Status + Refund badge -->
+  <div class="fr-tags" style="flex-direction:column;align-items:flex-start;gap:6px;">
+    {% if booking.status == "paid" %}
+      <span class="badge badge-paid">✅ Đã thanh toán</span>
+    {% elif booking.status == "pending" %}
+      <span class="badge badge-pending">⏳ Chờ thanh toán</span>
     {% else %}
-    <a href="{% url 'ticket' booking.id %}" class="fr-chevron">›</a>
+      <span class="badge badge-cancelled">❌ Đã huỷ</span>
+    {% endif %}
+
+    {# Hiện trạng thái refund nếu có #}
+    {% if booking.status == "paid" %}
+      {% if booking.refund_request.status == "pending" %}
+        <span class="badge" style="background:#eff6ff;color:#1d4ed8;border:1px solid #93c5fd;">🔄 Đang xử lý hoàn tiền</span>
+      {% elif booking.refund_request.status == "approved" %}
+        <span class="badge" style="background:#d1fae5;color:#065f46;border:1px solid #6ee7b7;">💸 Đã hoàn {{ booking.refund_request.refund_amount|floatformat:0 }} ₫</span>
+      {% elif booking.refund_request.status == "rejected" %}
+        <span class="badge" style="background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;" title="{{ booking.refund_request.admin_note }}">🚫 Từ chối hoàn tiền</span>
+      {% endif %}
+    {% elif booking.status == "cancelled" %}
+      {% if booking.refund_request.status == "approved" %}
+        <span class="badge" style="background:#d1fae5;color:#065f46;border:1px solid #6ee7b7;">💸 Hoàn {{ booking.refund_request.refund_amount|floatformat:0 }} ₫</span>
+      {% endif %}
     {% endif %}
   </div>
+
+  <!-- Giá + Actions -->
+  <div class="fr-price-block" style="flex-direction:column;align-items:flex-end;gap:8px;">
+    <a href="{% url 'ticket' booking.id %}" class="fr-price-btn">
+      {{ booking.total_price|floatformat:0 }} ₫
+    </a>
+
+    <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">
+      {# Xem vé #}
+      <a href="{% url 'ticket' booking.id %}" class="fr-chevron" title="Xem vé">›</a>
+
+      {# Huỷ: chỉ khi pending #}
+      {% if booking.status == "pending" %}
+        <a href="{% url 'cancel_booking' booking.id %}"
+           class="fr-chevron"
+           title="Huỷ vé"
+           style="color:#dc2626;background:#fee2e2;">✕</a>
+      {% endif %}
+
+      {# Hoàn tiền: chỉ khi paid và chưa có refund request #}
+      {% if booking.status == "paid" and not booking.refund_request %}
+        <a href="{% url 'request_refund' booking.id %}"
+           class="fr-chevron"
+           title="Yêu cầu hoàn tiền"
+           style="color:#1d4ed8;background:#dbeafe;">↩</a>
+      {% endif %}
+    </div>
+  </div>
+
 </div>
 {% empty %}
 <div class="empty-state">
@@ -50,4 +102,14 @@
   <a href="{% url 'home' %}" class="btn btn-primary" style="margin-top:16px;">Tìm chuyến bay</a>
 </div>
 {% endfor %}
+
+{# Legend hướng dẫn nút #}
+{% if bookings %}
+<div style="margin-top:24px;padding:14px 18px;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0;font-size:.8rem;color:#6b7fa8;display:flex;gap:20px;flex-wrap:wrap;">
+  <span><strong style="font-family:monospace;background:#fff;border:1px solid #e2e8f0;border-radius:6px;padding:1px 7px;">›</strong> Xem vé điện tử</span>
+  <span><strong style="font-family:monospace;background:#fee2e2;color:#dc2626;border-radius:6px;padding:1px 7px;">✕</strong> Huỷ vé (chỉ khi chờ TT)</span>
+  <span><strong style="font-family:monospace;background:#dbeafe;color:#1d4ed8;border-radius:6px;padding:1px 7px;">↩</strong> Yêu cầu hoàn tiền (vé đã TT)</span>
+</div>
+{% endif %}
+
 {% endblock %}

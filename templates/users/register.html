@@ -1,34 +1,40 @@
 {% extends "base.html" %}
-{% block title %}Đăng ký — Flight Booking{% endblock %}
+{% block title %}Đăng ký — SkyBook{% endblock %}
 {% block full_content %}
 <div class="auth-wrapper">
-  {% if messages %}
-  <div style="position:fixed;top:80px;left:50%;transform:translateX(-50%);z-index:99;min-width:320px;max-width:90vw;">
-    {% for message in messages %}
-    <div class="message message-{{ message.tags }}">{{ message }}</div>
-    {% endfor %}
-  </div>
-  {% endif %}
-
-  <div class="auth-card">
-    <div style="text-align:center;margin-bottom:24px;">
-      <div style="width:60px;height:60px;background:var(--navy);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin:0 auto 16px;">✈</div>
-      <h1>Tạo tài khoản</h1>
-      <p class="auth-sub">Đăng ký để bắt đầu đặt vé</p>
+  <div class="auth-card" style="max-width: 500px;">
+    <div style="text-align:center;margin-bottom:28px;">
+      <div style="width:64px;height:64px;background:linear-gradient(135deg, #00B4D8, #1E5FBE);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;margin:0 auto 16px;box-shadow:0 8px 16px rgba(0,180,216,0.3);color:white;">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M12 5v14M5 12h14"/>
+        </svg>
+      </div>
+      <h1 style="font-size:1.8rem;font-weight:800;color:var(--navy);">Tạo tài khoản</h1>
+      <p class="auth-sub" style="color:#64748b;font-size:0.95rem;margin-top:6px;">Bắt đầu hành trình mới cùng SkyBook</p>
     </div>
+    
     <form method="POST">
       {% csrf_token %}
-      {% for field in form %}
-      <div>
-        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-        {{ field }}
-        {% if field.errors %}<ul class="error-list">{% for e in field.errors %}<li>⚠ {{ e }}</li>{% endfor %}</ul>{% endif %}
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        {% for field in form %}
+          <div style="margin-bottom:12px; {% if field.name in 'username,email,password' %}grid-column:1/-1;{% endif %}">
+            <label for="{{ field.id_for_label }}" style="display:block;font-size:0.85rem;font-weight:700;color:#334155;margin-bottom:6px;">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}
+            <ul class="error-list" style="list-style:none;padding:0;margin-top:6px;font-size:0.8rem;color:#dc2626;">
+              {% for e in field.errors %}<li>• {{ e }}</li>{% endfor %}
+            </ul>
+            {% endif %}
+          </div>
+        {% endfor %}
       </div>
-      {% endfor %}
-      {% if form.non_field_errors %}<ul class="error-list">{% for e in form.non_field_errors %}<li>⚠ {{ e }}</li>{% endfor %}</ul>{% endif %}
-      <button type="submit" class="btn btn-primary btn-full btn-lg" style="margin-top:8px;">Tạo tài khoản</button>
+      
+      <button type="submit" class="btn btn-primary btn-full btn-lg" style="margin-top:16px;background:linear-gradient(135deg, #00B4D8, #1E5FBE);border:none;box-shadow:0 6px 16px rgba(30,95,190,0.3);font-weight:700;letter-spacing:0.02em;">Đăng ký tài khoản</button>
     </form>
-    <p style="text-align:center;margin-top:20px;color:var(--muted);font-size:.93rem;">Đã có tài khoản? <a href="{% url 'login' %}" style="font-weight:700;color:var(--blue);">Đăng nhập</a></p>
+    
+    <p style="text-align:center;margin-top:24px;color:#64748b;font-size:.93rem;">
+      Đã có tài khoản? <a href="{% url 'login' %}" style="font-weight:700;color:#00B4D8;text-decoration:none;">Đăng nhập</a>
+    </p>
   </div>
 </div>
 {% endblock %}

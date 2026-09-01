@@ -10,4 +10,10 @@ urlpatterns = [
         name="payment"
     ),
 
+    path(
+        "refund/<int:booking_id>/",
+        views.request_refund,
+        name="request_refund"
+    ),
+
 ]

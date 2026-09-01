@@ -1,0 +1,90 @@
+﻿{% extends "base.html" %}
+{% block title %}Yêu cầu hoàn tiền — {{ booking.booking_code }}{% endblock %}
+{% block content %}
+<div style="max-width:560px;margin:0 auto;">
+  <a href="{% url 'my_bookings' %}" class="back-link">← Vé của tôi</a>
+  <h1>💸 Yêu cầu hoàn tiền</h1>
+
+  <!-- Thông tin chuyến bay -->
+  <div class="card" style="margin:20px 0;border-top:4px solid #3b82f6;">
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
+      <div style="width:52px;height:52px;background:linear-gradient(135deg,#dbeafe,#bfdbfe);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:900;color:#1e3a8a;flex-shrink:0;">
+        {% if booking.flight %}{{ booking.flight.airline.code|slice:":2"|upper }}{% else %}??{% endif %}
+      </div>
+      <div>
+        <div style="font-weight:800;font-size:1.05rem;color:#1a2744;">{{ booking.booking_code }}</div>
+        {% if booking.flight %}
+        <div style="color:#6b7fa8;font-size:.88rem;margin-top:2px;">
+          {{ booking.flight.departure_airport.city }} → {{ booking.flight.arrival_airport.city }}
+          &nbsp;·&nbsp; {{ booking.flight.departure_time|date:"d/m/Y H:i" }}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Chi tiết tài chính -->
+    <div style="background:#f8fafc;border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:10px;">
+      <div style="display:flex;justify-content:space-between;font-size:.9rem;">
+        <span style="color:#6b7fa8;">Số tiền đã thanh toán</span>
+        <strong>{{ booking.total_price|floatformat:0 }} ₫</strong>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:.9rem;">
+        <span style="color:#6b7fa8;">Tỷ lệ hoàn tiền</span>
+        <strong style="color:{% if refund_pct == 100 %}#065f46{% elif refund_pct == 50 %}#92400e{% else %}#991b1b{% endif %};">
+          {{ refund_pct }}%
+        </strong>
+      </div>
+      <div style="border-top:1px dashed #d5e2f7;padding-top:10px;display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-weight:700;font-size:.95rem;">Số tiền được hoàn</span>
+        <span style="font-size:1.5rem;font-weight:900;background:linear-gradient(135deg,#0d2137,#1565c0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">
+          {{ refund_amount|floatformat:0 }} ₫
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chính sách -->
+  <div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:12px;padding:16px 18px;margin-bottom:20px;">
+    <div style="font-weight:700;color:#92400e;margin-bottom:8px;font-size:.9rem;">⚠️ Chính sách hoàn tiền</div>
+    <ul style="list-style:none;display:flex;flex-direction:column;gap:6px;font-size:.84rem;color:#78350f;">
+      <li>✅ &nbsp;<strong>Trước 24h:</strong> hoàn 100% giá vé</li>
+      <li>⚠️ &nbsp;<strong>Trước 2h – 24h:</strong> hoàn 50% giá vé</li>
+      <li>❌ &nbsp;<strong>Dưới 2h hoặc sau khi bay:</strong> không hoàn tiền</li>
+    </ul>
+    {% if hours_left %}
+    <div style="margin-top:10px;padding-top:10px;border-top:1px solid #fde68a;font-size:.83rem;color:#92400e;">
+      ⏱ Còn <strong>{{ hours_left|floatformat:1 }} giờ</strong> trước khi khởi hành
+    </div>
+    {% endif %}
+    <div style="margin-top:8px;font-size:.8rem;color:#a16207;">
+      Tiền hoàn sẽ được xử lý trong <strong>3–5 ngày làm việc</strong> sau khi admin duyệt.
+    </div>
+  </div>
+
+  <!-- Form gửi yêu cầu -->
+  <form method="POST" style="background:none;border:none;box-shadow:none;padding:0;gap:16px;">
+    {% csrf_token %}
+
+    <div>
+      <label for="reason" style="display:block;font-size:.78rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#6b7fa8;margin-bottom:6px;">
+        Lý do hoàn tiền (tuỳ chọn)
+      </label>
+      <textarea
+        id="reason" name="reason" rows="3"
+        placeholder="Vd: Thay đổi kế hoạch, chuyến bay bị delay,..."
+        style="width:100%;padding:11px 14px;border:1.5px solid #d5e2f7;border-radius:10px;font-family:inherit;font-size:.93rem;color:#1a2744;background:#f8fafc;resize:vertical;outline:none;transition:border-color .15s;"
+        onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#d5e2f7'"
+      ></textarea>
+    </div>
+
+    <div style="display:flex;gap:12px;flex-direction:row;background:none;padding:0;border:none;box-shadow:none;">
+      <button type="submit" class="btn btn-primary btn-lg"
+        style="background:linear-gradient(135deg,#06b6d4,#3b82f6);border:none;flex:1;"
+        onclick="return confirm('Xác nhận gửi yêu cầu hoàn tiền {{ refund_amount|floatformat:0 }} ₫?')">
+        💸 Xác nhận yêu cầu hoàn tiền
+      </button>
+      <a href="{% url 'my_bookings' %}" class="btn btn-secondary btn-lg">Huỷ</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

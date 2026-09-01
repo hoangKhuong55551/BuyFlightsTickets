@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=2" />
     {% block extra_css %}{% endblock %}
   </head>
   <body>
@@ -23,10 +23,28 @@
     {% endif %}
 
     {% block full_content %}
-    <main>{% block content %}{% endblock %}</main>
+    <main class="contained">{% block content %}{% endblock %}</main>
     {% endblock %}
 
     {% include "partials/footer.html" %}
     {% block extra_js %}{% endblock %}
+      <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        var messages = document.querySelectorAll('.message');
+        messages.forEach(function(msg) {
+          // Slide down animation is handled by CSS
+          // Auto remove after 3 seconds
+          setTimeout(function() {
+            msg.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+            msg.style.opacity = '0';
+            msg.style.transform = 'translateY(-20px)';
+            setTimeout(function() {
+              msg.remove();
+            }, 400);
+          }, 3000);
+        });
+      });
+    </script>
   </body>
 </html>
+

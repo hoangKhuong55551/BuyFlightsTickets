@@ -1,7 +1,8 @@
-﻿import uuid
+import uuid
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db import transaction, IntegrityError
 from django.shortcuts import render, redirect, get_object_or_404
 
 from .forms import PassengerForm
@@ -10,9 +11,14 @@ from flights.models import Flight
 
 
 def _generate_seats(flight):
-    """Tao danh sach ghe tu tong so ghe cua may bay."""
+    """Tạo danh sách ghế, đánh dấu taken nếu ghế thuộc booking pending hoặc paid.
+    Ghế của booking đã cancelled được coi là trống lại.
+    """
     taken = set(
-        Ticket.objects.filter(flight=flight).values_list("seat_number", flat=True)
+        Ticket.objects.filter(
+            flight=flight,
+            booking__status__in=["pending", "paid"]
+        ).values_list("seat_number", flat=True)
     )
     total = getattr(getattr(flight, "aircraft", None), "total_seats", 30)
     seat_letters = ["A", "B", "C", "D", "E", "F"]
@@ -30,12 +36,36 @@ def _generate_seats(flight):
     return seats
 
 
-@login_required(login_url="/users/login/")
+@login_required
+@transaction.atomic
 def create_booking(request, flight_id):
     flight = get_object_or_404(Flight, id=flight_id)
 
     if request.method == "POST":
-        seat_number = request.POST.get("seat_number", "")
+        seat_number = request.POST.get("seat_number", "").strip()
+
+        if not seat_number:
+            messages.error(request, "Vui lòng chọn ghế trước khi đặt vé.")
+            return redirect("create_booking", flight_id=flight.id)
+
+        # Khoá dòng để tránh race condition — hai user chọn cùng ghế đồng thời
+        already_taken = (
+            Ticket.objects
+            .select_for_update()
+            .filter(
+                flight=flight,
+                seat_number=seat_number,
+                booking__status__in=["pending", "paid"]
+            )
+            .exists()
+        )
+        if already_taken:
+            messages.error(
+                request,
+                f"Ghế {seat_number} vừa được người khác đặt. Vui lòng chọn ghế khác."
+            )
+            return redirect("create_booking", flight_id=flight.id)
+
         booking_code = uuid.uuid4().hex[:10].upper()
 
         booking = Booking.objects.create(
@@ -55,6 +85,7 @@ def create_booking(request, flight_id):
         "bookings/create.html",
         {"flight": flight, "all_seats": all_seats}
     )
+
 
 
 @login_required(login_url="/users/login/")
@@ -115,7 +146,7 @@ def my_bookings(request):
     return render(request, "bookings/my_bookings.html", {"bookings": bookings})
 
 
-@login_required(login_url="/users/login/")
+@login_required
 def cancel_booking(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id, user=request.user)
 
@@ -123,9 +154,9 @@ def cancel_booking(request, booking_id):
         if booking.status == "pending":
             booking.status = "cancelled"
             booking.save()
-            messages.success(request, f"Da huy booking {booking.booking_code}.")
+            messages.success(request, f"Đã huỷ vé {booking.booking_code}. Ghế đã được giải phóng.")
         else:
-            messages.error(request, "Chi co the huy booking o trang thai cho thanh toan.")
+            messages.error(request, "Chỉ có thể huỷ vé đang ở trạng thái chờ thanh toán.")
         return redirect("my_bookings")
 
     return render(request, "bookings/cancel_confirm.html", {"booking": booking})
