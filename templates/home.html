@@ -1,26 +1,39 @@
-{% extends "base.html" %}
-{% block title %}Tìm chuyến bay — Flight Booking{% endblock %}
-{% block content %}
+{% extends "base.html" %} {% block title %}Tìm chuyến bay — Flight Booking{%
+endblock %} {% block content %}
 
 <!-- HERO -->
 <div class="hero">
   <div class="hero-body">
     <div class="hero-text">
-      <h1>Đặt Vé Máy Bay<br>Nhanh Chóng & Tiện Lợi</h1>
+      <h1>Đặt Vé Máy Bay<br />Nhanh Chóng & Tiện Lợi</h1>
       <p>Tìm kiếm hàng trăm chuyến bay với giá tốt nhất mỗi ngày</p>
     </div>
     <div class="hero-plane">✈</div>
   </div>
   <div class="hero-search">
-    <form method="GET" style="margin:0;">
+    <form method="GET" style="margin: 0">
       <div class="search-row">
         <div>
           <span class="sf-label">Điểm đi</span>
-          <input class="sf-input" type="text" name="departure" value="{{ departure }}" placeholder="Thành phố hoặc sân bay" autocomplete="off" />
+          <input
+            class="sf-input"
+            type="text"
+            name="departure"
+            value="{{ departure }}"
+            placeholder="Thành phố hoặc sân bay"
+            autocomplete="off"
+          />
         </div>
         <div>
           <span class="sf-label">Điểm đến</span>
-          <input class="sf-input" type="text" name="arrival" value="{{ arrival }}" placeholder="Thành phố hoặc sân bay" autocomplete="off" />
+          <input
+            class="sf-input"
+            type="text"
+            name="arrival"
+            value="{{ arrival }}"
+            placeholder="Thành phố hoặc sân bay"
+            autocomplete="off"
+          />
         </div>
         <div>
           <span class="sf-label">Ngày đi</span>
@@ -28,10 +41,17 @@
         </div>
         <div>
           <span class="sf-label">Ngày về</span>
-          <input class="sf-input" type="date" name="return_date" placeholder="Không bắt buộc" />
+          <input
+            class="sf-input"
+            type="date"
+            name="return_date"
+            placeholder="Không bắt buộc"
+          />
         </div>
-        <div style="align-self:flex-end;">
-          <button type="submit" class="btn-hero-search">🔍 Tìm chuyến bay</button>
+        <div style="align-self: flex-end">
+          <button type="submit" class="btn-hero-search">
+            🔍 Tìm chuyến bay
+          </button>
         </div>
       </div>
     </form>
@@ -73,7 +93,7 @@
 <!-- FLIGHT RESULTS -->
 <section>
   <div class="section-header">
-    <h2 style="font-size:1.2rem;">Kết quả chuyến bay</h2>
+    <h2 style="font-size: 1.2rem">Kết quả chuyến bay</h2>
     {% if departure or arrival or date %}
     <a href="{% url 'home' %}" class="btn btn-secondary btn-sm">✕ Xoá bộ lọc</a>
     {% endif %}
@@ -82,14 +102,19 @@
   {% for flight in flights %}
   <div class="flight-result">
     <!-- Logo hãng -->
-    <div class="fr-logo">{{ flight.airline.code|default:flight.airline.name|slice:":2"|upper }}</div>
+    <div class="fr-logo">
+      {{ flight.airline.code|default:flight.airline.name|slice:":2"|upper }}
+    </div>
 
     <!-- Times + route -->
     <div class="fr-info">
       <div class="fr-times">
         <span class="fr-time">{{ flight.departure_time|date:"H:i" }}</span>
         <div class="fr-duration-line">
-          <span>Non-stop · {{ flight.departure_airport.code }} → {{ flight.arrival_airport.code }}</span>
+          <span
+            >Non-stop · {{ flight.departure_airport.code }} → {{
+            flight.arrival_airport.code }}</span
+          >
           <div class="fr-line"></div>
         </div>
         <span class="fr-time">{{ flight.arrival_time|date:"H:i" }}</span>
@@ -113,7 +138,12 @@
       <a href="{% url 'create_booking' flight.id %}" class="fr-price-btn">
         {{ flight.price|floatformat:0 }} ₫
       </a>
-      <a href="{% url 'flight_detail' flight.id %}" class="fr-chevron" title="Xem chi tiết">›</a>
+      <a
+        href="{% url 'flight_detail' flight.id %}"
+        class="fr-chevron"
+        title="Xem chi tiết"
+        >›</a
+      >
     </div>
   </div>
   {% empty %}
@@ -121,18 +151,26 @@
     <div class="empty-icon">✈</div>
     <h3>Không tìm thấy chuyến bay</h3>
     <p>Thử thay đổi điểm đi, điểm đến hoặc ngày khởi hành.</p>
-    <a href="{% url 'home' %}" class="btn btn-primary" style="margin-top:16px;">Xem tất cả</a>
+    <a href="{% url 'home' %}" class="btn btn-primary" style="margin-top: 16px"
+      >Xem tất cả</a
+    >
   </div>
-  {% endfor %}
-
-  {% if page_obj.has_other_pages %}
+  {% endfor %} {% if page_obj.has_other_pages %}
   <div class="pagination">
     {% if page_obj.has_previous %}
-    <a href="?page={{ page_obj.previous_page_number }}&departure={{ departure }}&arrival={{ arrival }}&date={{ date }}">← Trước</a>
+    <a
+      href="?page={{ page_obj.previous_page_number }}&departure={{ departure }}&arrival={{ arrival }}&date={{ date }}"
+      >← Trước</a
+    >
     {% endif %}
-    <span>Trang {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+    <span
+      >Trang {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span
+    >
     {% if page_obj.has_next %}
-    <a href="?page={{ page_obj.next_page_number }}&departure={{ departure }}&arrival={{ arrival }}&date={{ date }}">Sau →</a>
+    <a
+      href="?page={{ page_obj.next_page_number }}&departure={{ departure }}&arrival={{ arrival }}&date={{ date }}"
+      >Sau →</a
+    >
     {% endif %}
   </div>
   {% endif %}
