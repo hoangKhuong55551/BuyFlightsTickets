@@ -20,3 +20,18 @@ class PassengerAdmin(admin.ModelAdmin):
 class TicketAdmin(admin.ModelAdmin):
     list_display = ["booking", "passenger", "flight", "seat_number", "price"]
     search_fields = ["booking__booking_code", "seat_number"]
+
+    def delete_model(self, request, obj):
+        booking = obj.booking
+        super().delete_model(request, obj)
+        if booking:
+            booking.status = "cancelled"
+            booking.save(update_fields=["status"])
+
+    def delete_queryset(self, request, queryset):
+        # Lưu lại danh sách các booking liên quan trước khi xoá vé
+        bookings = [obj.booking for obj in queryset if obj.booking]
+        super().delete_queryset(request, queryset)
+        for booking in bookings:
+            booking.status = "cancelled"
+            booking.save(update_fields=["status"])

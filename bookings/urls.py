@@ -1,4 +1,4 @@
-from django.urls import path
+﻿from django.urls import path
 from . import views
 
 
@@ -38,4 +38,5 @@ urlpatterns = [
     name="cancel_booking"
     ),
 
+    path('change-seat/<int:ticket_id>/', views.change_seat, name='change_seat'),
 ]

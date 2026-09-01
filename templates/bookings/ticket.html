@@ -2,7 +2,7 @@
 {% block title %}Vé điện tử — {{ booking.booking_code }}{% endblock %}
 {% block content %}
 <div style="max-width:620px;margin:0 auto;">
-  <a href="{% url 'my_bookings' %}" class="back-link">← Vé của tôi</a>
+  <a href="{% url 'my_bookings' %}" class="back-link">&larr; Vé của tôi</a>
   <h1 style="margin-bottom:20px;">🎫 Vé điện tử</h1>
 
   <div class="boarding-pass">
@@ -55,7 +55,10 @@
         {% for t in booking.tickets.all %}
         <div class="bp-passenger-row">
           <span style="font-weight:600;">{{ t.passenger.full_name }}</span>
-          <span>Ghế <strong style="color:var(--blue);font-size:1.05rem;">{{ t.seat_number }}</strong></span>
+          <div>
+            <span>Ghế <strong style="color:var(--blue);font-size:1.05rem;margin-right:12px;">{{ t.seat_number }}</strong></span>
+            <a href="{% url 'change_seat' t.id %}" style="display:inline-block; padding: 4px 10px; font-size: 0.7rem; border-radius: 99px; border: 1px solid var(--border); text-decoration: none; font-weight: bold; color: var(--navy);">Đổi ghế</a>
+          </div>
         </div>
         {% endfor %}
       </div>
@@ -69,11 +72,11 @@
       <hr class="divider" />
       <div style="display:flex;justify-content:space-between;align-items:center;">
         <div style="font-size:.82rem;color:var(--muted);">Tổng tiền thanh toán</div>
-        <div style="font-size:1.5rem;font-weight:800;color:var(--blue);">{{ booking.total_price|floatformat:0 }} ₫</div>
+        <div style="font-size:1.5rem;font-weight:800;color:var(--blue);">{{ booking.total_price|floatformat:0 }} đ</div>
       </div>
     </div>
   </div>
 
-  <div style="margin-top:24px;"><a href="{% url 'my_bookings' %}" class="btn btn-secondary">← Vé của tôi</a></div>
+  <div style="margin-top:24px;"><a href="{% url 'my_bookings' %}" class="btn btn-secondary">Vé của tôi</a></div>
 </div>
 {% endblock %}

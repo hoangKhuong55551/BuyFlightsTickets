@@ -186,3 +186,55 @@ def cancel_booking(request, booking_id):
 
     return render(request, "bookings/cancel_confirm.html", {"booking": booking})
 
+
+@login_required
+@transaction.atomic
+def change_seat(request, ticket_id):
+    ticket = get_object_or_404(Ticket, id=ticket_id, booking__user=request.user)
+    flight = ticket.flight
+    
+    if request.method == "POST":
+        new_seat = request.POST.get("seat_number", "").strip()
+        if not new_seat:
+            messages.error(request, "Vui lòng chọn ghế mới.")
+            return redirect("change_seat", ticket_id=ticket.id)
+            
+        if new_seat == ticket.seat_number:
+            messages.info(request, "Bạn vẫn đang giữ ghế cũ.")
+            return redirect("ticket", booking_id=ticket.booking.id)
+
+        # Khoá dòng để tránh race condition
+        already_taken = (
+            Ticket.objects
+            .select_for_update()
+            .filter(
+                flight=flight,
+                seat_number=new_seat,
+                booking__status__in=["pending", "paid"]
+            )
+            .exists()
+        )
+        
+        if already_taken:
+            messages.error(request, f"Ghế {new_seat} đã có người đặt. Vui lòng chọn ghế khác.")
+            return redirect("change_seat", ticket_id=ticket.id)
+            
+        ticket.seat_number = new_seat
+        ticket.save(update_fields=["seat_number"])
+        
+        messages.success(request, f"Đổi ghế thành công! Ghế mới của bạn là {new_seat}.")
+        return redirect("ticket", booking_id=ticket.booking.id)
+        
+    all_seats = _generate_seats(flight)
+    # Highlight current seat so the template knows
+    for row in all_seats:
+        for seat in row["seats"]:
+            if seat["code"] == ticket.seat_number:
+                seat["is_current"] = True
+                seat["taken"] = False # Cho phép chọn lại chính ghế của mình (dù có thể bị check ở backend)
+
+    return render(
+        request,
+        "bookings/change_seat.html",
+        {"ticket": ticket, "flight": flight, "all_seats": all_seats}
+    )
