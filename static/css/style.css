@@ -573,40 +573,30 @@ footer { background: var(--navy); color: rgba(255,255,255,.7); }
 /* =====================
    RESPONSIVE
 ===================== */
-@media (max-width: 900px) {
-    .navbar-inner {
-        padding: 10px 16px;
-        grid-template-columns: 1fr auto;
-        grid-template-rows: auto auto;
-    }
-    .navbar-brand { grid-column: 1; }
-    .nav-actions { grid-column: 2; }
-    .nav-links { 
-        display: flex !important; 
-        grid-column: 1 / -1; 
-        grid-row: 2; 
-        justify-content: center; 
-        gap: 20px; 
-        padding-top: 12px; 
-        margin-top: 10px; 
-        border-top: 1px solid rgba(255,255,255,0.1); 
-    }
-    .nav-user-greeting { display: none; }
-    .nav-username { max-width: 80px; }
 
+
+    /* Fix Search Form */
+    .search-grid { grid-template-columns: 1fr !important; gap: 16px !important; }
+    .s-grid-2 { grid-template-columns: 1fr !important; }
+    .search-wrapper { margin-top: -30px; padding: 0 16px; }
+    .search-card { padding: 20px; }
+    
     main { padding: 24px 16px 56px; }
     .hero-body { grid-template-columns: 1fr; padding: 32px 24px 0; }
     .hero-plane { display: none; }
     .hero-search { padding: 20px 24px; }
     .search-row { grid-template-columns: 1fr; gap: 10px; }
     .btn-hero-search { width: 100%; justify-content: center; }
-    .quick-cards { grid-template-columns: 1fr 1fr; }
+    .quick-cards { grid-template-columns: 1fr; gap: 16px; }
     .flight-result { grid-template-columns: 1fr; gap: 12px; }
     .fr-price-block { justify-content: flex-end; }
     .info-grid { grid-template-columns: 1fr; }
+    
+    /* Destinations */
+    .dest-grid { grid-template-columns: 1fr 1fr; }
+    .feat-grid { grid-template-columns: 1fr; }
 }
-@media (max-width: 600px) {
-    .btn-nav-register, .btn-nav-login { padding: 6px 12px !important; font-size: 0.8rem !important; }
+
     .btn-nav-logout { font-size: 0; padding: 8px !important; }
     .btn-nav-logout svg { margin: 0; }
     .nav-user-pill { padding: 4px 12px 4px 4px !important; }
@@ -729,3 +719,87 @@ main .page-subtitle {
     margin-bottom: 32px;
 }
 
+
+
+/* Mobile Taskbar */
+.mobile-taskbar {
+    display: none;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 65px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid #e2e8f0;
+    z-index: 9999;
+    box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
+    padding-bottom: env(safe-area-inset-bottom);
+}
+.taskbar-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    text-decoration: none;
+    font-size: 0.65rem;
+    font-weight: 600;
+    gap: 4px;
+    transition: all 0.2s;
+}
+.taskbar-item.active {
+    color: #00B4D8;
+}
+.taskbar-item svg {
+    transition: transform 0.2s;
+}
+.taskbar-item.active svg {
+    transform: translateY(-2px);
+    stroke-width: 2.5;
+}
+
+
+
+/* =====================
+   RESPONSIVE (MOBILE)
+===================== */
+@media (max-width: 900px) {
+    .navbar-inner {
+        padding: 0 16px;
+        grid-template-columns: auto 1fr auto;
+        height: 60px;
+    }
+    .nav-links { display: none !important; }
+    .nav-user-greeting { display: none; }
+    .nav-username { max-width: 80px; }
+    .btn-nav-logout, .btn-nav-login, .btn-nav-register { display: none !important; }
+    
+    .mobile-taskbar { display: flex !important; }
+    body { padding-bottom: 70px !important; padding-top: 60px !important; }
+
+    /* Fix Search Form */
+    .search-grid { grid-template-columns: 1fr !important; gap: 16px !important; }
+    .s-grid-2 { grid-template-columns: 1fr !important; }
+    .search-wrapper { margin-top: -30px; padding: 0 16px; }
+    .search-card { padding: 20px; }
+    
+    main { padding: 24px 16px 56px; }
+    .hero-body { grid-template-columns: 1fr; padding: 32px 24px 0; }
+    .hero-plane { display: none; }
+    .hero-search { padding: 20px 24px; }
+    .search-row { grid-template-columns: 1fr; gap: 10px; }
+    .btn-hero-search { width: 100%; justify-content: center; }
+    .quick-cards { grid-template-columns: 1fr; gap: 16px; }
+    .flight-result { grid-template-columns: 1fr; gap: 12px; }
+    .fr-price-block { justify-content: flex-end; }
+    .info-grid { grid-template-columns: 1fr; }
+    
+    /* Destinations */
+    .dest-grid { grid-template-columns: 1fr 1fr; }
+    .feat-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 600px) {
+    .plane-wrapper { overflow-x: clip; max-width: 100vw; }
+    .booking-layout { margin-top: 20px !important; }
+}
