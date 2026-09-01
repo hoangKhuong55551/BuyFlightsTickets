@@ -1,4 +1,4 @@
-﻿{% load static %}
+{% load static %}
 <header class="navbar-glass" id="main-nav">
   <div class="navbar-inner">
 
@@ -14,36 +14,36 @@
 
     <!-- Nav links (center) -->
     <nav class="nav-links">
-      <a href="{% url 'home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}nav-link--active{% endif %}">Trang chá»§</a>
-      <a href="{% url 'recommendations' %}" class="nav-link {% if request.resolver_match.url_name == 'recommendations' %}nav-link--active{% endif %}">KhÃ¡m phÃ¡</a>
+      <a href="{% url 'home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}nav-link--active{% endif %}">Trang chủ</a>
+      <a href="{% url 'recommendations' %}" class="nav-link {% if request.resolver_match.url_name == 'recommendations' %}nav-link--active{% endif %}">Khám phá</a>
       {% if user.is_authenticated %}
-        <a href="{% url 'my_bookings' %}" class="nav-link {% if request.resolver_match.url_name == 'my_bookings' %}nav-link--active{% endif %}">VÃ© cá»§a tÃ´i</a>
+        <a href="{% url 'my_bookings' %}" class="nav-link {% if request.resolver_match.url_name == 'my_bookings' %}nav-link--active{% endif %}">Vé của tôi</a>
       {% endif %}
     </nav>
 
     <!-- Auth actions (right) -->
     <div class="nav-actions">
       {% if user.is_authenticated %}
-        <!-- User pill: avatar + tÃªn -->
+        <!-- User pill: avatar + tên -->
         <div class="nav-user-pill" style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); border-radius: 99px; padding: 4px 16px 4px 6px; display: flex; align-items: center; gap: 10px;">
           <div class="nav-avatar" style="background: #00B4D8; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; box-shadow: 0 2px 8px rgba(0,180,216,0.3);">{{ user.username|slice:":1"|upper }}</div>
           <div class="nav-user-info" style="display: flex; flex-direction: column; line-height: 1.1;">
-            <span class="nav-user-greeting" style="font-size: 0.7rem; color: rgba(255,255,255,0.7);">Xin chÃ o,</span>
+            <span class="nav-user-greeting" style="font-size: 0.7rem; color: rgba(255,255,255,0.7);">Xin chào,</span>
             <span class="nav-username" style="font-size: 0.85rem; font-weight: 700; color: white;">{{ user.username }}</span>
           </div>
         </div>
 
         <!-- Logout -->
-        <a href="{% url 'logout' %}" class="btn-nav-logout" title="ÄÄƒng xuáº¥t" style="background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 99px; display: flex; align-items: center; gap: 6px; font-weight: 600; text-decoration: none; transition: 0.2s;">
+        <a href="{% url 'logout' %}" class="btn-nav-logout" title="Đăng xuất" style="background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 99px; display: flex; align-items: center; gap: 6px; font-weight: 600; text-decoration: none; transition: 0.2s;">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>
           </svg>
-          ÄÄƒng xuáº¥t
+          Đăng xuất
         </a>
       {% else %}
-        <a href="{% url 'login' %}" class="btn-nav-login" style="border: 1.5px solid rgba(255,255,255,0.4); color: #fff; background: transparent; padding: 8px 20px; border-radius: 99px; font-weight: 600; text-decoration: none; transition: 0.2s;">ÄÄƒng nháº­p</a>
+        <a href="{% url 'login' %}" class="btn-nav-login" style="border: 1.5px solid rgba(255,255,255,0.4); color: #fff; background: transparent; padding: 8px 20px; border-radius: 99px; font-weight: 600; text-decoration: none; transition: 0.2s;">Đăng nhập</a>
         <a href="{% url 'register' %}" class="btn-nav-register" style="background: #00B4D8; color: #fff; box-shadow: 0 4px 12px rgba(0,180,216,0.3); padding: 9px 24px; border-radius: 99px; font-weight: 700; text-decoration: none; transition: 0.2s;">
-          ÄÄƒng kÃ½
+          Đăng ký
         </a>
       {% endif %}
     </div>
