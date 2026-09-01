@@ -34,3 +34,5 @@ env/
 # Static collected files
 staticfiles/
 static_root/
+
+db_backups/

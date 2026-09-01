@@ -101,17 +101,6 @@
 <h1>🎫 Vé của tôi</h1>
 <p class="page-subtitle">Lịch sử đặt vé và quản lý hoàn tiền</p>
 
-{% comment %} Improvement notes panel {% endcomment %}
-<div class="improve-panel">
-  <h4>🛠 Các cải tiến trong trang này</h4>
-  <ul>
-    <li>Định dạng giá tiền: <strong>15.000.000 đ</strong> (dấu chấm phân cách hàng nghìn, dễ đọc)</li>
-    <li>Thêm thông tin thời lượng bay ngay dưới tuyến đường</li>
-    <li>Phân nhóm trạng thái vé theo Tab: <strong>Sắp bay / Đã hoàn thành / Đã huỷ</strong></li>
-    <li>Nút bấm vé đã huỷ đổi thành <strong>"Đặt lại chuyến bay"</strong> — tránh nhầm là nút thanh toán</li>
-  </ul>
-</div>
-
 {% comment %} Tabs {% endcomment %}
 <div class="booking-tabs">
   <a href="?tab=upcoming" class="booking-tab {% if active_tab == 'upcoming' %}active{% endif %}">
@@ -130,16 +119,8 @@
 <div class="flight-result" style="position:relative;">
 
   {% comment %} Logo hãng hàng không {% endcomment %}
-  <div>
-    {% if booking.flight and booking.flight.airline.logo %}
-      <img src="{{ booking.flight.airline.logo }}"
-           alt="{{ booking.flight.airline.name }}"
-           class="fr-logo-img">
-    {% else %}
-      <div class="fr-logo-fallback">
-        {% if booking.flight %}{{ booking.flight.airline.code|default:booking.flight.airline.name|slice:":2"|upper }}{% else %}??{% endif %}
-      </div>
-    {% endif %}
+  <div class="fr-logo">
+    {% if booking.flight %}{{ booking.flight.airline.code|default:booking.flight.airline.name|slice:":2"|upper }}{% else %}??{% endif %}
   </div>
 
   {% comment %} Thông tin chuyến bay {% endcomment %}

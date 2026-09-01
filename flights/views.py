@@ -46,3 +46,11 @@ def home(request):
             "date": date,
         }
     )
+def help_center(request):
+    return render(request, 'flights/help_center.html')
+
+def contact_us(request):
+    return render(request, 'flights/contact_us.html')
+
+def boarding_guidelines(request):
+    return render(request, 'flights/boarding_guidelines.html')

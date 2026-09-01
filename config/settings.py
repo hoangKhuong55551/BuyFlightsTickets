@@ -71,13 +71,26 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 
 # ── Database ─────────────────────────────────────────────────────────────────
-# SQLite for development. Switch to PostgreSQL before production.
+# SQLite: dữ liệu lưu vĩnh viễn trong file db.sqlite3 trên đĩa.
+# WAL mode bảo vệ dữ liệu khỏi mất mát khi tắt máy đột ngột.
+DB_PATH = str(BASE_DIR / 'db.sqlite3')
+
 DATABASES = {
     'default': dj_database_url.config(
-        default='sqlite:///' + str(BASE_DIR / 'db.sqlite3'),
+        default='sqlite:///' + DB_PATH,
         conn_max_age=600
     )
 }
+
+# Kích hoạt bảo vệ dữ liệu cho SQLite
+DATABASES['default'].setdefault('OPTIONS', {})
+DATABASES['default']['OPTIONS']['init_command'] = (
+    "PRAGMA journal_mode=WAL; "     # Ghi log trước -> chống mất dữ liệu khi tắt đột ngột
+    "PRAGMA synchronous=FULL; "     # Đảm bảo flush xuống đĩa trước khi commit
+    "PRAGMA foreign_keys=ON; "      # Bật ràng buộc khóa ngoại
+    "PRAGMA temp_store=MEMORY; "    # Bảng tạm trong RAM -> nhanh hơn
+    "PRAGMA cache_size=-32000;"     # Cache 32MB
+)
 
 # Auto-increment primary key type (removes W042 warnings)
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -122,7 +135,24 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='noreply@flightbooking.com')
 
 
-# ── Auth redirects ────────────────────────────────────────────────────────────
+# ── Kích hoạt bảo vệ dữ liệu SQLite qua signal ──────────────────────────────
+# Django's connection_created signal chạy ngay sau khi mỗi kết nối DB được tạo.
+# Đây là cách duy nhất đáng tin cậy để set PRAGMA cho SQLite với dj_database_url.
+from django.db.backends.signals import connection_created
+
+def _set_sqlite_pragmas(sender, connection, **kwargs):
+    if connection.vendor == 'sqlite':
+        with connection.cursor() as cursor:
+            cursor.execute("PRAGMA journal_mode=WAL;")      # Chống mất dữ liệu khi crash
+            cursor.execute("PRAGMA synchronous=FULL;")      # Flush xuống đĩa trước commit
+            cursor.execute("PRAGMA foreign_keys=ON;")       # Bật ràng buộc khóa ngoại
+            cursor.execute("PRAGMA temp_store=MEMORY;")     # Bảng tạm trong RAM
+            cursor.execute("PRAGMA cache_size=-32000;")     # Cache 32MB
+
+connection_created.connect(_set_sqlite_pragmas)
+
+
+
+# Auth redirects
 LOGIN_URL = '/users/login/'
 LOGIN_REDIRECT_URL = '/'
-

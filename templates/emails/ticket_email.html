@@ -56,18 +56,7 @@
         <div class="header">
             <h1>✈ SkyBook</h1>
             <p>VÉ MÁY BAY ĐIỆN TỬ (E-TICKET)</p>
-            {% if booking.flight %}
-            <div class="airline-row">
-                <div class="airline-logo">
-                    {% if booking.flight.airline.logo %}
-                        <img src="{{ booking.flight.airline.logo }}" alt="{{ booking.flight.airline.name }}">
-                    {% else %}
-                        {{ booking.flight.airline.code|default:booking.flight.airline.name|slice:":2"|upper }}
-                    {% endif %}
-                </div>
-                <span class="airline-name">{{ booking.flight.airline.name }}</span>
-            </div>
-            {% endif %}
+            {% if booking.flight %}<p style="margin:8px 0 0;color:rgba(255,255,255,0.7);font-size:13px;">{{ booking.flight.airline.name }}</p>{% endif %}
         </div>
 
         <div class="content">
