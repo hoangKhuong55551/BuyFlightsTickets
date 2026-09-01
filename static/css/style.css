@@ -836,6 +836,18 @@ main .page-subtitle {
 .booking-tab.tab-cancelled .tab-count { background: #fee2e2; color: #dc2626; }
 .booking-tab.tab-cancelled.active { color: #dc2626; border-bottom-color: #dc2626; }
 
+@media (max-width: 600px) {
+    .booking-tabs {
+        justify-content: space-between;
+        gap: 0;
+    }
+    .booking-tab {
+        padding: 10px 8px 12px;
+        font-size: 0.8rem;
+        gap: 4px;
+    }
+}
+
 /* =====================
    AIRLINE LOGO (my_bookings)
 ===================== */

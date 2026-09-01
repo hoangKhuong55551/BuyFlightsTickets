@@ -176,8 +176,12 @@ def my_bookings(request):
     ).order_by("-booking_date")
 
     # Count for each tab
-    upcoming_qs   = all_bookings.filter(status__in=["pending", "paid"], flight__departure_time__gte=now)
+    # Count for each tab
+    # Sắp bay: Chưa tới giờ bay VÀ đã thanh toán (paid)
+    upcoming_qs   = all_bookings.filter(status="paid", flight__departure_time__gte=now)
+    # Đã hoàn thành: Đã qua giờ bay VÀ đã thanh toán (paid)
     completed_qs  = all_bookings.filter(status="paid", flight__departure_time__lt=now)
+    # Đã huỷ: Trạng thái là cancelled (hoặc pending quá hạn nếu có)
     cancelled_qs  = all_bookings.filter(status="cancelled")
 
     count_upcoming  = upcoming_qs.count()
