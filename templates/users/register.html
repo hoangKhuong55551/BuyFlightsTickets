@@ -1,27 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Đăng ký — SkyBook
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    const toggleBtns = document.querySelectorAll(".toggle-password");
-    toggleBtns.forEach(btn => {
-        btn.addEventListener("click", function() {
-            const wrapper = this.closest(".password-wrapper");
-            const input = wrapper.querySelector("input");
-            const icon = this.querySelector(".eye-icon");
-            if (input.type === "password") {
-                input.type = "text";
-                icon.innerHTML = "<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>";
-                icon.style.color = "#00B4D8";
-            } else {
-                input.type = "password";
-                icon.innerHTML = "<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>";
-                icon.style.color = "#94a3b8";
-            }
-        });
-    });
-});
-</script>
-{% endblock %}
+{% block title %}Đăng ký — SkyBook{% endblock %}
 {% block full_content %}
 <div class="auth-wrapper">
   <div class="auth-card" style="max-width: 500px;">
@@ -41,18 +19,7 @@ document.addEventListener("DOMContentLoaded", function() {
         {% for field in form %}
           <div style="margin-bottom:12px; {% if field.name in 'username,email,password' %}grid-column:1/-1;{% endif %}">
             <label for="{{ field.id_for_label }}" style="display:block;font-size:0.85rem;font-weight:700;color:#334155;margin-bottom:6px;">{{ field.label }}</label>
-            {% if "password" in field.name %}
-            <div class="password-wrapper" style="position: relative;">
-              {{ field }}
-              <button type="button" class="toggle-password" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #94a3b8; display: flex; align-items: center; justify-content: center; padding: 0;">
-                <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>
-                </svg>
-              </button>
-            </div>
-            {% else %}
             {{ field }}
-            {% endif %}
             {% if field.errors %}
             <ul class="error-list" style="list-style:none;padding:0;margin-top:6px;font-size:0.8rem;color:#dc2626;">
               {% for e in field.errors %}<li>• {{ e }}</li>{% endfor %}
@@ -70,26 +37,4 @@ document.addEventListener("DOMContentLoaded", function() {
     </p>
   </div>
 </div>
-
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    const toggleBtns = document.querySelectorAll(".toggle-password");
-    toggleBtns.forEach(btn => {
-        btn.addEventListener("click", function() {
-            const wrapper = this.closest(".password-wrapper");
-            const input = wrapper.querySelector("input");
-            const icon = this.querySelector(".eye-icon");
-            if (input.type === "password") {
-                input.type = "text";
-                icon.innerHTML = "<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>";
-                icon.style.color = "#00B4D8";
-            } else {
-                input.type = "password";
-                icon.innerHTML = "<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>";
-                icon.style.color = "#94a3b8";
-            }
-        });
-    });
-});
-</script>
 {% endblock %}
