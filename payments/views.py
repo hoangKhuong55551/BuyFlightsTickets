@@ -1,4 +1,4 @@
-﻿from django.contrib import messages
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
@@ -29,17 +29,20 @@ def payment(request, booking_id):
         booking.save()
 
         # Gửi email xác nhận kèm E-Ticket HTML
-        subject = f"SkyBook - Xác nhận đặt vé {booking.booking_code}"
-        from_email = None
-        to_email = booking.user.email or "noreply@dev.null"
-        
-        context = {"booking": booking}
-        text_content = render_to_string("emails/ticket_email.txt", context)
-        html_content = render_to_string("emails/ticket_email.html", context)
-        
-        msg = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
-        msg.attach_alternative(html_content, "text/html")
-        msg.send(fail_silently=True)
+        try:
+            subject = f"SkyBook - Xác nhận đặt vé {booking.booking_code}"
+            from_email = None
+            to_email = booking.user.email or "noreply@dev.null"
+            
+            context = {"booking": booking}
+            text_content = render_to_string("emails/ticket_email.txt", context)
+            html_content = render_to_string("emails/ticket_email.html", context)
+            
+            msg = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
+            msg.attach_alternative(html_content, "text/html")
+            msg.send(fail_silently=True)
+        except Exception as e:
+            print(f"Email sending failed: {e}")
 
         messages.success(
             request,
