@@ -1,4 +1,4 @@
-﻿from django.db import models
+from django.db import models
 from django.utils import timezone
 from bookings.models import Booking
 
@@ -108,25 +108,38 @@ class RefundRequest(models.Model):
         booking.status = "cancelled"
         booking.save(update_fields=["status"])
 
-        # Send notification email (fail_silently)
+        # Send notification email via Resend API
         try:
-            from django.core.mail import send_mail
-            send_mail(
-                subject=f"Refund Successful - {booking.booking_code}",
-                message=(
-                    f"Hello {booking.user.username},\n\n"
-                    f"Your refund request has been approved.\n"
-                    f"Booking Code: {booking.booking_code}\n"
-                    f"Refund Amount: {self.refund_amount:,.0f} VND\n\n"
-                    f"Please allow 3-5 business days for the funds to return to your account.\n"
-                    f"Thank you for using SkyBook."
-                ),
-                from_email=None,
-                recipient_list=[booking.user.email or "noreply@dev.null"],
-                fail_silently=True,
-            )
-        except Exception:
-            pass
+            to_email = booking.user.email
+            if to_email:
+                import urllib.request
+                import json
+                
+                from decouple import config
+                url = "https://api.brevo.com/v3/smtp/email"
+                headers = {
+                    "accept": "application/json",
+                    "api-key": config("BREVO_API_KEY", default=""),
+                    "content-type": "application/json"
+                }
+                data = {
+                    "sender": {"name": "SkyBook Airlines", "email": "khuong206111@gmail.com"},
+                    "to": [{"email": to_email}],
+                    "subject": f"Refund Successful - {booking.booking_code}",
+                    "htmlContent": (
+                        f"<p>Hello {booking.user.username},</p>"
+                        f"<p>Your refund request has been approved.</p>"
+                        f"<p><strong>Booking Code:</strong> {booking.booking_code}<br>"
+                        f"<strong>Refund Amount:</strong> {self.refund_amount:,.0f} VND</p>"
+                        f"<p>Please allow 3-5 business days for the funds to return to your account.</p>"
+                        f"<p>Thank you for using SkyBook.</p>"
+                    )
+                }
+                req = urllib.request.Request(url, data=json.dumps(data).encode("utf-8"), headers=headers)
+                with urllib.request.urlopen(req) as response:
+                    pass
+        except Exception as e:
+            print(f"Brevo Refund Error: {e}")
 
     def reject(self, note=""):
         """Reject refund."""
