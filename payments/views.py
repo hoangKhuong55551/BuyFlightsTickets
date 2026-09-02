@@ -28,21 +28,25 @@ def payment(request, booking_id):
         booking.status = "paid"
         booking.save()
 
-        # Gửi email xác nhận kèm E-Ticket HTML
-        try:
-            subject = f"SkyBook - Xác nhận đặt vé {booking.booking_code}"
-            from_email = None
-            to_email = booking.user.email or "noreply@dev.null"
-            
-            context = {"booking": booking}
-            text_content = render_to_string("emails/ticket_email.txt", context)
-            html_content = render_to_string("emails/ticket_email.html", context)
-            
-            msg = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
-            msg.attach_alternative(html_content, "text/html")
-            msg.send(fail_silently=True)
-        except Exception as e:
-            print(f"Email sending failed: {e}")
+        # Gửi email xác nhận kèm E-Ticket HTML qua Thread phụ để tránh block web (Gunicorn timeout)
+        import threading
+        def send_email_bg():
+            try:
+                subject = f"SkyBook - Xác nhận đặt vé {booking.booking_code}"
+                from_email = None
+                to_email = booking.user.email or "noreply@dev.null"
+                
+                context = {"booking": booking}
+                text_content = render_to_string("emails/ticket_email.txt", context)
+                html_content = render_to_string("emails/ticket_email.html", context)
+                
+                msg = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
+                msg.attach_alternative(html_content, "text/html")
+                msg.send(fail_silently=True)
+            except Exception as e:
+                print(f"Email sending failed: {e}")
+                
+        threading.Thread(target=send_email_bg).start()
 
         messages.success(
             request,
