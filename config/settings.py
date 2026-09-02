@@ -128,3 +128,6 @@ DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='noreply@flightbooking
 # Auth redirects
 LOGIN_URL = '/users/login/'
 LOGIN_REDIRECT_URL = '/'
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+CSRF_TRUSTED_ORIGINS = ['https://*.onrender.com', 'https://*.127.0.0.1']
