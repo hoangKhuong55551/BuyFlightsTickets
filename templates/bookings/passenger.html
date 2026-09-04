@@ -1,36 +1,157 @@
 {% extends "base.html" %}
+{% load flight_extras %}
 {% block title %}Thông tin hành khách{% endblock %}
+{% block extra_css %}
+<style>
+  body { background-color: var(--bg-light); }
+  .progress-bar {
+    display: flex; align-items: center; justify-content: center;
+    max-width: 800px; margin: 0 auto 40px; gap: 16px;
+  }
+  .step { display: flex; align-items: center; gap: 8px; font-weight: 600; color: var(--text-muted); }
+  .step.active { color: var(--navy-900); }
+  .step.done { color: #2ed573; }
+  .step-circle {
+    width: 24px; height: 24px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.8rem; background: #e2e8f0; color: white;
+  }
+  .step.active .step-circle { background: var(--cyan-500); }
+  .step.done .step-circle { background: #2ed573; }
+  .step-line { height: 2px; flex: 1; background: #e2e8f0; max-width: 100px; }
+  
+  .layout-2col {
+    display: flex; gap: 32px; max-width: 1080px; margin: 0 auto;
+    align-items: flex-start;
+  }
+  .col-left { flex: 0 0 65%; }
+  .col-right { flex: 0 0 35%; position: sticky; top: 100px; }
+  
+  .form-card {
+    background: white; border-radius: 16px; padding: 32px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  }
+  
+  .form-group { margin-bottom: 20px; }
+  .form-label {
+    display: block; margin-bottom: 8px;
+    text-transform: uppercase; letter-spacing: 1px;
+    font-size: 0.75rem; font-weight: 700; color: var(--text-muted);
+  }
+  .form-input {
+    width: 100%; padding: 12px 16px;
+    border: 1px solid #e2e8f0; border-radius: 10px;
+    transition: all 0.2s;
+  }
+  .form-input:focus { border-color: var(--cyan-500); outline: none; }
+  
+  .gender-options { display: flex; gap: 12px; }
+  .gender-pill {
+    padding: 10px 24px; border: 1px solid #e2e8f0; border-radius: 99px;
+    cursor: pointer; font-weight: 600; transition: 0.2s;
+    background: white; color: var(--text-muted);
+  }
+  .gender-pill:hover { border-color: var(--cyan-500); color: var(--cyan-500); }
+  .gender-radio:checked + .gender-pill {
+    background: var(--cyan-500); color: white; border-color: var(--cyan-500);
+  }
+  
+  .summary-card {
+    background: white; border-radius: 16px; padding: 24px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  }
+</style>
+{% endblock %}
 {% block content %}
-<div style="max-width:600px;margin:0 auto;">
-  <a href="{% url 'my_bookings' %}" class="back-link">← Vé của tôi</a>
-  <h1 style="margin-bottom:4px;">Thông tin hành khách</h1>
-  <p class="page-subtitle">Vui lòng điền đầy đủ thông tin</p>
+<div class="progress-bar">
+  <div class="step done"><div class="step-circle">✓</div> ① Chọn ghế</div>
+  <div class="step-line"></div>
+  <div class="step active"><div class="step-circle">2</div> ② Thông tin</div>
+  <div class="step-line"></div>
+  <div class="step"><div class="step-circle">3</div> ③ Thanh toán</div>
+</div>
 
-  {% if booking.flight %}
-  <div class="card" style="margin-bottom:20px;border-left:4px solid var(--blue);display:flex;align-items:center;gap:16px;">
-    <div style="font-size:2rem;">✈</div>
-    <div>
-      <div style="font-weight:700;font-size:1rem;">{{ booking.flight.flight_number }} · {{ booking.flight.departure_airport.city }} → {{ booking.flight.arrival_airport.city }}</div>
-      <div style="font-size:.85rem;color:var(--muted);">{{ booking.flight.departure_time|date:"H:i, d/m/Y" }} · {{ booking.flight.airline.name }}</div>
+<div class="layout-2col">
+  <div class="col-left">
+    <div class="form-card">
+      <h2 style="margin-bottom: 24px;">Thông tin hành khách</h2>
+      <form method="POST">
+        {% csrf_token %}
+        <!-- Basic info that normally comes from form -->
+        <div class="form-group">
+          <label class="form-label">Họ và tên (Bắt buộc)</label>
+          {{ form.passenger_name }}
+        </div>
+        <div style="display: flex; gap: 16px;">
+          <div class="form-group" style="flex: 1;">
+            <label class="form-label">Ngày sinh</label>
+            <input type="date" class="form-input" required />
+          </div>
+          <div class="form-group" style="flex: 1;">
+            <label class="form-label">Giới tính</label>
+            <div class="gender-options">
+              <label>
+                <input type="radio" name="gender" value="M" class="gender-radio" style="display:none;" checked>
+                <div class="gender-pill">Nam</div>
+              </label>
+              <label>
+                <input type="radio" name="gender" value="F" class="gender-radio" style="display:none;">
+                <div class="gender-pill">Nữ</div>
+              </label>
+              <label>
+                <input type="radio" name="gender" value="O" class="gender-radio" style="display:none;">
+                <div class="gender-pill">Khác</div>
+              </label>
+            </div>
+          </div>
+        </div>
+        <div style="display: flex; gap: 16px;">
+          <div class="form-group" style="flex: 1;">
+            <label class="form-label">Email</label>
+            {{ form.passenger_email }}
+          </div>
+          <div class="form-group" style="flex: 1;">
+            <label class="form-label">Số điện thoại</label>
+            {{ form.passenger_phone }}
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">CCCD / Hộ chiếu</label>
+          <input type="text" class="form-input" placeholder="Nhập số CCCD/Passport" required />
+        </div>
+        
+        <button type="submit" class="btn" style="display:none;" id="realSubmitBtn">Submit</button>
+      </form>
     </div>
-    <div style="margin-left:auto;font-size:1.1rem;font-weight:800;color:var(--blue);">{{ booking.total_price|floatformat:0 }} ₫</div>
   </div>
-  {% endif %}
-
-  <div class="card">
-    <h2>Điền thông tin</h2>
-    <form method="POST">
-      {% csrf_token %}
-      {% for field in form %}
-      <div>
-        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-        {{ field }}
-        {% if field.errors %}<ul class="error-list">{% for e in field.errors %}<li>⚠ {{ e }}</li>{% endfor %}</ul>{% endif %}
+  
+  <div class="col-right">
+    <div class="summary-card">
+      <div style="font-size: 1.2rem; font-weight: 800; margin-bottom: 8px;">
+        {{ booking.flight.departure_airport.city }} → {{ booking.flight.arrival_airport.city }}
       </div>
-      {% endfor %}
-      {% if form.non_field_errors %}<ul class="error-list">{% for e in form.non_field_errors %}<li>⚠ {{ e }}</li>{% endfor %}</ul>{% endif %}
-      <button type="submit" class="btn btn-primary btn-full" style="margin-top:8px;">Tiếp tục thanh toán →</button>
-    </form>
+      <div style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px dashed #e2e8f0;">
+        {{ booking.flight.flight_number }} · {{ booking.flight.departure_time|date:"H:i" }} · {{ booking.flight.departure_time|date:"d/m/Y" }}
+      </div>
+      <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
+        <span style="color: var(--text-muted);">Ghế đã chọn:</span>
+        <strong>{{ booking.seat_number|default:"Chưa chọn" }}</strong>
+      </div>
+      <div style="display: flex; justify-content: space-between; margin-bottom: 24px; font-size: 1.2rem;">
+        <span style="font-weight: 600;">Tổng tiền:</span>
+        <strong style="color: var(--cyan-500);">{{ booking.total_price|vnd_format }} đ</strong>
+      </div>
+      <button onclick="document.getElementById('realSubmitBtn').click()" class="btn" style="width: 100%; padding: 16px; background: linear-gradient(135deg, var(--cyan-500), var(--blue-600)); color: white; font-weight: 700; border: none;">
+        Tiếp tục thanh toán →
+      </button>
+    </div>
   </div>
 </div>
+
+<script>
+  // Quick fix for django form inputs
+  document.querySelectorAll('.form-card input:not([type="radio"]), .form-card select').forEach(el => {
+    el.classList.add('form-input');
+  });
+</script>
 {% endblock %}

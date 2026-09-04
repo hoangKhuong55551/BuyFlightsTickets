@@ -1,38 +1,123 @@
 {% extends "base.html" %}
+{% load flight_extras %}
 {% block title %}Khám phá chuyến bay — Flight Booking{% endblock %}
+{% block extra_css %}
+<style>
+  body { background-color: var(--bg-light); }
+  .flight-result {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    transition: all 200ms ease;
+    border-left: 3px solid transparent;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 16px;
+  }
+  .flight-result:hover {
+    border-left: 3px solid var(--cyan-500);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+  }
+  .fr-price-btn {
+    background: linear-gradient(135deg, var(--cyan-500), var(--blue-600));
+    color: #fff;
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-weight: 700;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: 200ms;
+  }
+  .fr-price-btn:hover {
+    transform: translateY(-2px);
+    color: #fff;
+  }
+  .badge-nonstop {
+    background: rgba(0, 180, 216, 0.1);
+    color: var(--cyan-500);
+    border: 1px solid rgba(0, 180, 216, 0.3);
+    padding: 4px 12px;
+    border-radius: 99px;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+  .badge-low-seat {
+    background: rgba(255, 71, 87, 0.1);
+    color: #ff4757;
+    padding: 4px 12px;
+    border-radius: 99px;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+</style>
+{% endblock %}
 {% block content %}
-<h1>🌟 Khám phá chuyến bay</h1>
-<p class="page-subtitle">Tất cả chuyến bay, sắp xếp theo giá từ thấp đến cao</p>
+<div style="max-width: 1080px; margin: 0 auto; padding-top: 20px;">
+  <div style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 16px;">
+    Trang chủ > Chuyến bay > Đà Nẵng → Hà Nội
+  </div>
+  <h1 style="margin-bottom: 8px;">🌤 Khám phá chuyến bay</h1>
+  <p class="page-subtitle" style="margin-bottom: 24px;">Tìm thấy {{ flights|length }} chuyến bay phù hợp</p>
 
-{% for flight in flights %}
-<div class="flight-result">
-  <div class="fr-logo">{{ flight.airline.code|default:flight.airline.name|slice:":2"|upper }}</div>
-  <div class="fr-info">
-    <div class="fr-times">
-      <span class="fr-time">{{ flight.departure_time|date:"H:i" }}</span>
-      <div class="fr-duration-line">
-        <span>Non-stop · {{ flight.departure_airport.code }} → {{ flight.arrival_airport.code }}</span>
-        <div class="fr-line"></div>
+  <div style="display: flex; gap: 12px; margin-bottom: 24px;">
+    <button class="btn" style="background: var(--blue-600); color: white;">Tất cả</button>
+    <button class="btn" style="background: white; border: 1px solid #e2e8f0;">Non-stop</button>
+    <button class="btn" style="background: white; border: 1px solid #e2e8f0;">Dưới 1tr</button>
+    <button class="btn" style="background: white; border: 1px solid #e2e8f0;">Sáng sớm</button>
+    <button class="btn" style="background: white; border: 1px solid #e2e8f0;">Chiều tối</button>
+  </div>
+
+  {% for flight in flights %}
+  <div class="flight-result">
+    <div style="display: flex; align-items: center; gap: 16px; flex: 1;">
+      <div style="width: 48px; height: 48px; background: var(--bg-light); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--blue-600);">
+        {{ flight.airline.code|default:flight.airline.name|slice:":2"|upper }}
       </div>
-      <span class="fr-time">{{ flight.arrival_time|date:"H:i" }}</span>
+      <div>
+        <div style="font-weight: 700; color: var(--navy-900);">{{ flight.airline.name }} · {{ flight.flight_number }} <span class="badge-nonstop" style="margin-left: 8px;">Non-stop ✓</span></div>
+        <div style="display: flex; align-items: center; gap: 24px; margin-top: 12px;">
+          <div style="text-align: center;">
+            <div style="font-size: 1.2rem; font-weight: 800;">{{ flight.departure_time|date:"H:i" }}</div>
+            <div style="font-size: 0.9rem; font-weight: 600; color: var(--text-muted);">{{ flight.departure_airport.code }}</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">{{ flight.departure_airport.city }}</div>
+          </div>
+          <div style="flex: 1; min-width: 100px; text-align: center; position: relative;">
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px;">{{ flight.departure_time|flight_duration:flight.arrival_time }}</div>
+            <div style="height: 2px; background: #e2e8f0; width: 100%; position: relative;">
+              <div style="position: absolute; right: 0; top: -4px; width: 10px; height: 10px; background: var(--text-muted); border-radius: 50%;"></div>
+            </div>
+          </div>
+          <div style="text-align: center;">
+            <div style="font-size: 1.2rem; font-weight: 800;">{{ flight.arrival_time|date:"H:i" }}</div>
+            <div style="font-size: 0.9rem; font-weight: 600; color: var(--text-muted);">{{ flight.arrival_airport.code }}</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">{{ flight.arrival_airport.city }}</div>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="fr-route">
-      <strong>{{ flight.departure_airport.city }}</strong> → <strong>{{ flight.arrival_airport.city }}</strong>
-      &nbsp;·&nbsp; {{ flight.airline.name }} {{ flight.flight_number }}
-      &nbsp;·&nbsp; {{ flight.departure_time|date:"d/m/Y" }}
+    
+    <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 12px;">
+      <div style="display: flex; gap: 16px; font-size: 0.9rem;">
+        <span style="color: var(--text-muted);">📅 {{ flight.departure_time|date:"d/m/Y" }}</span>
+        {% if flight.available_seats < 5 %}
+          <span class="badge-low-seat">💺 Còn {{ flight.available_seats }} ghế</span>
+        {% else %}
+          <span style="color: var(--text-muted);">💺 Còn {{ flight.available_seats }} ghế</span>
+        {% endif %}
+      </div>
+      <a href="{% url 'create_booking' flight.id %}" class="fr-price-btn">Chọn: {{ flight.price|vnd_format }} đ →</a>
     </div>
   </div>
-  <div class="fr-tags"><span class="fr-tag">{{ flight.get_status_display }}</span></div>
-  <div class="fr-price-block">
-    <a href="{% url 'create_booking' flight.id %}" class="fr-price-btn">{{ flight.price|floatformat:0 }} ₫</a>
-    <a href="{% url 'flight_detail' flight.id %}" class="fr-chevron">›</a>
+  {% empty %}
+  <div class="empty-state" style="background: white; border-radius: 16px; padding: 48px; text-align: center;">
+    <div class="empty-icon" style="font-size: 3rem; margin-bottom: 16px;">✈</div>
+    <h3>Chưa có chuyến bay nào</h3>
+    <p>Vui lòng quay lại sau.</p>
   </div>
+  {% endfor %}
 </div>
-{% empty %}
-<div class="empty-state">
-  <div class="empty-icon">✈</div>
-  <h3>Chưa có chuyến bay nào</h3>
-  <p>Vui lòng quay lại sau.</p>
-</div>
-{% endfor %}
 {% endblock %}

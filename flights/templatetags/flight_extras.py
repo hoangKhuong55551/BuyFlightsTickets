@@ -1,6 +1,7 @@
-﻿from django import template
+from django import template
 
 register = template.Library()
+
 
 @register.filter
 def flight_duration(departure, arrival):
@@ -22,3 +23,9 @@ def flight_duration(departure, arrival):
         return f"{hours}h"
     else:
         return f"{minutes}m"
+@register.filter
+def vnd_format(value):
+    try:
+        return f"{int(value):,}".replace(",", ".")
+    except (ValueError, TypeError):
+        return value

@@ -557,193 +557,134 @@ trình của bạn bắt đầu từ đây{% endblock %} {% block extra_css %}
 {% endblock %} {% block content %}
 
 <!-- Hero Section -->
-<section class="hero-v3">
-  <div class="hero-pattern"></div>
+
+<section class="hero-v3" style="background: linear-gradient(135deg, var(--navy-950) 0%, var(--navy-900) 50%, var(--navy-800) 100%);">
+  <div class="hero-pattern" style="opacity: 0.12; background-image: radial-gradient(rgba(255, 255, 255, 0.4) 1px, transparent 1px); background-size: 20px 20px;"></div>
+  <!-- Blob glows -->
+  <div style="position: absolute; top: 20%; left: -10%; width: 40%; height: 60%; background: var(--cyan-500); filter: blur(120px); opacity: 0.15; border-radius: 50%;"></div>
+  <div style="position: absolute; bottom: -10%; right: 10%; width: 30%; height: 50%; background: var(--blue-600); filter: blur(120px); opacity: 0.15; border-radius: 50%;"></div>
+  
   <div class="hero-content">
     <div class="hero-text">
-      <div class="hero-tag">
-        <span
-          style="
-            display: inline-block;
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: currentColor;
-          "
-        ></span>
-        Đặt vé máy bay nhanh chóng & an toàn
-      </div>
-      <h1 class="hero-title">
-        Hành trình <span>của bạn</span><br />bắt đầu từ đây
+      <h1 class="hero-title" style="font-family: var(--font-heading); font-weight: 800;">
+        Hành trình <span style="background: linear-gradient(135deg, var(--cyan-500), var(--blue-600)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">của bạn</span><br />bắt đầu từ đây
       </h1>
-      <p class="hero-desc">
-        Tìm kiếm và đặt vé máy bay với giá tốt nhất. Hơn 150 đường bay nội địa
-        và quốc tế đang chờ bạn khám phá.
-      </p>
-
+      
       <div class="hero-badges">
         <div class="h-badge">
-          <div class="h-badge-icon">✈️</div>
+          <div class="h-badge-icon">✈</div>
           <div class="h-badge-info">
-            <strong>2M+</strong>
-            <span>Hành khách</span>
+            <strong>2M+ Hành khách</strong>
           </div>
         </div>
         <div class="h-badge">
-          <div class="h-badge-icon">🗺️</div>
+          <div class="h-badge-icon">🗺</div>
           <div class="h-badge-info">
-            <strong>150+</strong>
-            <span>Đường bay</span>
+            <strong>150+ Đường bay</strong>
           </div>
         </div>
         <div class="h-badge">
           <div class="h-badge-icon">⭐</div>
           <div class="h-badge-info">
             <strong>4.9★</strong>
-            <span>Đánh giá</span>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="hero-img">
-      <svg viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M120 180 L280 120 L350 130 L280 160 Z" fill="#E2E8F0" />
-        <path d="M120 180 L180 220 L220 180 Z" fill="#94A3B8" />
-        <path d="M280 120 L250 80 L210 120 Z" fill="#94A3B8" />
-        <circle cx="230" cy="140" r="15" fill="#00B4D8" />
-        <path
-          d="M60 160 C100 150 150 160 200 180"
-          stroke="#00B4D8"
-          stroke-width="4"
-          stroke-dasharray="8 8"
-        />
+    <div class="hero-img" style="animation: floatUp 5s ease-in-out infinite;">
+      <!-- SVG Máy bay -->
+      <svg viewBox="0 0 500 300" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:500px;">
+        <!-- Contrail -->
+        <path d="M50 200 Q 150 200 250 160" stroke="rgba(255,255,255,0.2)" stroke-width="4" stroke-dasharray="8 8" fill="none"/>
+        <path d="M70 220 Q 170 220 270 180" stroke="rgba(255,255,255,0.1)" stroke-width="3" stroke-dasharray="6 6" fill="none"/>
+        <!-- Thân máy bay -->
+        <rect x="200" y="130" width="220" height="40" rx="20" fill="#ffffff" />
+        <!-- Đuôi máy bay -->
+        <path d="M200 150 L220 100 L250 100 L240 150 Z" fill="#00b4d8" />
+        <!-- Cánh chính -->
+        <path d="M280 150 L340 220 L380 220 L350 150 Z" fill="#e2e8f0" />
+        <path d="M300 130 L350 70 L390 70 L360 130 Z" fill="#cbd5e1" />
+        <!-- Động cơ -->
+        <rect x="310" y="170" width="30" height="15" rx="5" fill="#94a3b8" />
+        <!-- Cửa sổ -->
+        <circle cx="280" cy="145" r="4" fill="#0f1f3d" />
+        <circle cx="300" cy="145" r="4" fill="#0f1f3d" />
+        <circle cx="320" cy="145" r="4" fill="#0f1f3d" />
+        <circle cx="340" cy="145" r="4" fill="#0f1f3d" />
+        <!-- Buồng lái -->
+        <path d="M390 135 Q 410 135 415 150 L390 150 Z" fill="#0f1f3d" />
       </svg>
     </div>
   </div>
 </section>
 
+
 <!-- Search Section -->
-<div class="search-wrapper">
-  <div class="search-card">
+
+<div class="search-wrapper" style="margin-top: -60px;">
+  <div class="search-card" style="background: rgba(255, 255, 255, 0.06); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 20px;">
     <div class="s-tabs">
-      <button class="s-tab active">⇄ Khứ hồi</button>
-      <button class="s-tab">→ Một chiều</button>
+      <button class="s-tab active" style="background: linear-gradient(135deg, var(--cyan-500), var(--blue-600)); border: none; border-radius: 99px;">⇄ Khứ hồi</button>
+      <button class="s-tab" style="border-radius: 99px;">→ Một chiều</button>
     </div>
-
-    <form method="GET" action="{% url 'home' %}">
-      <!-- 2 Columns Grid -->
-      <div class="search-grid">
-        <!-- Col 1: Locations -->
-        <div class="s-grid-2" style="position: relative">
-          <div class="s-input-group">
-            <label class="s-label">ĐIỂM ĐI</label>
-            <div class="s-input-wrapper">
-              <span class="s-icon">🛫</span>
-              <input
-                type="text"
-                class="s-input"
-                name="departure"
-                placeholder="Hà Nội (HAN)"
-                value="{{ departure }}"
-              />
-            </div>
-            <div class="s-swap">⇄</div>
-          </div>
-          <div class="s-input-group">
-            <label class="s-label">ĐIỂM ĐẾN</label>
-            <div class="s-input-wrapper">
-              <span class="s-icon">🛬</span>
-              <input
-                type="text"
-                class="s-input"
-                name="arrival"
-                placeholder="TP. Hồ Chí Minh (SGN)"
-                value="{{ arrival }}"
-              />
-            </div>
-          </div>
+    <form method="GET" action="{% url 'recommendations' %}">
+      <!-- Grid fields -->
+      <div class="search-grid" style="grid-template-columns: 1fr auto 1fr 1fr 1fr 1fr 1fr; align-items: end;">
+        <!-- Điểm đi -->
+        <div class="s-input-group">
+          <label class="s-label" style="text-transform: uppercase; letter-spacing: 1px;">Điểm đi</label>
+          <input type="text" class="s-input" name="departure" value="{{ departure }}" placeholder="Từ..." style="border-radius: 10px;" />
+        </div>
+        
+        <!-- Mũi tên ⇄ -->
+        <div style="color: var(--cyan-500); font-size: 1.5rem; padding-bottom: 10px; cursor: pointer;">⇄</div>
+        
+        <!-- Điểm đến -->
+        <div class="s-input-group">
+          <label class="s-label" style="text-transform: uppercase; letter-spacing: 1px;">Điểm đến</label>
+          <input type="text" class="s-input" name="arrival" value="{{ arrival }}" placeholder="Đến..." style="border-radius: 10px;" />
         </div>
 
-        <!-- Col 2: Dates -->
-        <div class="s-grid-2">
-          <div class="s-input-group">
-            <label class="s-label">NGÀY ĐI</label>
-            <div class="s-input-wrapper">
-              <span class="s-icon">📅</span>
-              <input
-                type="date"
-                class="s-input"
-                name="date"
-                value="{{ date }}"
-              />
-            </div>
-          </div>
-          <div class="s-input-group">
-            <label class="s-label">NGÀY VỀ</label>
-            <div class="s-input-wrapper">
-              <span class="s-icon">📅</span>
-              <input
-                type="date"
-                class="s-input"
-                name="return_date"
-                placeholder="dd/mm/yyyy"
-              />
-            </div>
-          </div>
+        <!-- Ngày đi -->
+        <div class="s-input-group">
+          <label class="s-label" style="text-transform: uppercase; letter-spacing: 1px;">Ngày đi</label>
+          <input type="date" class="s-input" name="date" value="{{ date }}" style="border-radius: 10px;" />
+        </div>
+
+        <!-- Ngày về -->
+        <div class="s-input-group">
+          <label class="s-label" style="text-transform: uppercase; letter-spacing: 1px;">Ngày về</label>
+          <input type="date" class="s-input" name="return_date" style="border-radius: 10px;" />
+        </div>
+
+        <!-- Hành khách -->
+        <div class="s-input-group">
+          <label class="s-label" style="text-transform: uppercase; letter-spacing: 1px;">Hành khách</label>
+          <select class="s-input" style="border-radius: 10px; appearance: none;">
+            <option>1 người lớn</option>
+            <option>2 người lớn</option>
+          </select>
+        </div>
+
+        <!-- Hạng ghế -->
+        <div class="s-input-group">
+          <label class="s-label" style="text-transform: uppercase; letter-spacing: 1px;">Hạng ghế</label>
+          <select class="s-input" style="border-radius: 10px; appearance: none;">
+            <option>Phổ thông</option>
+            <option>Thương gia</option>
+          </select>
         </div>
       </div>
-
-      <!-- 3 Columns Grid (Passengers, Class, Button) -->
-      <div class="search-grid" style="grid-template-columns: 1fr 1fr 1fr">
-        <div class="s-input-group">
-          <label class="s-label">HÀNH KHÁCH</label>
-          <div class="s-input-wrapper">
-            <span class="s-icon">👤</span>
-            <select
-              class="s-input"
-              style="appearance: none; padding-right: 16px"
-            >
-              <option>1 người lớn</option>
-              <option>2 người lớn</option>
-              <option>1 người lớn, 1 trẻ em</option>
-            </select>
-          </div>
-        </div>
-        <div class="s-input-group">
-          <label class="s-label">HẠNG GHẾ</label>
-          <div class="s-input-wrapper">
-            <span class="s-icon">💺</span>
-            <select
-              class="s-input"
-              style="appearance: none; padding-right: 16px"
-            >
-              <option>Phổ thông</option>
-              <option>Thương gia</option>
-              <option>Hạng nhất</option>
-            </select>
-          </div>
-        </div>
-        <div class="s-input-group" style="justify-content: flex-end">
-          <button type="submit" class="btn-search">
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2.5"
-            >
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
-            Tìm chuyến bay
-          </button>
-        </div>
-      </div>
+      
+      <button type="submit" class="btn-search" style="width: 100%; border-radius: 10px; background: linear-gradient(135deg, var(--cyan-500), var(--blue-600)); box-shadow: 0 4px 15px rgba(0, 180, 216, 0.4); border: none;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Tìm chuyến bay
+      </button>
     </form>
   </div>
 </div>
+
 
 <!-- Popular Destinations -->
 <section class="section">

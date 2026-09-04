@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Vé điện tử — {{ booking.booking_code }}{% endblock %}
+{% load flight_extras %}
 {% block content %}
 <div style="max-width:620px;margin:0 auto;">
   <a href="{% url 'my_bookings' %}" class="back-link">&larr; Vé của tôi</a>
@@ -37,7 +38,13 @@
       {% endif %}
     </div>
 
-    <hr class="divider divider-dashed" />
+    
+<div class="ticket-perforation" style="position: relative; height: 30px; background: transparent; margin: 0 -24px;">
+    <div style="position: absolute; top: 50%; left: -15px; width: 30px; height: 30px; background: var(--bg-light); border-radius: 50%; transform: translateY(-50%); box-shadow: inset -3px 0 5px rgba(0,0,0,0.02);"></div>
+    <div style="position: absolute; top: 50%; right: -15px; width: 30px; height: 30px; background: var(--bg-light); border-radius: 50%; transform: translateY(-50%); box-shadow: inset 3px 0 5px rgba(0,0,0,0.02);"></div>
+    <div style="position: absolute; top: 50%; left: 24px; right: 24px; border-top: 2px dashed #cbd5e1; transform: translateY(-50%);"></div>
+</div>
+
 
     <div class="boarding-pass-bottom">
       {% if booking.flight %}
@@ -70,13 +77,27 @@
       {% endif %}
 
       <hr class="divider" />
-      <div style="display:flex;justify-content:space-between;align-items:center;">
-        <div style="font-size:.82rem;color:var(--muted);">Tổng tiền thanh toán</div>
-        <div style="font-size:1.5rem;font-weight:800;color:var(--blue);">{{ booking.total_price|floatformat:0 }} đ</div>
-      </div>
-    </div>
+      
+<div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 24px;">
+  <div>
+    <div style="font-size:.82rem;color:var(--muted);margin-bottom:4px;">Tổng tiền thanh toán</div>
+    <div style="font-size:1.5rem;font-weight:800;color:var(--cyan-500);">{{ booking.total_price|vnd_format }} đ</div>
+  </div>
+  <div style="text-align: right;">
+    <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=SkyBook-{{ booking.booking_code }}" alt="QR Code" style="border-radius: 8px; border: 1px solid #e2e8f0; padding: 4px; background: white;" />
+  </div>
+</div>
+
+</div>
+</div>
   </div>
 
-  <div style="margin-top:24px;"><a href="{% url 'my_bookings' %}" class="btn btn-secondary">Vé của tôi</a></div>
+  
+<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 24px;">
+  <button class="btn" style="background: white; border: 1px solid #e2e8f0; color: var(--navy-900); font-weight: 600;" onclick="window.print()">⬇ Tải vé PDF</button>
+  <button class="btn" style="background: white; border: 1px solid #e2e8f0; color: var(--navy-900); font-weight: 600;">📤 Chia sẻ</button>
+  <a href="{% url 'home' %}" class="btn" style="background: var(--blue-600); color: white; text-align: center; font-weight: 600; text-decoration: none;">🏠 Về trang chủ</a>
+</div>
+
 </div>
 {% endblock %}
