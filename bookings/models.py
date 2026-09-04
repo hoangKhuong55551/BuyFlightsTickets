@@ -1,4 +1,4 @@
-﻿from django.db import models
+from django.db import models
 from django.contrib.auth.models import User
 from flights.models import Flight
 
@@ -40,6 +40,8 @@ class Passenger(models.Model):
     full_name = models.CharField(max_length=150, verbose_name="Full Name")
     date_of_birth = models.DateField(null=True, blank=True, verbose_name="Date of Birth")
     passport_number = models.CharField(max_length=50, blank=True, verbose_name="Passport Number")
+    email = models.EmailField(max_length=254, blank=True, null=True, verbose_name="Email")
+    phone_number = models.CharField(max_length=20, blank=True, null=True, verbose_name="Phone Number")
     passenger_type = models.CharField(max_length=10, choices=PASSENGER_TYPE_CHOICES, default="adult", verbose_name="Passenger Type")
 
     class Meta:

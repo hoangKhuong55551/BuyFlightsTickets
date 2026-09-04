@@ -1,123 +1,388 @@
 {% extends "base.html" %}
 {% load flight_extras %}
-{% block title %}Khám phá chuyến bay — Flight Booking{% endblock %}
+{% block title %}Tìm chuyến bay — SkyBook{% endblock %}
 {% block extra_css %}
 <style>
-  body { background-color: var(--bg-light); }
-  .flight-result {
+  body { background: var(--bg-light) !important; }
+  main.contained { background: var(--bg-light) !important; }
+
+  .results-layout {
+    display: flex;
+    gap: 24px;
+    max-width: 1280px;
+    margin: 24px auto;
+    padding: 0 20px;
+    align-items: flex-start;
+  }
+
+  /* ─── SIDEBAR ─── */
+  .sidebar {
+    flex: 0 0 280px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .sidebar-card {
     background: #fff;
     border-radius: 16px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    transition: all 200ms ease;
-    border-left: 3px solid transparent;
-    padding: 16px 24px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  }
+  .sidebar-card h4 {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+  }
+  .sidebar-card h4 .chevron { font-size: 0.8rem; transition: transform 0.2s; }
+  .filter-row {
     display: flex;
     align-items: center;
-    gap: 24px;
+    justify-content: space-between;
+    padding: 8px 0;
+    cursor: pointer;
+    gap: 10px;
+  }
+  .filter-row:not(:last-child) { border-bottom: 1px solid #f1f5f9; }
+  .filter-label {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 0.875rem; color: var(--text-dark); font-weight: 500;
+    cursor: pointer;
+  }
+  .filter-price {
+    font-size: 0.8rem; color: var(--text-muted); white-space: nowrap;
+  }
+  input[type=checkbox].fc {
+    width: 16px; height: 16px; accent-color: var(--blue-600);
+    cursor: pointer; flex-shrink: 0;
+  }
+
+  /* ─── MAIN AREA ─── */
+  .main-area { flex: 1; min-width: 0; }
+
+  /* Sort bar */
+  .sort-bar {
+    background: #fff; border-radius: 12px;
+    display: flex; gap: 0; overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     margin-bottom: 16px;
   }
-  .flight-result:hover {
-    border-left: 3px solid var(--cyan-500);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+  .sort-btn {
+    flex: 1; padding: 14px 16px; border: none; background: transparent;
+    font-size: 0.875rem; font-weight: 600; color: var(--text-muted);
+    cursor: pointer; transition: all 0.2s; text-align: center;
+    border-bottom: 2px solid transparent; font-family: inherit;
   }
-  .fr-price-btn {
+  .sort-btn.active { color: var(--blue-600); border-bottom-color: var(--blue-600); background: rgba(30,95,190,0.04); }
+  .sort-btn:hover:not(.active) { background: var(--bg-light); }
+  .sort-meta { font-size: 0.75rem; color: var(--text-muted); font-weight: 400; display: block; }
+
+  /* Flight cards */
+  .flight-card {
+    background: #fff; border-radius: 16px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    margin-bottom: 12px;
+    border-left: 3px solid transparent;
+    transition: all 200ms ease;
+    overflow: hidden;
+  }
+  .flight-card:hover {
+    border-left-color: var(--cyan-500);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    transform: translateY(-1px);
+  }
+  .flight-card-inner {
+    display: flex; align-items: center; gap: 20px; padding: 18px 24px;
+  }
+
+  /* Airline logo */
+  .airline-logo {
+    flex: 0 0 56px; height: 56px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 12px; background: var(--bg-light);
+    overflow: hidden;
+  }
+  .airline-logo img { width: 100%; height: 100%; object-fit: contain; padding: 6px; }
+  .airline-logo-fallback {
+    font-weight: 800; font-size: 1rem; color: var(--blue-600);
+  }
+
+  /* Times */
+  .flight-times { display: flex; align-items: center; gap: 16px; flex: 1; }
+  .time-block { text-align: center; }
+  .time-big { font-size: 1.4rem; font-weight: 800; color: var(--text-dark); line-height: 1; }
+  .time-code { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-top: 3px; }
+  .time-city { font-size: 0.75rem; color: var(--text-muted); }
+
+  .duration-line { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .duration-text { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); }
+  .stops-text { font-size: 0.75rem; color: var(--text-muted); }
+  .line-track {
+    width: 100%; height: 2px; background: #e2e8f0; position: relative;
+    display: flex; align-items: center;
+  }
+  .line-track::before, .line-track::after {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--text-muted); position: absolute;
+  }
+  .line-track::before { left: 0; }
+  .line-track::after { right: 0; }
+  .line-dot {
+    position: absolute; width: 5px; height: 5px; border-radius: 50%;
+    background: var(--cyan-500); border: 1px solid white;
+    left: 50%; transform: translateX(-50%);
+  }
+
+  /* Right: price + button */
+  .flight-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; min-width: 160px; }
+  .flight-price { font-size: 1.25rem; font-weight: 800; color: var(--blue-600); }
+  .flight-price-old { font-size: 0.8rem; text-decoration: line-through; color: var(--text-muted); }
+  .btn-select {
     background: linear-gradient(135deg, var(--cyan-500), var(--blue-600));
-    color: #fff;
-    border-radius: 10px;
-    padding: 10px 20px;
-    font-weight: 700;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: 200ms;
+    color: #fff; border: none; border-radius: 10px;
+    padding: 10px 24px; font-size: 0.9rem; font-weight: 700;
+    cursor: pointer; transition: all 0.2s; text-decoration: none;
+    display: inline-block;
   }
-  .fr-price-btn:hover {
-    transform: translateY(-2px);
-    color: #fff;
+  .btn-select:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,180,216,0.35); color: #fff; }
+
+  /* Tags */
+  .flight-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+  .tag-cheapest { background: rgba(30,95,190,0.1); color: var(--blue-600); padding: 3px 10px; border-radius: 99px; font-size: 0.72rem; font-weight: 700; }
+  .tag-nonstop { background: rgba(0,180,216,0.1); color: var(--cyan-500); padding: 3px 10px; border-radius: 99px; font-size: 0.72rem; font-weight: 600; border: 1px solid rgba(0,180,216,0.25); }
+  .tag-baggage { background: rgba(16,185,129,0.1); color: #059669; padding: 3px 10px; border-radius: 99px; font-size: 0.72rem; font-weight: 600; }
+  .tag-low-seat { background: rgba(239,68,68,0.1); color: #ef4444; padding: 3px 10px; border-radius: 99px; font-size: 0.72rem; font-weight: 600; }
+
+  /* Result header */
+  .result-header {
+    background: #fff; border-radius: 12px; padding: 16px 20px; margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    display: flex; justify-content: space-between; align-items: center;
   }
-  .badge-nonstop {
-    background: rgba(0, 180, 216, 0.1);
-    color: var(--cyan-500);
-    border: 1px solid rgba(0, 180, 216, 0.3);
-    padding: 4px 12px;
-    border-radius: 99px;
-    font-size: 0.8rem;
-    font-weight: 600;
+  .result-title { font-size: 1rem; font-weight: 700; color: var(--text-dark); }
+  .result-count { font-size: 0.85rem; color: var(--text-muted); }
+
+  /* Empty */
+  .empty-results {
+    background: #fff; border-radius: 16px; padding: 60px 20px; text-align: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
   }
-  .badge-low-seat {
-    background: rgba(255, 71, 87, 0.1);
-    color: #ff4757;
-    padding: 4px 12px;
-    border-radius: 99px;
-    font-size: 0.8rem;
-    font-weight: 600;
+
+  @media(max-width: 900px) {
+    .results-layout { flex-direction: column; }
+    .sidebar { flex: none; width: 100%; }
   }
 </style>
 {% endblock %}
+
 {% block content %}
-<div style="max-width: 1080px; margin: 0 auto; padding-top: 20px;">
-  <div style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 16px;">
-    Trang chủ > Chuyến bay > Đà Nẵng → Hà Nội
-  </div>
-  <h1 style="margin-bottom: 8px;">🌤 Khám phá chuyến bay</h1>
-  <p class="page-subtitle" style="margin-bottom: 24px;">Tìm thấy {{ flights|length }} chuyến bay phù hợp</p>
+<div class="results-layout">
 
-  <div style="display: flex; gap: 12px; margin-bottom: 24px;">
-    <button class="btn" style="background: var(--blue-600); color: white;">Tất cả</button>
-    <button class="btn" style="background: white; border: 1px solid #e2e8f0;">Non-stop</button>
-    <button class="btn" style="background: white; border: 1px solid #e2e8f0;">Dưới 1tr</button>
-    <button class="btn" style="background: white; border: 1px solid #e2e8f0;">Sáng sớm</button>
-    <button class="btn" style="background: white; border: 1px solid #e2e8f0;">Chiều tối</button>
-  </div>
+  <!-- ─── SIDEBAR ─── -->
+  <aside class="sidebar">
 
-  {% for flight in flights %}
-  <div class="flight-result">
-    <div style="display: flex; align-items: center; gap: 16px; flex: 1;">
-      <div style="width: 48px; height: 48px; background: var(--bg-light); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--blue-600);">
-        {{ flight.airline.code|default:flight.airline.name|slice:":2"|upper }}
+    <!-- Được đề xuất -->
+    <div class="sidebar-card">
+      <h4>Được đề xuất <span class="chevron">▾</span></h4>
+      <form id="filter-form" method="GET">
+        {% if departure %}<input type="hidden" name="departure" value="{{ departure }}">{% endif %}
+        {% if arrival %}<input type="hidden" name="arrival" value="{{ arrival }}">{% endif %}
+        {% if date %}<input type="hidden" name="date" value="{{ date }}">{% endif %}
+        <input type="hidden" name="sort" value="{{ sort_by }}">
+
+        <div class="filter-row">
+          <label class="filter-label">
+            <input type="checkbox" class="fc" name="stops" value="0" {% if "0" in filter_stops %}checked{% endif %} onchange="this.form.submit()">
+            Bay thẳng
+          </label>
+          {% if direct_min %}
+          <span class="filter-price">{{ direct_min|vnd_format }} đ</span>
+          {% endif %}
+        </div>
+
+        <div class="filter-row">
+          <label class="filter-label">
+            <input type="checkbox" class="fc" name="has_baggage" value="1" {% if filter_baggage == "1" %}checked{% endif %} onchange="this.form.submit()">
+            Hành lý ký gửi
+          </label>
+          {% if baggage_min %}
+          <span class="filter-price">{{ baggage_min|vnd_format }} đ</span>
+          {% endif %}
+        </div>
+
+        <div class="filter-row">
+          <label class="filter-label">
+            <input type="checkbox" class="fc" disabled>
+            Không bao gồm HLK
+          </label>
+          {% if no_baggage_min %}
+          <span class="filter-price">{{ no_baggage_min|vnd_format }} đ</span>
+          {% endif %}
+        </div>
+      </form>
+    </div>
+
+    <!-- Hãng hàng không -->
+    <div class="sidebar-card">
+      <h4>Hãng hàng không <span class="chevron">▾</span></h4>
+      {% for ap in airline_prices %}
+      <div class="filter-row">
+        <label class="filter-label">
+          <input type="checkbox" form="filter-form" class="fc" name="airline" value="{{ ap.airline__code }}"
+            {% if ap.airline__code in filter_airlines %}checked{% endif %}
+            onchange="document.getElementById('filter-form').submit()">
+          {% if ap.airline__logo %}
+          <img src="{{ ap.airline__logo }}" alt="{{ ap.airline__name }}" style="width:20px;height:20px;object-fit:contain;">
+          {% endif %}
+          {{ ap.airline__name }}
+        </label>
+        <span class="filter-price">{{ ap.min_price|vnd_format }} đ</span>
       </div>
+      {% endfor %}
+    </div>
+
+    <!-- Số điểm dừng -->
+    <div class="sidebar-card">
+      <h4>Số điểm dừng <span class="chevron">▾</span></h4>
+      <div class="filter-row">
+        <label class="filter-label">
+          <input type="checkbox" form="filter-form" class="fc" name="stops" value="0"
+            {% if "0" in filter_stops %}checked{% endif %}
+            onchange="document.getElementById('filter-form').submit()">
+          Bay thẳng
+        </label>
+        {% if direct_min %}<span class="filter-price">{{ direct_min|vnd_format }} đ</span>{% endif %}
+      </div>
+      <div class="filter-row">
+        <label class="filter-label">
+          <input type="checkbox" form="filter-form" class="fc" name="stops" value="1"
+            {% if "1" in filter_stops %}checked{% endif %}
+            onchange="document.getElementById('filter-form').submit()">
+          1 điểm dừng
+        </label>
+        {% if one_stop_min %}<span class="filter-price">{{ one_stop_min|vnd_format }} đ</span>{% endif %}
+      </div>
+      <div class="filter-row">
+        <label class="filter-label">
+          <input type="checkbox" form="filter-form" class="fc" name="stops" value="2"
+            {% if "2" in filter_stops %}checked{% endif %}
+            onchange="document.getElementById('filter-form').submit()">
+          2+ điểm dừng
+        </label>
+        {% if multi_stop_min %}<span class="filter-price">{{ multi_stop_min|vnd_format }} đ</span>{% endif %}
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- ─── MAIN RESULTS ─── -->
+  <div class="main-area">
+
+    <!-- Result header -->
+    <div class="result-header">
       <div>
-        <div style="font-weight: 700; color: var(--navy-900);">{{ flight.airline.name }} · {{ flight.flight_number }} <span class="badge-nonstop" style="margin-left: 8px;">Non-stop ✓</span></div>
-        <div style="display: flex; align-items: center; gap: 24px; margin-top: 12px;">
-          <div style="text-align: center;">
-            <div style="font-size: 1.2rem; font-weight: 800;">{{ flight.departure_time|date:"H:i" }}</div>
-            <div style="font-size: 0.9rem; font-weight: 600; color: var(--text-muted);">{{ flight.departure_airport.code }}</div>
-            <div style="font-size: 0.8rem; color: var(--text-muted);">{{ flight.departure_airport.city }}</div>
+        <div class="result-title">
+          ✈
+          {% if departure %}{{ departure }}{% else %}Tất cả{% endif %}
+          →
+          {% if arrival %}{{ arrival }}{% else %}Tất cả điểm đến{% endif %}
+        </div>
+        <div class="result-count">Tìm thấy {{ total_count }} chuyến bay</div>
+      </div>
+    </div>
+
+    <!-- Sort bar -->
+    <div class="sort-bar">
+      <a href="?departure={{ departure }}&arrival={{ arrival }}&date={{ date }}{% for s in filter_stops %}&stops={{ s }}{% endfor %}{% for a in filter_airlines %}&airline={{ a }}{% endfor %}{% if filter_baggage %}&has_baggage={{ filter_baggage }}{% endif %}&sort=price"
+         class="sort-btn {% if sort_by == 'price' or not sort_by %}active{% endif %}">
+        Giá thấp nhất
+        {% with flights|first as f %}{% if f %}<span class="sort-meta">{{ f.price|vnd_format }} đ · {{ f.departure_time|flight_duration:f.arrival_time }}</span>{% endif %}{% endwith %}
+      </a>
+      <a href="?departure={{ departure }}&arrival={{ arrival }}&date={{ date }}{% for s in filter_stops %}&stops={{ s }}{% endfor %}{% for a in filter_airlines %}&airline={{ a }}{% endfor %}{% if filter_baggage %}&has_baggage={{ filter_baggage }}{% endif %}&sort=duration"
+         class="sort-btn {% if sort_by == 'duration' %}active{% endif %}">
+        Thời gian bay ngắn nhất
+      </a>
+      <a href="?departure={{ departure }}&arrival={{ arrival }}&date={{ date }}{% for s in filter_stops %}&stops={{ s }}{% endfor %}{% for a in filter_airlines %}&airline={{ a }}{% endfor %}{% if filter_baggage %}&has_baggage={{ filter_baggage }}{% endif %}&sort=airline"
+         class="sort-btn {% if sort_by == 'airline' %}active{% endif %}">
+        ↕ Ưu tiên bay thẳng
+      </a>
+    </div>
+
+    <!-- Flight list -->
+    {% for flight in flights %}
+    {% with loop_counter=forloop.counter %}
+    <div class="flight-card">
+      <div class="flight-card-inner">
+
+        <!-- Logo -->
+        <div class="airline-logo">
+          {% if flight.airline.logo %}
+          <img src="{{ flight.airline.logo }}" alt="{{ flight.airline.name }}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="airline-logo-fallback" style="display:none;">{{ flight.airline.code }}</div>
+          {% else %}
+          <div class="airline-logo-fallback">{{ flight.airline.code }}</div>
+          {% endif %}
+        </div>
+
+        <!-- Times -->
+        <div class="flight-times">
+          <div class="time-block">
+            <div class="time-big">{{ flight.departure_time|date:"H:i" }}</div>
+            <div class="time-code">{{ flight.departure_airport.code }}</div>
+            <div class="time-city">{{ flight.departure_airport.city }}</div>
           </div>
-          <div style="flex: 1; min-width: 100px; text-align: center; position: relative;">
-            <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px;">{{ flight.departure_time|flight_duration:flight.arrival_time }}</div>
-            <div style="height: 2px; background: #e2e8f0; width: 100%; position: relative;">
-              <div style="position: absolute; right: 0; top: -4px; width: 10px; height: 10px; background: var(--text-muted); border-radius: 50%;"></div>
+
+          <div class="duration-line">
+            <div class="duration-text">{{ flight.departure_time|flight_duration:flight.arrival_time }}</div>
+            <div class="line-track">
+              {% if flight.stops > 0 %}<div class="line-dot"></div>{% endif %}
+            </div>
+            <div class="stops-text">
+              {% if flight.stops == 0 %}Bay thẳng{% elif flight.stops == 1 %}1 điểm dừng{% else %}{{ flight.stops }} điểm dừng{% endif %}
             </div>
           </div>
-          <div style="text-align: center;">
-            <div style="font-size: 1.2rem; font-weight: 800;">{{ flight.arrival_time|date:"H:i" }}</div>
-            <div style="font-size: 0.9rem; font-weight: 600; color: var(--text-muted);">{{ flight.arrival_airport.code }}</div>
-            <div style="font-size: 0.8rem; color: var(--text-muted);">{{ flight.arrival_airport.city }}</div>
+
+          <div class="time-block">
+            <div class="time-big">{{ flight.arrival_time|date:"H:i" }}</div>
+            <div class="time-code">{{ flight.arrival_airport.code }}</div>
+            <div class="time-city">{{ flight.arrival_airport.city }}</div>
           </div>
         </div>
+
+        <!-- Tags & Info -->
+        <div style="display:flex;flex-direction:column;gap:8px;min-width:140px;">
+          <div style="font-size:0.8rem;color:var(--text-muted);">📅 {{ flight.departure_time|date:"d/m/Y" }}</div>
+          <div class="flight-tags">
+            {% if forloop.first and sort_by != 'airline' %}<span class="tag-cheapest">Giá thấp nhất</span>{% endif %}
+            {% if flight.stops == 0 %}<span class="tag-nonstop">Bay thẳng</span>{% endif %}
+            {% if flight.has_checked_baggage %}<span class="tag-baggage">✓ HLK miễn phí</span>{% endif %}
+            {% if flight.available_seats < 10 %}<span class="tag-low-seat">Còn {{ flight.available_seats }} ghế</span>{% endif %}
+          </div>
+          <div style="font-size:0.78rem;color:var(--text-muted);">{{ flight.airline.name }} · {{ flight.flight_number }}</div>
+        </div>
+
+        <!-- Price + Button -->
+        <div class="flight-right">
+          <div class="flight-price">{{ flight.price|vnd_format }} đ</div>
+          <a href="{% url 'create_booking' flight.id %}" class="btn-select">Chọn</a>
+        </div>
+
       </div>
     </div>
-    
-    <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 12px;">
-      <div style="display: flex; gap: 16px; font-size: 0.9rem;">
-        <span style="color: var(--text-muted);">📅 {{ flight.departure_time|date:"d/m/Y" }}</span>
-        {% if flight.available_seats < 5 %}
-          <span class="badge-low-seat">💺 Còn {{ flight.available_seats }} ghế</span>
-        {% else %}
-          <span style="color: var(--text-muted);">💺 Còn {{ flight.available_seats }} ghế</span>
-        {% endif %}
-      </div>
-      <a href="{% url 'create_booking' flight.id %}" class="fr-price-btn">Chọn: {{ flight.price|vnd_format }} đ →</a>
+    {% endwith %}
+    {% empty %}
+    <div class="empty-results">
+      <div style="font-size:3rem;margin-bottom:16px;">✈</div>
+      <h3 style="margin-bottom:8px;">Không tìm thấy chuyến bay phù hợp</h3>
+      <p style="color:var(--text-muted);">Hãy thử thay đổi bộ lọc hoặc tìm kiếm tuyến đường khác.</p>
+      <a href="{% url 'recommendations' %}" class="btn-select" style="margin-top:16px;display:inline-block;">Xem tất cả chuyến bay</a>
     </div>
+    {% endfor %}
+
   </div>
-  {% empty %}
-  <div class="empty-state" style="background: white; border-radius: 16px; padding: 48px; text-align: center;">
-    <div class="empty-icon" style="font-size: 3rem; margin-bottom: 16px;">✈</div>
-    <h3>Chưa có chuyến bay nào</h3>
-    <p>Vui lòng quay lại sau.</p>
-  </div>
-  {% endfor %}
 </div>
 {% endblock %}

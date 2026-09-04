@@ -1,4 +1,4 @@
-﻿from django.db import models
+from django.db import models
 
 class Airline(models.Model):
     name = models.CharField(max_length=100, verbose_name="Airline Name")
@@ -57,6 +57,22 @@ class Flight(models.Model):
     
     price = models.DecimalField(max_digits=12, decimal_places=2, verbose_name="Base Price")
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="scheduled", db_index=True, verbose_name="Status")
+
+    # New fields for filters
+    stops = models.PositiveSmallIntegerField(
+        default=0,
+        verbose_name="Số điểm dừng",
+        help_text="0 = Bay thẳng, 1 = 1 điểm dừng, 2+ = Nhiều điểm dừng"
+    )
+    has_checked_baggage = models.BooleanField(
+        default=False,
+        verbose_name="Có hành lý ký gửi",
+        help_text="Giá đã bao gồm hành lý ký gửi"
+    )
+    available_seats = models.PositiveIntegerField(
+        default=100,
+        verbose_name="Số ghế còn lại"
+    )
 
     class Meta:
         verbose_name = "Flight"

@@ -80,12 +80,12 @@
         <!-- Basic info that normally comes from form -->
         <div class="form-group">
           <label class="form-label">Họ và tên (Bắt buộc)</label>
-          {{ form.passenger_name }}
+          {{ form.full_name }}
         </div>
         <div style="display: flex; gap: 16px;">
           <div class="form-group" style="flex: 1;">
             <label class="form-label">Ngày sinh</label>
-            <input type="date" class="form-input" required />
+            {{ form.date_of_birth }}
           </div>
           <div class="form-group" style="flex: 1;">
             <label class="form-label">Giới tính</label>
@@ -108,16 +108,16 @@
         <div style="display: flex; gap: 16px;">
           <div class="form-group" style="flex: 1;">
             <label class="form-label">Email</label>
-            {{ form.passenger_email }}
+            {{ form.email }}
           </div>
           <div class="form-group" style="flex: 1;">
             <label class="form-label">Số điện thoại</label>
-            {{ form.passenger_phone }}
+            {{ form.phone_number }}
           </div>
         </div>
         <div class="form-group">
           <label class="form-label">CCCD / Hộ chiếu</label>
-          <input type="text" class="form-input" placeholder="Nhập số CCCD/Passport" required />
+          {{ form.passport_number }}
         </div>
         
         <button type="submit" class="btn" style="display:none;" id="realSubmitBtn">Submit</button>
@@ -155,3 +155,5 @@
   });
 </script>
 {% endblock %}
+
+

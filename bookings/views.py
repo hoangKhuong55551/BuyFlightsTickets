@@ -135,7 +135,9 @@ def passenger(request, booking_id):
                 booking=booking,
                 full_name=form.cleaned_data["full_name"],
                 date_of_birth=form.cleaned_data.get("date_of_birth"),
-                passport_number=form.cleaned_data.get("passport_number", "")
+                passport_number=form.cleaned_data.get("passport_number", ""),
+                email=form.cleaned_data.get("email", ""),
+                phone_number=form.cleaned_data.get("phone_number", "")
             )
             seat_number = request.session.pop("selected_seat", "N/A")
             if booking.flight:
