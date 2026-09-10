@@ -4,12 +4,12 @@
 
     <!-- Brand -->
     <a href="{% url 'home' %}" class="navbar-brand">
-      <div class="brand-icon" style="background: linear-gradient(135deg, #00B4D8, #1E5FBE);">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <div class="brand-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
           <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
         </svg>
       </div>
-      <span style="font-weight: 800;">SkyBook</span>
+      <span>SkyBook</span>
     </a>
 
     <!-- Nav links (center) -->
@@ -19,118 +19,95 @@
       {% if user.is_authenticated %}
         <a href="{% url 'my_bookings' %}" class="nav-link {% if request.resolver_match.url_name == 'my_bookings' %}nav-link--active{% endif %}">Vé của tôi</a>
       {% endif %}
-      
+
       <!-- Hỗ trợ Dropdown -->
       <div class="nav-dropdown" style="position: relative; display: inline-block;">
-        <button class="nav-link dropdown-toggle" style="background: transparent; border: none; cursor: pointer; outline: none; font-family: inherit; display: flex; align-items: center; gap: 4px;">
+        <button class="nav-link dropdown-toggle" style="background: transparent; border: none; cursor: pointer; outline: none; font-family: inherit; display: flex; align-items: center; gap: 4px; color: var(--muted); font-size: .9rem; font-weight: 500; padding: 8px 18px; border-radius: 99px; transition: all .18s;">
           Hỗ trợ
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
         </button>
-        <div class="dropdown-menu support-dropdown" style="position: absolute; top: 100%; left: 0; background: white; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); padding: 8px 0; min-width: 280px; display: none; flex-direction: column; z-index: 1001; border: 1px solid #e2e8f0; transform: translateY(8px);">
-          <a href="{% url 'help_center' %}" class="dropdown-item" style="padding: 12px 20px; color: var(--navy-900); text-decoration: none; font-weight: 500; display: flex; align-items: center; gap: 12px; transition: background 0.2s;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-            Trợ giúp
+        <div class="dropdown-menu support-dropdown" style="position: absolute; top: calc(100% + 8px); left: 0; background: white; border-radius: 16px; box-shadow: 0 8px 32px rgba(57,96,251,.15); padding: 8px; min-width: 260px; display: none; flex-direction: column; z-index: 1001; border: 1.5px solid var(--periwinkle);">
+          <a href="{% url 'help_center' %}" class="dropdown-item" style="padding: 12px 16px; color: var(--penn-blue); text-decoration: none; font-weight: 500; display: flex; align-items: center; gap: 12px; transition: background 0.2s; border-radius: 10px; font-size: .88rem;">
+            <div style="width: 36px; height: 36px; background: var(--lavender); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--neon-blue)" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+            </div>
+            Trung tâm trợ giúp
           </a>
-          <a href="{% url 'contact_us' %}" class="dropdown-item" style="padding: 12px 20px; color: var(--navy-900); text-decoration: none; font-weight: 500; display: flex; align-items: center; gap: 12px; transition: background 0.2s;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+          <a href="{% url 'contact_us' %}" class="dropdown-item" style="padding: 12px 16px; color: var(--penn-blue); text-decoration: none; font-weight: 500; display: flex; align-items: center; gap: 12px; transition: background 0.2s; border-radius: 10px; font-size: .88rem;">
+            <div style="width: 36px; height: 36px; background: var(--lavender); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--neon-blue)" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+            </div>
             Liên hệ chúng tôi
           </a>
-          <a href="{% url 'boarding_guidelines' %}" class="dropdown-item" style="padding: 12px 20px; color: var(--navy-900); text-decoration: none; font-weight: 500; display: flex; align-items: center; gap: 12px; transition: background 0.2s;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-            Những lưu ý khi lên máy bay
+          <a href="{% url 'boarding_guidelines' %}" class="dropdown-item" style="padding: 12px 16px; color: var(--penn-blue); text-decoration: none; font-weight: 500; display: flex; align-items: center; gap: 12px; transition: background 0.2s; border-radius: 10px; font-size: .88rem;">
+            <div style="width: 36px; height: 36px; background: var(--lavender); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--neon-blue)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            </div>
+            Lưu ý khi lên máy bay
           </a>
         </div>
       </div>
     </nav>
 
-
-
     <!-- Auth actions (right) -->
     <div class="nav-actions">
       {% if user.is_authenticated %}
-        <!-- User pill: avatar + tên -->
-        <div class="nav-user-pill" style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); border-radius: 99px; padding: 4px 16px 4px 6px; display: flex; align-items: center; gap: 10px;">
-          <div class="nav-avatar" style="background: #00B4D8; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; box-shadow: 0 2px 8px rgba(0,180,216,0.3);">{{ user.username|slice:":1"|upper }}</div>
-          <div class="nav-user-info" style="display: flex; flex-direction: column; line-height: 1.1;">
-            <span class="nav-user-greeting" style="font-size: 0.7rem; color: rgba(255,255,255,0.7);">Xin chào,</span>
-            <span class="nav-username" style="font-size: 0.85rem; font-weight: 700; color: white;">{{ user.username }}</span>
+        <!-- User pill -->
+        <div class="nav-user-pill">
+          <div class="nav-avatar">{{ user.username|slice:":1"|upper }}</div>
+          <div class="nav-user-info">
+            <span class="nav-user-greeting">Xin chào,</span>
+            <span class="nav-username">{{ user.username }}</span>
           </div>
         </div>
-
         <!-- Logout -->
-        <a href="{% url 'logout' %}" class="btn-nav-logout" title="Đăng xuất" style="background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 99px; display: flex; align-items: center; gap: 6px; font-weight: 600; text-decoration: none; transition: 0.2s;">
+        <a href="{% url 'logout' %}" class="btn-nav-logout" title="Đăng xuất">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>
           </svg>
           Đăng xuất
         </a>
       {% else %}
-        <a href="{% url 'login' %}" class="btn-nav-login" style="border: 1.5px solid rgba(255,255,255,0.4); color: #fff; background: transparent; padding: 8px 20px; border-radius: 99px; font-weight: 600; text-decoration: none; transition: 0.2s;">Đăng nhập</a>
-        <a href="{% url 'register' %}" class="btn-nav-register" style="background: linear-gradient(135deg, var(--cyan-500), var(--blue-600)); color: #fff; box-shadow: 0 4px 12px rgba(0,180,216,0.3); padding: 9px 24px; border-radius: 99px; font-weight: 700; text-decoration: none; transition: 0.2s;">
-          Đăng ký
+        <a href="{% url 'login' %}" class="btn-nav-login">Đăng nhập</a>
+        <a href="{% url 'register' %}" class="btn-nav-register">
+          Đăng ký miễn phí
         </a>
       {% endif %}
     </div>
 
   </div>
 </header>
-<style>
-  header.navbar-glass {
-    position: fixed !important;
-    top: 0; left: 0; right: 0;
-    width: 100%;
-    z-index: 1000;
-    transition: all 0.3s ease;
-    background: rgba(15, 31, 61, 0.98) !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
-  }
-  header.navbar-glass.scrolled {
-    background: rgba(15, 31, 61, 0.98) !important;
-    backdrop-filter: blur(16px) !important;
-    -webkit-backdrop-filter: blur(16px) !important;
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2) !important;
-  }
-  .btn-nav-login:hover { background: rgba(255,255,255,0.1) !important; }
-  .btn-nav-register:hover { transform: translateY(-1px); }
-  .btn-nav-logout:hover { background: rgba(255,50,50,0.2) !important; border-color: rgba(255,50,50,0.4) !important; color: #ffb3b3 !important; }
-  
-  /* Dropdown styles */
-  .nav-dropdown:hover .dropdown-menu { display: flex !important; }
-  .support-dropdown::before { content: ""; position: absolute; top: -15px; left: 0; right: 0; height: 15px; background: transparent; }
-  .dropdown-item:hover { background: #f8fafc !important; color: #00B4D8 !important; }
-  .dropdown-item:hover svg { stroke: #00B4D8 !important; }
-</style>
 
 <!-- MOBILE TASKBAR -->
 <nav class="mobile-taskbar">
   <a href="{% url 'home' %}" class="taskbar-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
     <span>Trang chủ</span>
   </a>
   <a href="{% url 'recommendations' %}" class="taskbar-item {% if request.resolver_match.url_name == 'recommendations' %}active{% endif %}">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
     <span>Khám phá</span>
   </a>
   {% if user.is_authenticated %}
   <a href="{% url 'my_bookings' %}" class="taskbar-item {% if request.resolver_match.url_name == 'my_bookings' %}active{% endif %}">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="14" x2="23" y2="14"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="14" x2="4" y2="14"></line></svg>
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3" ry="3"></rect><path d="M9 9h6M9 12h6M9 15h4"></path></svg>
     <span>Vé của tôi</span>
   </a>
   <button type="button" class="taskbar-item" onclick="toggleMobileSupport()" style="background:transparent; border:none; outline:none; padding:0; cursor:pointer; font-family:inherit;">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
     <span>Hỗ trợ</span>
   </button>
   <a href="{% url 'logout' %}" class="taskbar-item">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-    <span>Đăng xuất</span>
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+    <span>Thoát</span>
   </a>
   {% else %}
   <button type="button" class="taskbar-item" onclick="toggleMobileSupport()" style="background:transparent; border:none; outline:none; padding:0; cursor:pointer; font-family:inherit;">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
     <span>Hỗ trợ</span>
   </button>
   <a href="{% url 'login' %}" class="taskbar-item {% if request.resolver_match.url_name == 'login' %}active{% endif %}">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M13.8 12H3"/></svg>
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M13.8 12H3"/></svg>
     <span>Đăng nhập</span>
   </a>
   {% endif %}
@@ -140,8 +117,8 @@
 <div class="mobile-support-backdrop" id="mobileSupportBackdrop" onclick="toggleMobileSupport()"></div>
 <div class="mobile-support-overlay" id="mobileSupportMenu">
   <div class="mobile-support-handle"></div>
-  <h3 style="margin: 0 0 16px; font-weight: 800; color: var(--navy); font-size: 1.1rem; text-align: center;">Hỗ trợ khách hàng</h3>
-  
+  <h3 style="margin: 0 0 16px; font-weight: 800; color: var(--penn-blue); font-size: 1.1rem; text-align: center;">Hỗ trợ khách hàng</h3>
+
   <a href="{% url 'help_center' %}" class="mobile-support-item">
     <div class="msi-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>
     <div class="msi-text">
@@ -149,7 +126,7 @@
       <span>Trung tâm hỗ trợ và giải đáp</span>
     </div>
   </a>
-  
+
   <a href="{% url 'contact_us' %}" class="mobile-support-item">
     <div class="msi-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></div>
     <div class="msi-text">
@@ -157,9 +134,9 @@
       <span>Chat, Email, Hotline</span>
     </div>
   </a>
-  
+
   <a href="{% url 'boarding_guidelines' %}" class="mobile-support-item">
-    <div class="msi-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg></div>
+    <div class="msi-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg></div>
     <div class="msi-text">
       <strong>Lưu ý khi lên máy bay</strong>
       <span>Quy định và hành lý</span>
@@ -168,47 +145,10 @@
 </div>
 
 <style>
-  /* Mobile Support Sheet CSS */
-  .mobile-support-backdrop {
-    display: none; position: fixed; inset: 0; background: rgba(15, 31, 61, 0.4); 
-    backdrop-filter: blur(2px); z-index: 9997; opacity: 0; transition: opacity 0.3s;
-  }
-  .mobile-support-overlay {
-    display: none; /* Hidden by default on desktop */
-  }
-  
-  @media (max-width: 900px) {
-    .mobile-support-overlay {
-      display: flex; position: fixed; bottom: 0; left: 0; right: 0; 
-      background: white; border-top-left-radius: 24px; border-top-right-radius: 24px; 
-      box-shadow: 0 -10px 40px rgba(0,0,0,0.15); z-index: 9998; 
-      padding: 16px 20px 32px; flex-direction: column; gap: 8px; 
-      transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      padding-bottom: calc(32px + env(safe-area-inset-bottom));
-    }
-  }
-  .mobile-support-handle {
-    width: 40px; height: 5px; background: #cbd5e1; border-radius: 99px; margin: 0 auto 16px;
-  }
-  .mobile-support-item {
-    display: flex; align-items: center; gap: 16px; padding: 14px 16px;
-    background: #f8fafc; border-radius: 16px; border: 1px solid #f1f5f9;
-    text-decoration: none !important; transition: background 0.2s;
-  }
-  .mobile-support-item:active { background: #e2e8f0; }
-  .msi-icon {
-    width: 40px; height: 40px; border-radius: 12px; background: white;
-    display: flex; align-items: center; justify-content: center; color: #00B4D8;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.04); flex-shrink: 0;
-  }
-  .msi-text { display: flex; flex-direction: column; line-height: 1.3; }
-  .msi-text strong { color: var(--navy-900); font-size: 0.95rem; font-weight: 700; }
-  .msi-text span { color: #64748b; font-size: 0.75rem; }
-  
-  /* Show state */
-  body.show-mobile-support { overflow: hidden; }
-  body.show-mobile-support .mobile-support-backdrop { display: block; opacity: 1; }
-  body.show-mobile-support .mobile-support-overlay { transform: translateY(0); }
+  .dropdown-item:hover { background: var(--lavender) !important; color: var(--neon-blue) !important; }
+  .nav-dropdown:hover .dropdown-menu { display: flex !important; }
+  .support-dropdown::before { content: ""; position: absolute; top: -15px; left: 0; right: 0; height: 15px; background: transparent; }
+  .dropdown-toggle:hover { background: var(--lavender) !important; color: var(--neon-blue) !important; }
 </style>
 
 <script>

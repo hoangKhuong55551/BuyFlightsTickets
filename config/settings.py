@@ -121,13 +121,16 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='noreply@flightbooking.com')
 
 
-
-
-
-
-# Auth redirects
+# ── Auth redirects ────────────────────────────────────────────────────────────
 LOGIN_URL = '/users/login/'
 LOGIN_REDIRECT_URL = '/'
 
+# ── CSRF & Security ───────────────────────────────────────────────────────────
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-CSRF_TRUSTED_ORIGINS = ['https://*.onrender.com', 'https://*.127.0.0.1']
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.onrender.com',
+    'http://127.0.0.1',
+    'http://127.0.0.1:8000',
+    'http://localhost',
+    'http://localhost:8000',
+]

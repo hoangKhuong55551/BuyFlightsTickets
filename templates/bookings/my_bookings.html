@@ -1,107 +1,233 @@
-﻿{% extends "base.html" %}
+{% extends "base.html" %}
 {% load static flight_extras %}
 {% block title %}Vé của tôi — SkyBook{% endblock %}
 
 {% block extra_css %}
 <style>
-/* == Booking Tabs == */
+/* ── Page header ── */
+.page-hero {
+  background: linear-gradient(135deg, var(--lavender) 0%, white 100%);
+  border: 1.5px solid var(--periwinkle);
+  border-radius: 20px; padding: 28px 32px;
+  margin-bottom: 28px; display: flex;
+  align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 16px;
+}
+.page-hero h1 { margin-bottom: 4px; font-size: 1.7rem; }
+.page-hero p   { color: var(--muted); font-size: .95rem; margin: 0; }
+
+/* ── Tabs ── */
 .booking-tabs {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 24px;
-  border-bottom: 2px solid #e2e8f0;
-  padding-bottom: 0;
+  display: flex; gap: 6px; margin-bottom: 24px;
+  background: white; border: 1.5px solid var(--periwinkle);
+  border-radius: 14px; padding: 6px; width: fit-content;
 }
 .booking-tab {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 10px 20px 12px;
-  font-size: .88rem;
-  font-weight: 600;
-  color: var(--muted);
-  text-decoration: none !important;
-  border-bottom: 3px solid transparent;
-  margin-bottom: -2px;
-  transition: color .15s, border-color .15s;
-  white-space: nowrap;
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 9px 20px; font-size: .88rem; font-weight: 600;
+  color: var(--muted); text-decoration: none !important;
+  border-radius: 10px; transition: all .18s; white-space: nowrap;
+  border: none;
 }
-.booking-tab:hover { color: var(--blue); text-decoration: none !important; }
-.booking-tab.active { color: var(--blue); border-bottom-color: var(--blue); font-weight: 700; }
+.booking-tab:hover { color: var(--neon-blue); background: var(--lavender); text-decoration: none !important; }
+.booking-tab.active { color: var(--neon-blue); background: var(--neon-blue-lt); font-weight: 700; }
 .tab-count {
-  background: #e2e8f0; color: #64748b; border-radius: 99px;
-  font-size: .72rem; font-weight: 700; padding: 1px 8px;
-  min-width: 22px; text-align: center;
+  background: var(--periwinkle); color: var(--muted);
+  border-radius: 99px; font-size: .7rem; font-weight: 700;
+  padding: 1px 8px; min-width: 22px; text-align: center;
 }
-.booking-tab.active .tab-count { background: var(--blue-lt); color: var(--blue); }
+.booking-tab.active .tab-count { background: var(--neon-blue); color: white; }
 .booking-tab.tab-cancelled .tab-count { background: #fee2e2; color: #dc2626; }
-.booking-tab.tab-cancelled.active { color: #dc2626; border-bottom-color: #dc2626; }
+.booking-tab.tab-cancelled.active { color: #dc2626; background: #fff5f5; }
+.booking-tab.tab-cancelled.active .tab-count { background: #dc2626; color: white; }
 
-/* == Airline logo == */
-.fr-logo-img {
-  width: 48px; height: 48px; border-radius: 50%;
-  object-fit: contain; background: #fff;
-  border: 2px solid #e2e8f0; padding: 4px; flex-shrink: 0;
+/* ── Booking card (new style) ── */
+.booking-card {
+  background: white;
+  border: 1.5px solid var(--periwinkle);
+  border-radius: 20px;
+  padding: 0;
+  margin-bottom: 14px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  transition: all .2s;
 }
-.fr-logo-fallback {
-  width: 48px; height: 48px;
-  background: linear-gradient(135deg, #e0f2fe, #bae6fd);
-  color: #0369a1; border-radius: 12px; font-weight: 800;
+.booking-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--neon-blue);
+  transform: translateY(-2px);
+}
+
+/* Card top strip */
+.booking-card-top {
+  background: linear-gradient(135deg, var(--lavender), white);
+  padding: 16px 24px;
+  border-bottom: 1.5px solid var(--periwinkle);
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; flex-wrap: wrap;
+}
+.bc-airline-logo {
+  width: 42px; height: 42px; border-radius: 12px;
+  background: white; border: 1.5px solid var(--periwinkle);
   display: flex; align-items: center; justify-content: center;
-  font-size: 1rem; flex-shrink: 0;
+  font-size: .85rem; font-weight: 800; color: var(--neon-blue);
+  flex-shrink: 0;
 }
+.bc-airline-info { flex: 1; }
+.bc-airline-name { font-size: .92rem; font-weight: 700; color: var(--penn-blue); }
+.bc-flight-num   { font-size: .75rem; color: var(--muted); margin-top: 1px; }
+.bc-top-right { display: flex; align-items: center; gap: 8px; }
 
-/* == Duration label == */
-.fr-duration-label {
-  font-size: .7rem; color: #94a3b8;
-  font-weight: 600; letter-spacing: .03em; text-align: center;
+/* Flight route */
+.booking-card-body { padding: 20px 24px; }
+.bc-route-row {
+  display: flex; align-items: center; gap: 0;
+  margin-bottom: 14px;
 }
+.bc-airport-block { text-align: center; min-width: 80px; }
+.bc-iata { font-size: 1.6rem; font-weight: 900; color: var(--penn-blue); line-height: 1; }
+.bc-city  { font-size: .72rem; color: var(--muted); margin-top: 2px; }
+.bc-time  { font-size: .88rem; font-weight: 700; color: var(--penn-blue); margin-top: 4px; }
+.bc-date  { font-size: .7rem; color: var(--muted); }
 
-/* == Big cancelled badge == */
-.badge-cancelled-bold {
-  display: inline-flex; align-items: center; gap: 5px;
-  background: #dc2626; color: #fff;
-  font-size: .78rem; font-weight: 800; letter-spacing: .08em;
-  text-transform: uppercase; padding: 5px 14px; border-radius: 99px;
+.bc-flight-line {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  gap: 4px; padding: 0 16px;
 }
+.bc-dots-line {
+  width: 100%; height: 2px;
+  background: linear-gradient(to right, var(--neon-blue), var(--periwinkle), var(--neon-blue));
+  border-radius: 99px; position: relative;
+}
+.bc-dots-line::before,
+.bc-dots-line::after {
+  content: '';
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--neon-blue);
+}
+.bc-dots-line::before { left: 0; }
+.bc-dots-line::after  { right: 0; }
+.bc-plane-icon { font-size: .85rem; color: var(--neon-blue); }
+.bc-duration  { font-size: .7rem; color: var(--muted); font-weight: 600; }
 
-/* == Rebook button == */
+/* Tags row */
+.bc-tags-row {
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.bc-tag {
+  padding: 4px 12px; border-radius: 99px;
+  font-size: .72rem; font-weight: 700;
+  background: var(--neon-blue-lt); color: var(--neon-blue);
+  border: 1px solid var(--periwinkle);
+}
+.bc-tag-green { background: #f0fdf4; color: #059669; border-color: #6ee7b7; }
+.bc-tag-orange{ background: #fff7ed; color: #c2410c; border-color: #fed7aa; }
+
+/* Card bottom */
+.booking-card-footer {
+  padding: 14px 24px;
+  background: var(--lavender);
+  border-top: 1.5px solid var(--periwinkle);
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; flex-wrap: wrap;
+}
+.bc-price { font-size: 1.2rem; font-weight: 900; color: var(--neon-blue); }
+.bc-price-label { font-size: .72rem; color: var(--muted); margin-bottom: 1px; }
+.bc-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+.btn-view-ticket {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 9px 18px; border-radius: 10px;
+  background: var(--neon-blue); color: white;
+  font-size: .85rem; font-weight: 700; text-decoration: none !important;
+  box-shadow: 0 3px 10px rgba(57,96,251,.25); transition: all .18s;
+}
+.btn-view-ticket:hover { background: var(--neon-blue-h); transform: translateY(-1px); text-decoration: none; }
+
+.btn-cancel-ticket {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 9px 16px; border-radius: 10px;
+  background: white; color: #dc2626;
+  border: 1.5px solid #fca5a5;
+  font-size: .85rem; font-weight: 600; text-decoration: none !important;
+  transition: all .18s;
+}
+.btn-cancel-ticket:hover { background: #fee2e2; border-color: #f87171; text-decoration: none; }
+
+.btn-refund-ticket {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 9px 16px; border-radius: 10px;
+  background: white; color: var(--neon-blue);
+  border: 1.5px solid var(--periwinkle);
+  font-size: .85rem; font-weight: 600; text-decoration: none !important;
+  transition: all .18s;
+}
+.btn-refund-ticket:hover { background: var(--lavender); border-color: var(--neon-blue); text-decoration: none; }
+
 .btn-rebook {
-  display: inline-flex; align-items: center; gap: 8px;
-  padding: 9px 16px;
-  background: #f1f5f9; color: #64748b;
-  border: 1.5px solid #cbd5e1;
-  border-radius: 10px; font-size: .85rem; font-weight: 600;
-  text-decoration: none !important;
-  transition: background .15s, border-color .15s, color .15s;
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 9px 16px; border-radius: 10px;
+  background: white; color: var(--muted);
+  border: 1.5px solid var(--periwinkle);
+  font-size: .85rem; font-weight: 600; text-decoration: none !important;
+  transition: all .18s;
 }
-.btn-rebook:hover { background: #e2e8f0; border-color: #94a3b8; color: #475569; text-decoration: none !important; }
-.btn-rebook-note { font-size: .66rem; color: #94a3b8; margin-top: 3px; text-align: center; }
+.btn-rebook:hover { background: var(--lavender); border-color: var(--neon-blue); color: var(--neon-blue); text-decoration: none; }
 
-/* == Improvement panel == */
-.improve-panel {
-  background: linear-gradient(135deg, #f0fdf4, #dcfce7);
-  border: 1.5px solid #86efac; border-radius: 14px;
-  padding: 16px 20px; margin-bottom: 24px;
-  font-size: .82rem; color: #166534;
+/* Refund badges */
+.refund-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 12px; border-radius: 99px;
+  font-size: .72rem; font-weight: 700; border: 1px solid;
 }
-.improve-panel h4 {
-  font-size: .85rem; font-weight: 800; color: #15803d;
-  margin-bottom: 10px; display: flex; align-items: center; gap: 6px;
-}
-.improve-panel ul { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 5px; }
-.improve-panel li::before { content: "✅ "; }
+.refund-pending  { background: #eff6ff; color: #1d4ed8; border-color: #93c5fd; }
+.refund-approved { background: #d1fae5; color: #065f46; border-color: #6ee7b7; }
+.refund-rejected { background: #fee2e2; color: #991b1b; border-color: #fca5a5; }
 
-/* == Formatted price == */
-.fr-price-formatted { font-size: 1.05rem; font-weight: 800; color: var(--navy); white-space: nowrap; }
+/* Status chip */
+.status-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 14px; border-radius: 99px;
+  font-size: .75rem; font-weight: 700;
+}
+.status-paid     { background: #d1fae5; color: #059669; }
+.status-pending  { background: #fef3c7; color: #92400e; }
+.status-cancelled{ background: #dc2626; color: white; }
+
+/* Legend */
+.legend-strip {
+  margin-top: 20px; padding: 14px 20px;
+  background: white; border: 1.5px solid var(--periwinkle);
+  border-radius: 14px; font-size: .78rem; color: var(--muted);
+  display: flex; gap: 20px; flex-wrap: wrap; align-items: center;
+}
+
+@media (max-width: 600px) {
+  .booking-tabs { width: 100%; flex-wrap: wrap; }
+  .booking-card-top, .booking-card-footer { flex-direction: column; align-items: flex-start; }
+  .bc-route-row { flex-direction: column; gap: 12px; text-align: center; }
+  .bc-flight-line { width: 100%; }
+}
 </style>
 {% endblock %}
 
 {% block content %}
-<h1>🎫 Vé của tôi</h1>
-<p class="page-subtitle">Lịch sử đặt vé và quản lý hoàn tiền</p>
 
-{% comment %} Tabs {% endcomment %}
+<!-- Page Header -->
+<div class="page-hero">
+  <div>
+    <h1>🎫 Vé của tôi</h1>
+    <p>Lịch sử đặt vé và quản lý hoàn tiền</p>
+  </div>
+  <a href="{% url 'recommendations' %}" class="btn btn-primary" style="border-radius: 10px;">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    Đặt vé mới
+  </a>
+</div>
+
+<!-- Tabs -->
 <div class="booking-tabs">
   <a href="?tab=upcoming" class="booking-tab {% if active_tab == 'upcoming' %}active{% endif %}">
     ✈️ Sắp bay <span class="tab-count">{{ count_upcoming }}</span>
@@ -110,90 +236,121 @@
     ✅ Đã hoàn thành <span class="tab-count">{{ count_completed }}</span>
   </a>
   <a href="?tab=cancelled" class="booking-tab tab-cancelled {% if active_tab == 'cancelled' %}active{% endif %}">
-    ❌ Đã huỷ <span class="tab-count">{{ count_cancelled }}</span>
+    ✕ Đã huỷ <span class="tab-count">{{ count_cancelled }}</span>
   </a>
 </div>
 
-{% comment %} Booking list {% endcomment %}
+<!-- Booking list -->
 {% for booking in bookings %}
-<div class="flight-result" style="position:relative;">
+<div class="booking-card">
 
-  {% comment %} Logo hãng hàng không {% endcomment %}
-  <div class="fr-logo">
-    {% if booking.flight %}{{ booking.flight.airline.code|default:booking.flight.airline.name|slice:":2"|upper }}{% else %}??{% endif %}
-  </div>
-
-  {% comment %} Thông tin chuyến bay {% endcomment %}
-  <div class="fr-info">
-    {% if booking.flight %}
-    <div class="fr-times">
-      <span class="fr-time">{{ booking.flight.departure_time|date:"H:i" }}</span>
-      <div class="fr-duration-line">
-        <span>{{ booking.flight.departure_airport.code }} → {{ booking.flight.arrival_airport.code }}</span>
-        <div class="fr-line"></div>
-        <span class="fr-duration-label">Thời lượng: {{ booking.flight.departure_time|flight_duration:booking.flight.arrival_time }}</span>
+  <!-- Card top: airline + status -->
+  <div class="booking-card-top">
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <div class="bc-airline-logo">
+        {% if booking.flight %}{{ booking.flight.airline.code|default:booking.flight.airline.name|slice:":2"|upper }}{% else %}??{% endif %}
       </div>
-      <span class="fr-time">{{ booking.flight.arrival_time|date:"H:i" }}</span>
+      <div class="bc-airline-info">
+        <div class="bc-airline-name">
+          {% if booking.flight %}{{ booking.flight.airline.name }}{% else %}SkyBook{% endif %}
+        </div>
+        <div class="bc-flight-num">
+          {% if booking.flight %}{{ booking.flight.flight_number }} · {% endif %}Mã: {{ booking.booking_code }}
+        </div>
+      </div>
     </div>
-    <div class="fr-route">
-      <strong>{{ booking.flight.departure_airport.city }}</strong>
-      → <strong>{{ booking.flight.arrival_airport.city }}</strong>
-      &nbsp;·&nbsp; {{ booking.flight.flight_number }}
-      &nbsp;·&nbsp; {{ booking.flight.departure_time|date:"d/m/Y" }}
+    <div class="bc-top-right">
+      {% if booking.status == "paid" %}
+        <span class="status-chip status-paid">✓ Đã thanh toán</span>
+      {% elif booking.status == "pending" %}
+        <span class="status-chip status-pending">⏳ Chờ thanh toán</span>
+      {% else %}
+        <span class="status-chip status-cancelled">✕ Đã huỷ</span>
+      {% endif %}
     </div>
-    {% else %}
-    <div class="fr-route">
-      <strong>{{ booking.booking_code }}</strong>
-      · Ngày đặt: {{ booking.booking_date|date:"d/m/Y" }}
-    </div>
-    {% endif %}
   </div>
 
-  {% comment %} Status badges {% endcomment %}
-  <div class="fr-tags" style="flex-direction:column;align-items:flex-start;gap:6px;">
-    {% if booking.status == "paid" %}
-      <span class="badge badge-paid">✅ Đã thanh toán</span>
-    {% elif booking.status == "pending" %}
-      <span class="badge badge-pending">⏳ Chờ thanh toán</span>
+  <!-- Card body: route -->
+  <div class="booking-card-body">
+    {% if booking.flight %}
+    <div class="bc-route-row">
+      <!-- Departure -->
+      <div class="bc-airport-block">
+        <div class="bc-iata">{{ booking.flight.departure_airport.code }}</div>
+        <div class="bc-city">{{ booking.flight.departure_airport.city }}</div>
+        <div class="bc-time">{{ booking.flight.departure_time|date:"H:i" }}</div>
+        <div class="bc-date">{{ booking.flight.departure_time|date:"d/m/Y" }}</div>
+      </div>
+
+      <!-- Flight line -->
+      <div class="bc-flight-line">
+        <div class="bc-plane-icon">✈</div>
+        <div class="bc-dots-line"></div>
+        <div class="bc-duration">{{ booking.flight.departure_time|flight_duration:booking.flight.arrival_time }}</div>
+      </div>
+
+      <!-- Arrival -->
+      <div class="bc-airport-block">
+        <div class="bc-iata">{{ booking.flight.arrival_airport.code }}</div>
+        <div class="bc-city">{{ booking.flight.arrival_airport.city }}</div>
+        <div class="bc-time">{{ booking.flight.arrival_time|date:"H:i" }}</div>
+        <div class="bc-date">{{ booking.flight.arrival_time|date:"d/m/Y" }}</div>
+      </div>
+    </div>
     {% else %}
-      <span class="badge-cancelled-bold">✕ ĐÃ HUỶ</span>
+    <div style="color: var(--muted); font-size: .9rem;">
+      Đặt ngày {{ booking.booking_date|date:"d/m/Y" }}
+    </div>
     {% endif %}
 
-    {% if booking.status == "paid" %}
-      {% if booking.refund_request.status == "pending" %}
-        <span class="badge" style="background:#eff6ff;color:#1d4ed8;border:1px solid #93c5fd;">🔄 Đang xử lý hoàn tiền</span>
-      {% elif booking.refund_request.status == "approved" %}
-        <span class="badge" style="background:#d1fae5;color:#065f46;border:1px solid #6ee7b7;">💸 Đã hoàn {{ booking.refund_request.refund_amount|floatformat:0 }} ₫</span>
-      {% elif booking.refund_request.status == "rejected" %}
-        <span class="badge" style="background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;" title="{{ booking.refund_request.admin_note }}">🚫 Từ chối hoàn tiền</span>
+    <!-- Tags / badges -->
+    <div class="bc-tags-row">
+      {% if booking.status == "paid" %}
+        {% if booking.refund_request.status == "pending" %}
+          <span class="refund-badge refund-pending">🔄 Đang xử lý hoàn tiền</span>
+        {% elif booking.refund_request.status == "approved" %}
+          <span class="refund-badge refund-approved">💸 Đã hoàn {{ booking.refund_request.refund_amount|floatformat:0 }} đ</span>
+        {% elif booking.refund_request.status == "rejected" %}
+          <span class="refund-badge refund-rejected" title="{{ booking.refund_request.admin_note }}">🚫 Từ chối hoàn tiền</span>
+        {% endif %}
+      {% elif booking.status == "cancelled" %}
+        {% if booking.refund_request.status == "approved" %}
+          <span class="refund-badge refund-approved">💸 Hoàn {{ booking.refund_request.refund_amount|floatformat:0 }} đ</span>
+        {% endif %}
       {% endif %}
-    {% elif booking.status == "cancelled" %}
-      {% if booking.refund_request.status == "approved" %}
-        <span class="badge" style="background:#d1fae5;color:#065f46;border:1px solid #6ee7b7;">💸 Hoàn {{ booking.refund_request.refund_amount|floatformat:0 }} ₫</span>
-      {% endif %}
-    {% endif %}
+    </div>
   </div>
 
-  {% comment %} Giá + Actions {% endcomment %}
-  <div class="fr-price-block" style="flex-direction:column;align-items:flex-end;gap:8px;">
-    <span class="fr-price-formatted" data-price="{{ booking.total_price|floatformat:0 }}">
-      {{ booking.total_price|floatformat:0 }} đ
-    </span>
-    <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;align-items:flex-start;">
-      <a href="{% url 'ticket' booking.id %}" class="fr-chevron" title="Xem vé điện tử">›</a>
+  <!-- Card footer: price + actions -->
+  <div class="booking-card-footer">
+    <div>
+      <div class="bc-price-label">Tổng tiền</div>
+      <div class="bc-price" data-price="{{ booking.total_price|floatformat:0 }}">
+        {{ booking.total_price|floatformat:0 }} đ
+      </div>
+    </div>
+    <div class="bc-actions">
+      <a href="{% url 'ticket' booking.id %}" class="btn-view-ticket">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>
+        Xem vé
+      </a>
       {% if booking.status == "pending" %}
-        <a href="{% url 'cancel_booking' booking.id %}" class="fr-chevron" title="Huỷ vé" style="color:#dc2626;background:#fee2e2;">✕</a>
+        <a href="{% url 'cancel_booking' booking.id %}" class="btn-cancel-ticket">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          Huỷ vé
+        </a>
       {% endif %}
       {% if booking.status == "paid" and not booking.refund_request %}
-        <a href="{% url 'request_refund' booking.id %}" class="fr-chevron" title="Yêu cầu hoàn tiền" style="color:#1d4ed8;background:#dbeafe;">↩</a>
+        <a href="{% url 'request_refund' booking.id %}" class="btn-refund-ticket">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.64"/></svg>
+          Hoàn tiền
+        </a>
       {% endif %}
       {% if booking.status == "cancelled" and booking.flight %}
-        <div style="display:flex;flex-direction:column;align-items:center;gap:3px;">
-          <a href="{% url 'create_booking' booking.flight.id %}" class="btn-rebook" title="Đặt lại chuyến bay này">
-            ↺ Đặt lại chuyến bay
-          </a>
-          <span class="btn-rebook-note">Cải tiến: tránh nhầm là nút thanh toán</span>
-        </div>
+        <a href="{% url 'create_booking' booking.flight.id %}" class="btn-rebook">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.49-3.64"/></svg>
+          Đặt lại
+        </a>
       {% endif %}
     </div>
   </div>
@@ -205,10 +362,10 @@
   {% if active_tab == "upcoming" %}
     <h3>Không có vé sắp bay</h3>
     <p>Hãy tìm và đặt chuyến bay ngay!</p>
-    <a href="{% url 'home' %}" class="btn btn-primary" style="margin-top:16px;">Tìm chuyến bay</a>
+    <a href="{% url 'recommendations' %}" class="btn btn-primary" style="margin-top: 16px; border-radius: 10px;">Tìm chuyến bay</a>
   {% elif active_tab == "completed" %}
-    <h3>Chưa có chuyến bay nào hoàn thành</h3>
-    <p>Các chuyến đã bay xong sẽ xuất hiện ở đây.</p>
+    <h3>Chưa có chuyến bay hoàn thành</h3>
+    <p>Các chuyến đã bay sẽ xuất hiện ở đây.</p>
   {% else %}
     <h3>Không có vé nào đã huỷ 🎉</h3>
     <p>Tốt lắm — không có vé nào bị huỷ!</p>
@@ -217,11 +374,12 @@
 {% endfor %}
 
 {% if bookings %}
-<div style="margin-top:24px;padding:14px 18px;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0;font-size:.8rem;color:#6b7fa8;display:flex;gap:20px;flex-wrap:wrap;">
-  <span><strong style="font-family:monospace;background:#fff;border:1px solid #e2e8f0;border-radius:6px;padding:1px 7px;">›</strong> Xem vé điện tử</span>
-  <span><strong style="font-family:monospace;background:#fee2e2;color:#dc2626;border-radius:6px;padding:1px 7px;">✕</strong> Huỷ vé (chỉ khi chờ TT)</span>
-  <span><strong style="font-family:monospace;background:#dbeafe;color:#1d4ed8;border-radius:6px;padding:1px 7px;">↩</strong> Yêu cầu hoàn tiền (vé đã TT)</span>
-  <span><strong style="font-family:monospace;background:#f1f5f9;color:#64748b;border-radius:6px;padding:1px 7px;">↺</strong> Đặt lại chuyến (vé đã huỷ)</span>
+<div class="legend-strip">
+  <span>Chú thích:</span>
+  <span>🟢 <strong>Xem vé</strong> — Mở vé điện tử</span>
+  <span>🔴 <strong>Huỷ vé</strong> — Chỉ khi chờ thanh toán</span>
+  <span>🔵 <strong>Hoàn tiền</strong> — Vé đã thanh toán</span>
+  <span>🔄 <strong>Đặt lại</strong> — Vé đã huỷ</span>
 </div>
 {% endif %}
 
@@ -229,7 +387,6 @@
 
 {% block extra_js %}
 <script>
-// Format price voi dau cham phan nghin (VD: 1500000 → 1.500.000)
 document.querySelectorAll('[data-price]').forEach(function(el) {
   var raw = parseInt(el.dataset.price, 10);
   if (!isNaN(raw)) {

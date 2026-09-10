@@ -1,189 +1,452 @@
-{% extends "base.html" %}`n{% load flight_extras %}
-{% block title %}Chọn ghế — {{ flight.flight_number }}{% endblock %}
+{% extends "base.html" %}
+{% load flight_extras %}
+{% block title %}Chọn ghế · {{ flight.flight_number }}{% endblock %}
 
 {% block extra_css %}
-
 <style>
-body { background-color: var(--bg-light); }
-.booking-layout { display: flex; gap: 40px; max-width: 1080px; margin: 0 auto; padding-top: 20px; align-items: flex-start; }
-.plane-wrapper { flex: 1; display: flex; flex-direction: column; align-items: center; }
-.summary-sidebar { flex: 0 0 320px; position: sticky; top: 100px; }
-
-/* Legend at top */
-.seat-legend-card {
-    background: transparent;
-    margin-bottom: 24px;
-    display: flex;
-    justify-content: center;
-    gap: 24px;
-    width: 100%;
+/* ══════════════════════════════
+   PAGE RESET
+══════════════════════════════ */
+body { background: var(--lavender) !important; }
+main.contained {
+  max-width: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  background: transparent !important;
 }
-.legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); }
-.legend-box { width: 16px; height: 16px; border-radius: 4px; }
 
-/* Fuselage */
+/* ── Page header strip ── */
+.seat-page-header {
+  background: white;
+  border-bottom: 1.5px solid var(--periwinkle);
+  padding: 0 40px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: .88rem;
+  color: var(--muted);
+  position: sticky;
+  top: 72px;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(57,96,251,.06);
+  overflow-x: auto;
+}
+.seat-page-header a {
+  color: var(--neon-blue); font-weight: 600;
+  text-decoration: none; white-space: nowrap;
+  display: flex; align-items: center; gap: 5px;
+}
+.seat-page-header a:hover { text-decoration: underline; }
+.seat-page-header .sep { color: var(--periwinkle); }
+.seat-page-header strong { color: var(--penn-blue); white-space: nowrap; }
+
+/* ══════════════════════════════
+   TWO-COLUMN LAYOUT
+══════════════════════════════ */
+.seat-page-body {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  min-height: calc(100vh - 124px);
+}
+
+/* ── LEFT: Seat map ── */
+.seat-map-area {
+  padding: 32px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Legend bar */
+.legend-bar {
+  display: flex; gap: 20px; flex-wrap: wrap;
+  background: white; border: 1.5px solid var(--periwinkle);
+  border-radius: 14px; padding: 12px 20px;
+  margin-bottom: 28px; align-self: stretch;
+  box-shadow: var(--shadow);
+}
+.legend-item { display: flex; align-items: center; gap: 8px; font-size: .8rem; font-weight: 600; color: var(--muted); }
+.legend-box  { width: 18px; height: 18px; border-radius: 5px; flex-shrink: 0; }
+
+/* Plane fuselage */
+.plane-outer { position: relative; }
+.plane-wings-svg {
+  position: absolute; top: 270px; left: 50%;
+  transform: translateX(-50%); width: 580px;
+  pointer-events: none; z-index: 0; opacity: .65;
+}
 .plane-fuselage {
-    background: white; border-radius: 40px 40px 10px 10px;
-    padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); width: 100%; max-width: 380px;
+  position: relative; z-index: 1;
+  width: 300px;
+  background: white;
+  border-radius: 150px 150px 40px 40px;
+  padding: 70px 16px 36px;
+  box-shadow: 0 8px 32px rgba(57,96,251,.12), 0 2px 8px rgba(20,34,88,.06);
+  border: 1.5px solid var(--periwinkle);
 }
 .cockpit {
-    height: 60px; background: #e2e8f0; border-radius: 30px 30px 10px 10px;
-    margin-bottom: 30px; position: relative; overflow: hidden;
+  position: absolute; top: -18px; left: 50%; transform: translateX(-50%);
+  width: 56px; height: 36px; background: var(--periwinkle);
+  border-radius: 28px 28px 10px 10px; border: 2px solid var(--neon-blue); opacity: .5;
 }
-.cockpit::after {
-    content: ''; position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
-    width: 60px; height: 15px; background: rgba(255,255,255,0.5); border-radius: 10px;
-}
-.seat-row { display: flex; align-items: center; margin-bottom: 12px; }
-.seat-group { display: flex; gap: 8px; }
-.seat-group.left { margin-right: 16px; }
-.seat-group.right { margin-left: 16px; }
-.aisle-number { width: 20px; text-align: center; font-size: 0.8rem; font-weight: 700; color: #cbd5e1; }
 
+/* Column labels */
+.col-labels {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 8px; padding: 0 2px;
+}
+.col-label-group { display: flex; gap: 5px; width: 104px; }
+.col-label {
+  width: 32px; text-align: center;
+  font-size: .62rem; font-weight: 800;
+  color: var(--neon-blue); text-transform: uppercase; letter-spacing: .06em;
+}
+.col-label-mid { width: 26px; }
+
+/* Seat row */
+.seat-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 7px; }
+.seat-group { display: flex; gap: 5px; width: 104px; }
+.aisle-number { width: 26px; text-align: center; font-size: .72rem; font-weight: 700; color: var(--muted); }
+
+/* Seat button */
 .seat {
-    width: 32px; height: 32px; border-radius: 6px; border: none; font-size: 0.7rem; font-weight: 700; color: white;
-    cursor: pointer; transition: all 0.2s; position: relative; display: flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; border-radius: 7px 7px 5px 5px;
+  border: none; font-size: .58rem; font-weight: 700; color: #fff;
+  cursor: pointer; transition: all .18s;
+  display: flex; align-items: center; justify-content: center; position: relative;
 }
-.seat::after { content: ''; position: absolute; bottom: 3px; left: 4px; right: 4px; height: 2px; background: rgba(255,255,255,0.3); border-radius: 1px; }
+.seat::after {
+  content: ''; position: absolute; bottom: 4px; left: 4px; right: 4px;
+  height: 2px; background: rgba(255,255,255,.35); border-radius: 1px;
+}
+/* Seat types */
+.seat.premium  { background: #7c3aed; }
+.seat.premium:hover:not(.taken)  { background: #6d28d9; transform: scale(1.12); z-index: 5; }
+.seat.premium.selected           { background: #4c1d95; box-shadow: 0 0 0 3px #ddd6fe; }
 
-/* Colors according to brand */
-.seat.premium { background: var(--blue-600); }
-.seat.front { background: var(--cyan-500); }
-.seat.standard { background: #e2e8f0; color: #000; }
-.seat.standard::after { background: rgba(0,0,0,0.1); }
+.seat.front    { background: #059669; }
+.seat.front:hover:not(.taken)    { background: #047857; transform: scale(1.12); z-index: 5; }
+.seat.front.selected             { background: #064e3b; box-shadow: 0 0 0 3px #6ee7b7; }
 
-/* Hover effect */
-.seat:not(.taken):hover { transform: scale(1.1); box-shadow: 0 0 0 2px var(--cyan-500); z-index: 10; }
+.seat.standard { background: var(--neon-blue); }
+.seat.standard:hover:not(.taken) { background: var(--neon-blue-h); transform: scale(1.12); z-index: 5; }
+.seat.standard.selected          { background: var(--penn-blue); box-shadow: 0 0 0 3px #bfdbfe; }
 
-/* Taken seat */
-.seat.taken { background: #f1f5f9; color: #cbd5e1; cursor: not-allowed; }
+.seat.taken    { background: var(--periwinkle); color: var(--muted); cursor: not-allowed; text-decoration: line-through; }
 .seat.taken::after { display: none; }
-.seat.taken::before { content: '✕'; position: absolute; font-size: 1rem; color: #cbd5e1; }
 
-/* Selected seat */
-.seat.selected { background: linear-gradient(135deg, var(--cyan-500), var(--blue-600)) !important; color: white !important; font-size: 0; }
-.seat.selected::after { display: none; }
-.seat.selected::before { content: '✓'; font-size: 1rem; color: white; }
-
-.summary-card { background: white; border-radius: 16px; padding: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-
-/* Submit Button */
-#submit-btn {
-    width: 100%; padding: 16px; margin-top: 24px; border-radius: 10px; border: none;
-    background: linear-gradient(135deg, var(--cyan-500), var(--blue-600));
-    color: white; font-weight: 700; cursor: pointer; transition: 0.2s;
+/* Exit row */
+.exit-row {
+  display: flex; justify-content: space-between; align-items: center;
+  margin: 12px -6px; padding: 6px 0;
+  border-top: 2px dashed #ef4444; border-bottom: 2px dashed #ef4444;
+  font-size: .58rem; font-weight: 700; color: #ef4444;
+  text-transform: uppercase; letter-spacing: .04em;
 }
-#submit-btn:disabled { background: #e2e8f0; color: #94a3b8; cursor: not-allowed; }
-.skip-link { display: block; text-align: center; margin-top: 12px; font-size: 0.85rem; color: var(--text-muted); text-decoration: none; }
-.skip-link:hover { color: var(--blue-600); text-decoration: underline; }
 
+/* ══════════════════════════════
+   RIGHT: Sticky Sidebar
+══════════════════════════════ */
+.seat-sidebar {
+  background: white;
+  border-left: 1.5px solid var(--periwinkle);
+  position: sticky;
+  top: 124px;
+  height: calc(100vh - 124px);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.sidebar-inner {
+  padding: 28px 24px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* Back link */
+.sidebar-back {
+  display: flex; align-items: center; gap: 6px;
+  font-size: .85rem; font-weight: 600; color: var(--muted);
+  text-decoration: none; margin-bottom: 22px; transition: color .15s;
+}
+.sidebar-back:hover { color: var(--neon-blue); text-decoration: none; }
+
+/* Flight strip */
+.flight-strip {
+  background: linear-gradient(135deg, var(--penn-blue), var(--neon-blue));
+  color: white; border-radius: 14px; padding: 14px 16px; margin-bottom: 18px;
+}
+.flight-strip-route {
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 1.1rem; font-weight: 900; margin-bottom: 5px;
+  font-family: var(--font-heading);
+}
+.flight-strip-meta { font-size: .72rem; opacity: .7; display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* Seat info rows */
+.summary-rows { margin-bottom: 18px; }
+.summary-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 0; border-bottom: 1px solid var(--periwinkle);
+  font-size: .88rem;
+}
+.summary-row:last-child { border-bottom: none; }
+.summary-row .label { color: var(--muted); }
+.summary-row .value { font-weight: 700; color: var(--penn-blue); }
+
+/* Big seat display */
+.seat-display-box {
+  background: var(--lavender);
+  border: 2px solid var(--periwinkle);
+  border-radius: 16px; padding: 16px 12px;
+  text-align: center; margin-bottom: 18px;
+  transition: all .2s;
+}
+.seat-display-box.chosen {
+  background: var(--neon-blue-lt);
+  border-color: var(--neon-blue);
+}
+.seat-code-big {
+  font-size: 2.2rem; font-weight: 900;
+  color: var(--muted); font-family: var(--font-heading); line-height: 1;
+  transition: color .2s;
+}
+.seat-code-big.chosen { color: var(--neon-blue); }
+.seat-hint { font-size: .72rem; color: var(--muted); margin-top: 5px; }
+
+/* Price row */
+.price-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 0; border-top: 2px solid var(--periwinkle); margin-bottom: 16px;
+}
+.price-label { font-size: .85rem; color: var(--muted); font-weight: 600; }
+.price-value { font-size: 1.3rem; font-weight: 900; color: var(--neon-blue); font-family: var(--font-heading); }
+
+/* Confirm button */
+.btn-confirm {
+  width: 100%; padding: 15px;
+  background: var(--neon-blue); color: white;
+  border: none; border-radius: 14px; cursor: pointer;
+  font-size: 1rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  box-shadow: 0 4px 16px rgba(57,96,251,.35); transition: all .2s;
+  font-family: inherit; margin-bottom: 10px;
+}
+.btn-confirm:hover:not(:disabled) {
+  background: var(--neon-blue-h); transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(57,96,251,.45);
+}
+.btn-confirm:disabled {
+  background: var(--periwinkle); color: var(--muted);
+  cursor: not-allowed; box-shadow: none; transform: none;
+}
+
+/* Skip link */
+.skip-link {
+  display: block; text-align: center;
+  font-size: .82rem; color: var(--muted); text-decoration: none;
+  transition: color .15s;
+}
+.skip-link:hover { color: var(--neon-blue); text-decoration: underline; }
+
+/* Loader */
 .loader {
-    border: 2px solid rgba(255,255,255,0.3); border-top: 2px solid white; border-radius: 50%;
-    width: 16px; height: 16px; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; margin-left: 8px;
+  border: 2px solid rgba(255,255,255,.3); border-top: 2px solid white;
+  border-radius: 50%; width: 15px; height: 15px;
+  animation: spin 1s linear infinite; display: inline-block;
 }
-@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-</style>
+@keyframes spin { to { transform: rotate(360deg); } }
 
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .seat-page-body { grid-template-columns: 1fr; }
+  .seat-sidebar {
+    position: static; height: auto;
+    border-left: none; border-top: 1.5px solid var(--periwinkle);
+  }
+  .seat-map-area { padding: 20px 16px; }
+  .plane-wings-svg { display: none; }
+  .seat-page-header { padding: 0 16px; }
+}
+</style>
 {% endblock %}
 
 {% block content %}
-<div style="max-width: 1080px; margin: 0 auto 24px; font-size: 1.1rem; font-weight: 700; color: var(--text-dark); text-align: center;">Chọn ghế · {{ flight.airline.code|default:"VN" }} {{ flight.flight_number }} · {{ flight.departure_airport.code }} → {{ flight.arrival_airport.code }} · {{ flight.departure_time|date:"d/m/Y" }}</div>
-<div class="booking-layout">
-    
-    <!-- Airplane Seat Map -->
-    <div class="plane-wrapper">
-        <!-- SVG background for wings can go here if needed, but the fuselage is the main part -->
-        
-<div class="seat-legend-card">
-    <div class="legend-item"><div class="legend-box" style="background:var(--blue-600);"></div> Cao cấp</div>
-    <div class="legend-item"><div class="legend-box" style="background:var(--cyan-500);"></div> Phía trước</div>
-    <div class="legend-item"><div class="legend-box" style="background:#e2e8f0;"></div> Tiêu chuẩn</div>
-    <div class="legend-item"><div class="legend-box" style="background:#f1f5f9; display:flex; align-items:center; justify-content:center; color:#cbd5e1; font-weight:bold; font-size:12px;">✕</div> Đã đặt</div>
+
+<!-- ── Header strip ── -->
+<div class="seat-page-header">
+  <a href="{% url 'flight_detail' flight.id %}">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    Quay lại
+  </a>
+  <span class="sep">›</span>
+  <strong>Chọn ghế · {{ flight.airline.code|default:"VN" }} {{ flight.flight_number }} · {{ flight.departure_airport.code }} → {{ flight.arrival_airport.code }} · {{ flight.departure_time|date:"d/m/Y" }}</strong>
 </div>
 
-<div class="plane-fuselage">
-            <div class="cockpit"></div>
-            
-            <form method="POST" id="booking-form">
-                {% csrf_token %}
-                <input type="hidden" name="seat_number" id="seat_number_input" value="" />
-                
-                {% for row in all_seats %}
-                    
-                    {% if row.is_exit %}
-                        <div class="exit-row">
-                            <span class="exit-arrow">&larr;</span>
-                            <span>Lối thoát hiểm</span>
-                            <span class="exit-arrow">&rarr;</span>
-                        </div>
-                    {% endif %}
-                    
-                    <div class="seat-row">
-                        <!-- Left Seats -->
-                        <div class="seat-group left">
-                            {% for seat in row.seats|slice:":3" %}
-                                <button type="button" 
-                                    class="seat {{ row.type }} {% if seat.taken %}taken{% endif %}" 
-                                    data-seat="{{ seat.code }}" 
-                                    {% if seat.taken %}disabled{% endif %}
-                                    onclick="selectSeat('{{ seat.code }}')">{{ seat.code }}</button>
-                            {% endfor %}
-                        </div>
-                        
-                        <!-- Aisle -->
-                        <div class="aisle-number">{{ row.row_number }}</div>
-                        
-                        <!-- Right Seats -->
-                        <div class="seat-group right">
-                            {% for seat in row.seats|slice:"3:" %}
-                                <button type="button" 
-                                    class="seat {{ row.type }} {% if seat.taken %}taken{% endif %}" 
-                                    data-seat="{{ seat.code }}" 
-                                    {% if seat.taken %}disabled{% endif %}
-                                    onclick="selectSeat('{{ seat.code }}')">{{ seat.code }}</button>
-                            {% endfor %}
-                        </div>
-                    </div>
+<!-- ── Two column body ── -->
+<div class="seat-page-body">
+
+  <!-- ═══ LEFT: Seat Map ═══ -->
+  <div class="seat-map-area">
+
+    <!-- Legend -->
+    <div class="legend-bar">
+      <div class="legend-item"><div class="legend-box" style="background:#7c3aed;"></div> Cao cấp</div>
+      <div class="legend-item"><div class="legend-box" style="background:#059669;"></div> Phía trước</div>
+      <div class="legend-item"><div class="legend-box" style="background:var(--neon-blue);"></div> Tiêu chuẩn</div>
+      <div class="legend-item">
+        <div class="legend-box" style="background:var(--periwinkle); position:relative;">
+          <span style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:9px;color:var(--muted);font-weight:800;">X</span>
+        </div>
+        Đã đặt
+      </div>
+    </div>
+
+    <!-- Plane -->
+    <div class="plane-outer">
+      <svg class="plane-wings-svg" viewBox="0 0 580 280" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 210 75 L 15 210 Q 2 220 8 238 L 210 175 Z" fill="#C2CEFE" opacity="0.55"/>
+        <rect x="110" y="155" width="35" height="55" rx="17" fill="#C2CEFE" opacity="0.4"/>
+        <path d="M 370 75 L 565 210 Q 578 220 572 238 L 370 175 Z" fill="#C2CEFE" opacity="0.55"/>
+        <rect x="435" y="155" width="35" height="55" rx="17" fill="#C2CEFE" opacity="0.4"/>
+      </svg>
+
+      <div class="plane-fuselage">
+        <div class="cockpit"></div>
+
+        <form method="POST" id="booking-form">
+          {% csrf_token %}
+          <input type="hidden" name="seat_number" id="seat_number_input" value="" />
+
+          <!-- Column letters -->
+          <div class="col-labels">
+            <div class="col-label-group">
+              <div class="col-label">A</div>
+              <div class="col-label">B</div>
+              <div class="col-label">C</div>
+            </div>
+            <div class="col-label-mid"></div>
+            <div class="col-label-group">
+              <div class="col-label">D</div>
+              <div class="col-label">E</div>
+              <div class="col-label">F</div>
+            </div>
+          </div>
+
+          {% for row in all_seats %}
+            {% if row.is_exit %}
+              <div class="exit-row">
+                <span>←</span><span>Lối thoát hiểm</span><span>→</span>
+              </div>
+            {% endif %}
+            <div class="seat-row">
+              <div class="seat-group left">
+                {% for seat in row.seats|slice:":3" %}
+                  <button type="button"
+                    class="seat {{ row.type }} {% if seat.taken %}taken{% endif %}"
+                    data-seat="{{ seat.code }}"
+                    {% if seat.taken %}disabled{% endif %}
+                    onclick="selectSeat('{{ seat.code }}')"
+                    title="{{ seat.code }}"
+                  >{{ seat.code }}</button>
                 {% endfor %}
-            </form>
-        </div>
-    </div>
-    
-    <!-- Sidebar -->
-    <div class="summary-sidebar">
-        <a href="{% url 'flight_detail' flight.id %}" style="display:inline-block; margin-bottom: 16px; color: var(--navy); font-weight: 600; text-decoration: none;">&larr; Quay lại chuyến bay</a>
-        
-         Ghế cao cấp</div>
-            <div class="legend-item"><div class="legend-box" style="background:#059669;"></div> Phía trước</div>
-            <div class="legend-item"><div class="legend-box" style="background:#0ea5e9;"></div> Tiêu chuẩn</div>
-            <div class="legend-item"><div class="legend-box" style="background:#e2e8f0; position:relative;"><span style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:10px;color:#94a3b8;font-weight:bold;">X</span></div> Đã đặt</div>
-        </div>
-        
-        <div class="summary-card">
-            <div class="summary-title">Tóm tắt đặt vé</div>
-            <div class="summary-route">{{ flight.departure_airport.city }} &rarr; {{ flight.arrival_airport.city }}</div>
-            
-            <div class="summary-row">
-                <span style="color:#64748b;">Chuyến bay</span>
-                <strong style="color:var(--navy);">{{ flight.flight_number }}</strong>
+              </div>
+              <div class="aisle-number">{{ row.row_number }}</div>
+              <div class="seat-group right">
+                {% for seat in row.seats|slice:"3:" %}
+                  <button type="button"
+                    class="seat {{ row.type }} {% if seat.taken %}taken{% endif %}"
+                    data-seat="{{ seat.code }}"
+                    {% if seat.taken %}disabled{% endif %}
+                    onclick="selectSeat('{{ seat.code }}')"
+                    title="{{ seat.code }}"
+                  >{{ seat.code }}</button>
+                {% endfor %}
+              </div>
             </div>
-            <div class="summary-row">
-                <span style="color:#64748b;">Ghế đã chọn</span>
-                <strong id="selected-seat-display" style="color:var(--blue); font-size:1.1rem;">Chưa chọn</strong>
-            </div>
-            <div class="summary-row total">
-                <span style="color:#64748b; font-size:0.9rem; font-weight:600;">Tổng tiền</span>
-                <span>{{ flight.price|vnd_format }} đ</span>
-            </div>
-            
-            
-<button type="submit" form="booking-form" id="submit-btn" disabled>Xác nhận ghế</button>
-<a href="#" class="skip-link" onclick="submitWithoutSeat()">Bỏ qua, để hãng tự xếp ghế →</a>
+          {% endfor %}
+        </form>
+      </div><!-- /plane-fuselage -->
+    </div><!-- /plane-outer -->
 
-        </div>
-    </div>
+  </div><!-- /seat-map-area -->
 
-</div>
+  <!-- ═══ RIGHT: Sticky Sidebar ═══ -->
+  <div class="seat-sidebar">
+    <div class="sidebar-inner">
+
+      <!-- Back -->
+      <a href="{% url 'flight_detail' flight.id %}" class="sidebar-back">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Quay lại chuyến bay
+      </a>
+
+      <!-- Flight strip -->
+      <div class="flight-strip">
+        <div class="flight-strip-route">
+          <span>{{ flight.departure_airport.code }}</span>
+          <svg width="28" height="14" viewBox="0 0 28 14" fill="none">
+            <path d="M0 7h24M18 1l6 6-6 6" stroke="rgba(255,255,255,.7)" stroke-width="1.5"/>
+          </svg>
+          <span>{{ flight.arrival_airport.code }}</span>
+        </div>
+        <div class="flight-strip-meta">
+          <span>{{ flight.flight_number }}</span>
+          <span>·</span>
+          <span>{{ flight.departure_time|date:"d/m/Y" }}</span>
+          <span>·</span>
+          <span>{{ flight.departure_time|date:"H:i" }}</span>
+          <span>·</span>
+          <span>{{ flight.airline.name }}</span>
+        </div>
+      </div>
+
+      <!-- Summary rows -->
+      <div class="summary-rows">
+        <div class="summary-row">
+          <span class="label">Chuyến bay</span>
+          <span class="value">{{ flight.flight_number }}</span>
+        </div>
+        <div class="summary-row">
+          <span class="label">Hành trình</span>
+          <span class="value">{{ flight.departure_airport.city }} → {{ flight.arrival_airport.city }}</span>
+        </div>
+        <div class="summary-row">
+          <span class="label">Ghế đã chọn</span>
+          <span class="value" id="selected-seat-display" style="color:var(--muted);">Chưa chọn</span>
+        </div>
+      </div>
+
+      <!-- Seat big display -->
+      <div class="seat-display-box" id="seat-display-box">
+        <div class="seat-code-big" id="seat-code-big">—</div>
+        <div class="seat-hint" id="seat-hint">Nhấn vào ghế để chọn</div>
+      </div>
+
+      <!-- Price -->
+      <div class="price-row">
+        <span class="price-label">Tổng tiền</span>
+        <span class="price-value">{{ flight.price|vnd_format }} đ</span>
+      </div>
+
+      <!-- Confirm button -->
+      <button type="submit" form="booking-form" id="submit-btn" class="btn-confirm" disabled>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+        Chọn ghế để tiếp tục
+      </button>
+
+      <!-- Skip -->
+      <a href="#" class="skip-link" onclick="submitWithoutSeat(); return false;">
+        Bỏ qua, để hãng tự xếp ghế →
+      </a>
+
+    </div><!-- /sidebar-inner -->
+  </div><!-- /seat-sidebar -->
+
+</div><!-- /seat-page-body -->
 {% endblock %}
 
 {% block extra_js %}
@@ -191,28 +454,36 @@ body { background-color: var(--bg-light); }
 function selectSeat(code) {
   document.getElementById('seat_number_input').value = code;
   document.getElementById('selected-seat-display').textContent = code;
-  const btn = document.getElementById('submit-btn');
+
+  const btn     = document.getElementById('submit-btn');
+  const box     = document.getElementById('seat-display-box');
+  const codeBig = document.getElementById('seat-code-big');
+  const hint    = document.getElementById('seat-hint');
+
   btn.disabled = false;
-  btn.textContent = 'Xác nhận ghế ' + code;
+  btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> Xác nhận ghế ${code}`;
+
+  box.classList.add('chosen');
+  codeBig.textContent = code;
+  codeBig.classList.add('chosen');
+  hint.textContent = 'Nhấn xác nhận để tiếp tục đặt vé';
+
   document.querySelectorAll('.seat').forEach(b => b.classList.remove('selected'));
-  document.querySelector('[data-seat="' + code + '"]').classList.add('selected');
+  const target = document.querySelector('[data-seat="' + code + '"]');
+  if (target) target.classList.add('selected');
 }
 
 function submitWithoutSeat() {
-    document.getElementById('seat_number_input').value = '';
-    const form = document.getElementById('booking-form');
-    const skipLink = document.querySelector('.skip-link');
-    skipLink.innerHTML = 'Đang xử lý <div class="loader" style="border-top-color:var(--cyan-500)"></div>';
-    form.submit();
+  document.getElementById('seat_number_input').value = '';
+  const form = document.getElementById('booking-form');
+  const link = document.querySelector('.skip-link');
+  link.innerHTML = 'Đang xử lý <span class="loader" style="border-top-color:var(--neon-blue);vertical-align:middle;margin-left:4px;display:inline-block;width:13px;height:13px;border-color:var(--periwinkle);border-top-color:var(--neon-blue);border-radius:50%;border-width:2px;animation:spin 1s linear infinite;"></span>';
+  form.submit();
 }
-document.getElementById('booking-form').addEventListener('submit', function() {
-    const btn = document.getElementById('submit-btn');
-    btn.innerHTML = 'Đang xử lý <div class="loader"></div>';
-});
 
+document.getElementById('booking-form').addEventListener('submit', function() {
+  const btn = document.getElementById('submit-btn');
+  btn.innerHTML = 'Đang xử lý <span class="loader" style="display:inline-block;width:15px;height:15px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin 1s linear infinite;vertical-align:middle;margin-left:6px;"></span>';
+});
 </script>
 {% endblock %}
-
-
-
-

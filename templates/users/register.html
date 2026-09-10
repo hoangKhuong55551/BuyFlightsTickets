@@ -4,13 +4,13 @@
 <div class="auth-wrapper">
   <div class="auth-card" style="max-width: 500px;">
     <div style="text-align:center;margin-bottom:28px;">
-      <div style="width:64px;height:64px;background:linear-gradient(135deg, #00B4D8, #1E5FBE);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;margin:0 auto 16px;box-shadow:0 8px 16px rgba(0,180,216,0.3);color:white;">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <div style="width:68px;height:68px;background:linear-gradient(135deg, var(--neon-blue), #059669);border-radius:20px;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;box-shadow:0 10px 24px rgba(57,96,251,0.35);color:white;">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
           <path d="M12 5v14M5 12h14"/>
         </svg>
       </div>
-      <h1 style="font-size:1.8rem;font-weight:800;color:var(--navy);">Tạo tài khoản</h1>
-      <p class="auth-sub" style="color:#64748b;font-size:0.95rem;margin-top:6px;">Bắt đầu hành trình mới cùng SkyBook</p>
+      <h1 style="font-size:1.8rem;font-weight:900;color:var(--penn-blue);">Tạo tài khoản</h1>
+      <p class="auth-sub" style="color:var(--muted);font-size:0.95rem;margin-top:6px;">Bắt đầu hành trình mới cùng SkyBook</p>
     </div>
     
     <form method="POST">
@@ -40,11 +40,11 @@
         {% endfor %}
       </div>
       
-      <button type="submit" class="btn btn-primary btn-full btn-lg" style="margin-top:16px;background:linear-gradient(135deg, #00B4D8, #1E5FBE);border:none;box-shadow:0 6px 16px rgba(30,95,190,0.3);font-weight:700;letter-spacing:0.02em;">Đăng ký tài khoản</button>
+      <button type="submit" class="btn btn-primary btn-full btn-lg" style="margin-top:16px;background:var(--neon-blue);border:none;box-shadow:0 6px 20px rgba(57,96,251,.35);font-weight:700;border-radius:12px;">Đăng ký tài khoản →</button>
     </form>
     
-    <p style="text-align:center;margin-top:24px;color:#64748b;font-size:.93rem;">
-      Đã có tài khoản? <a href="{% url 'login' %}" style="font-weight:700;color:#00B4D8;text-decoration:none;">Đăng nhập</a>
+    <p style="text-align:center;margin-top:24px;color:var(--muted);font-size:.93rem;">
+      Đã có tài khoản? <a href="{% url 'login' %}" style="font-weight:700;color:var(--neon-blue);text-decoration:none;">Đăng nhập</a>
     </p>
   </div>
 </div>

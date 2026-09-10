@@ -4,32 +4,41 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{% block title %}Flight Booking{% endblock %}</title>
+    <title>{% block title %}SkyBook — Đặt vé máy bay{% endblock %}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=10" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;1,400&family=Plus+Jakarta+Sans:wght@700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=20" />
     {% block extra_css %}{% endblock %}
-  
+
 <style>
 :root {
+  /* SkyBook Brand — Light Theme */
+  --white:       #FFFFFF;
+  --lavender:    #EBEFFF;
+  --periwinkle:  #C2CEFE;
+  --penn-blue:   #142258;
+  --neon-blue:   #3960FB;
+  --neon-blue-h: #2748d6;
+  --neon-blue-lt:#EEF1FF;
+
+  /* Legacy aliases */
   --navy-950: #060d1f;
-  --navy-900: #0f1f3d;
-  --navy-800: #162847;
-  --blue-600: #1e5fbe;
-  --cyan-500: #00b4d8;
-  --bg-light: #f0f4f8;
-  --text-dark: #0f1f3d;
-  --text-muted: #64748b;
+  --navy-900: #142258;
+  --navy-800: #1a3070;
+  --blue-600:  #3960FB;
+  --cyan-500:  #3960FB;
+  --bg-light:  #EBEFFF;
+  --text-dark: #142258;
+  --text-muted:#6b7fa8;
   --font-heading: 'Plus Jakarta Sans', sans-serif;
-  --font-body: 'Inter', sans-serif;
+  --font-body:    'Inter', sans-serif;
 }
 body { font-family: var(--font-body); }
 h1, h2, h3, h4, h5, h6 { font-family: var(--font-heading); }
 .card { border-radius: 16px; }
-.btn, button, .btn-primary { border-radius: 10px; transition: all 200ms ease; }
+.btn, .btn-primary { border-radius: 10px; transition: all 200ms ease; }
 input, select { border-radius: 10px; transition: all 200ms ease; }
-label { text-transform: uppercase; letter-spacing: 0.5px; }
 </style>
 
 </head>

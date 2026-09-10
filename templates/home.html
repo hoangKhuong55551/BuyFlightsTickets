@@ -1,775 +1,654 @@
-{% extends "base.html" %} {% load static %} {% block title %}SkyBook — Hành
-trình của bạn bắt đầu từ đây{% endblock %} {% block extra_css %}
+{% extends "base.html" %} {% load static %} {% block title %}SkyBook — Hành trình của bạn bắt đầu từ đây{% endblock %}
+
+{% block extra_css %}
 <script>
   window.addEventListener("DOMContentLoaded", function () {
     var nav = document.getElementById("main-nav");
     if (nav) {
       nav.classList.add("is-home");
-
       var checkScroll = function () {
-        if (window.scrollY > 10) {
-          nav.classList.add("scrolled");
-        } else {
-          nav.classList.remove("scrolled");
-        }
+        if (window.scrollY > 10) nav.classList.add("scrolled");
+        else nav.classList.remove("scrolled");
       };
-
       window.addEventListener("scroll", checkScroll);
-      checkScroll(); // trigger immediately
+      checkScroll();
     }
   });
 </script>
 <style>
-  /* Override global body padding for home page */
-  body {
-    padding-top: 0 !important;
-  }
+  body { padding-top: 0 !important; }
   main.contained {
-    padding: 0 !important;
-    margin: 0 !important;
-    max-width: 100% !important;
-    background: var(--c-navy) !important;
-    color: #fff;
-    border: none !important;
+    padding: 0 !important; margin: 0 !important;
+    max-width: 100% !important; background: #fff; border: none !important;
   }
 
-  /* Navbar overrides for home page */
-  header.navbar-glass.is-home:not(.scrolled) {
-    background: transparent !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
-    backdrop-filter: none !important;
-    box-shadow: none !important;
-  }
-
-  /* Modern Glassmorphism Home Styles */
-  :root {
-    --c-navy: #0f1f3d;
-    --c-blue: #1e5fbe;
-    --c-cyan: #00b4d8;
-    --c-dark-input: #162a52;
-  }
-
+  /* ── HERO ── */
   .hero-v3 {
-    position: relative;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    padding: 140px 5% 120px;
-    background: linear-gradient(135deg, var(--c-navy) 0%, #0a1529 100%);
+    position: relative; min-height: 88vh;
+    display: flex; align-items: center;
+    padding: 120px 5% 80px;
+    background: linear-gradient(135deg, var(--lavender) 0%, #ffffff 60%, #e8ecff 100%);
     overflow: hidden;
   }
-  .hero-pattern {
-    position: absolute;
-    inset: 0;
-    background-image: radial-gradient(
-      rgba(255, 255, 255, 0.1) 1.5px,
-      transparent 1.5px
-    );
-    background-size: 32px 32px;
-    opacity: 0.15;
-    z-index: 1;
+  /* Decorative circles */
+  .hero-v3::before {
+    content: '';
+    position: absolute; top: -20%; right: -5%;
+    width: 55%; height: 90%;
+    background: radial-gradient(ellipse at center, rgba(57,96,251,.10) 0%, transparent 70%);
+    border-radius: 50%;
+    z-index: 0;
+  }
+  .hero-v3::after {
+    content: '';
+    position: absolute; bottom: -15%; left: -5%;
+    width: 40%; height: 60%;
+    background: radial-gradient(ellipse at center, rgba(194,206,254,.6) 0%, transparent 70%);
+    border-radius: 50%;
+    z-index: 0;
+  }
+  .hero-dot-grid {
+    position: absolute; inset: 0;
+    background-image: radial-gradient(var(--periwinkle) 1.5px, transparent 1.5px);
+    background-size: 28px 28px;
+    opacity: 0.5; z-index: 1;
   }
   .hero-content {
-    position: relative;
-    z-index: 10;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 40px;
-    width: 100%;
-    max-width: 1280px;
-    margin: 0 auto;
-    align-items: center;
+    position: relative; z-index: 10;
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 60px; width: 100%; max-width: 1280px;
+    margin: 0 auto; align-items: center;
   }
-  .hero-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(0, 180, 216, 0.15);
-    border: 1px solid rgba(0, 180, 216, 0.3);
-    padding: 6px 16px;
-    border-radius: 99px;
-    color: var(--c-cyan);
-    font-size: 0.85rem;
-    font-weight: 600;
-    margin-bottom: 24px;
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--neon-blue-lt); border: 1.5px solid var(--periwinkle);
+    padding: 6px 16px; border-radius: 99px; color: var(--neon-blue);
+    font-size: .82rem; font-weight: 700; margin-bottom: 20px;
   }
   .hero-title {
-    font-size: 3.5rem;
-    font-weight: 800;
-    line-height: 1.2;
-    margin-bottom: 20px;
+    font-size: clamp(2.4rem, 4vw, 3.6rem); font-weight: 900;
+    line-height: 1.15; color: #142258; margin-bottom: 20px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    -webkit-text-fill-color: #142258;
   }
-  .hero-title span {
-    color: var(--c-cyan);
+  .hero-title .accent {
+    background: linear-gradient(135deg, #3960FB 0%, #8b5cf6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: inline-block;
   }
   .hero-desc {
-    font-size: 1.1rem;
-    color: rgba(255, 255, 255, 0.7);
-    margin-bottom: 40px;
-    line-height: 1.6;
-    max-width: 500px;
+    font-size: 1.05rem; color: #6b7fa8; line-height: 1.7;
+    margin-bottom: 36px; max-width: 480px;
+    -webkit-text-fill-color: #6b7fa8;
   }
-  .hero-badges {
-    display: flex;
-    gap: 24px;
+  .hero-cta-row { display: flex; gap: 14px; align-items: center; margin-bottom: 48px; flex-wrap: wrap; }
+  .btn-hero-cta {
+    padding: 14px 32px; border-radius: 99px; font-weight: 700;
+    font-size: 1rem; background: #3960FB; color: #fff;
+    border: none; cursor: pointer; text-decoration: none;
+    box-shadow: 0 6px 20px rgba(57,96,251,.35); transition: all .2s;
+    display: inline-flex; align-items: center; gap: 8px;
+    -webkit-text-fill-color: #fff;
   }
-  .h-badge {
-    display: flex;
-    align-items: center;
-    gap: 12px;
+  .btn-hero-cta:hover { background: #2748d6; transform: translateY(-2px); box-shadow: 0 10px 28px rgba(57,96,251,.45); text-decoration: none; }
+  .btn-hero-outline {
+    padding: 14px 28px; border-radius: 99px; font-weight: 700;
+    font-size: 1rem; background: transparent; color: #142258;
+    border: 2px solid #C2CEFE; cursor: pointer; text-decoration: none;
+    transition: all .2s; display: inline-flex; align-items: center; gap: 8px;
+    -webkit-text-fill-color: #142258;
   }
-  .h-badge-icon {
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.05);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
-  .h-badge-info strong {
-    display: block;
-    font-size: 1.1rem;
-    font-weight: 800;
-  }
-  .h-badge-info span {
-    font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.6);
-  }
+  .btn-hero-outline:hover { border-color: #3960FB; color: #3960FB; background: #EBEFFF; text-decoration: none; -webkit-text-fill-color: #3960FB; }
 
-  .hero-img {
-    position: relative;
-    z-index: 10;
-    display: flex;
-    justify-content: flex-end;
-    animation: floatUp 4s ease-in-out infinite;
-  }
-  .hero-img svg {
-    width: 100%;
-    max-width: 500px;
-    filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.4));
-  }
-  @keyframes floatUp {
-    0%,
-    100% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(-20px);
-    }
-  }
+  .hero-stats { display: flex; gap: 32px; flex-wrap: wrap; }
+  .stat-item { text-align: left; }
+  .stat-num { font-size: 1.6rem; font-weight: 900; color: #142258; font-family: 'Plus Jakarta Sans', sans-serif; line-height: 1; -webkit-text-fill-color: #142258; }
+  .stat-label { font-size: .8rem; color: #6b7fa8; font-weight: 500; margin-top: 2px; -webkit-text-fill-color: #6b7fa8; }
 
-  /* Search Box */
-  .search-wrapper {
+  /* Hero visual */
+  .hero-visual {
+    position: relative; z-index: 10;
+    display: flex; justify-content: center; align-items: center;
+  }
+  .hero-phone-mockup {
     position: relative;
-    z-index: 20;
-    max-width: 1080px;
-    margin: -100px auto 60px;
-    padding: 0 5%;
+    animation: floatPhone 5s ease-in-out infinite;
   }
-  .search-card {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 24px;
-    padding: 32px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  @keyframes floatPhone {
+    0%, 100% { transform: translateY(0) rotate(-2deg); }
+    50% { transform: translateY(-18px) rotate(2deg); }
   }
-  .s-tabs {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 24px;
+  .phone-frame {
+    width: 280px; background: var(--penn-blue);
+    border-radius: 40px; padding: 16px;
+    box-shadow: 0 30px 60px rgba(20,34,88,.35), 0 0 0 1px rgba(194,206,254,.3);
   }
-  .s-tab {
-    padding: 8px 24px;
-    border-radius: 99px;
-    font-weight: 600;
-    font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.7);
-    cursor: pointer;
-    transition: all 0.2s;
-    background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+  .phone-screen {
+    background: var(--lavender); border-radius: 28px;
+    overflow: hidden; padding: 20px 16px;
+    min-height: 480px; position: relative;
   }
-  .s-tab.active {
-    background: var(--c-cyan);
-    color: #fff;
-    border-color: var(--c-cyan);
-  }
-  .search-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
+  .phone-top-bar {
+    display: flex; justify-content: space-between; align-items: center;
     margin-bottom: 16px;
   }
-  .s-input-group {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    position: relative;
+  .phone-greeting { font-size: .7rem; color: var(--muted); }
+  .phone-greeting strong { display: block; font-size: .95rem; color: var(--penn-blue); font-weight: 800; }
+  .phone-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--neon-blue), #8b5cf6);
+    border: 2px solid white; flex-shrink: 0;
   }
-  .s-label {
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: rgba(255, 255, 255, 0.6);
-    text-transform: uppercase;
+  /* Search tabs in phone */
+  .phone-tabs {
+    display: flex; gap: 6px; margin-bottom: 14px;
+    background: white; border-radius: 12px; padding: 5px;
   }
-  .s-input-wrapper {
-    position: relative;
-    display: flex;
-    align-items: center;
-    width: 100%;
+  .phone-tab {
+    flex: 1; text-align: center; padding: 6px 4px;
+    border-radius: 8px; font-size: .65rem; font-weight: 700;
+    color: var(--muted);
   }
-  .s-icon {
-    position: absolute;
-    left: 16px;
-    color: var(--c-cyan);
-    font-size: 1.1rem;
+  .phone-tab.active { background: var(--neon-blue); color: white; }
+  /* Route card in phone */
+  .phone-route-card {
+    background: white; border-radius: 16px; padding: 14px;
+    box-shadow: 0 4px 16px rgba(57,96,251,.1);
+    margin-bottom: 12px;
   }
-  .s-input {
-    width: 100%;
-    padding: 14px 16px 14px 44px;
-    background: var(--c-dark-input);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    color: #fff;
-    font-size: 0.95rem;
-    font-weight: 500;
-    transition: all 0.2s;
-    box-sizing: border-box;
-  }
-  .s-input:focus {
-    outline: none;
-    border-color: var(--c-cyan);
-  }
-  .s-input::placeholder {
-    color: rgba(255, 255, 255, 0.4);
-  }
-  .s-swap {
-    position: absolute;
-    right: -20px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: var(--c-navy);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 5;
-    cursor: pointer;
-    color: var(--c-cyan);
-    transition: all 0.2s;
-  }
-  .s-swap:hover {
-    background: var(--c-cyan);
-    color: #fff;
-  }
-  .btn-search {
-    width: 100%;
-    padding: 16px;
-    border-radius: 12px;
-    font-weight: 700;
-    font-size: 1rem;
-    background: var(--c-blue);
-    color: #fff;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    margin-top: 24px;
-    transition: all 0.2s;
-  }
-  .btn-search:hover {
-    background: #164b99;
-    transform: scale(1.02);
-  }
-  .s-grid-2 {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-  }
-  .s-input[type="date"]::-webkit-calendar-picker-indicator {
-    filter: invert(1);
-    cursor: pointer;
-  }
-
-  /* Sections */
-  .section {
-    padding: 80px 5%;
-    max-width: 1280px;
-    margin: 0 auto;
-  }
-  .sec-title {
-    text-align: center;
-    margin-bottom: 48px;
-  }
-  .sec-subtitle {
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: var(--c-cyan);
-    text-transform: uppercase;
+  .phone-route-row {
+    display: flex; align-items: center; justify-content: space-between;
     margin-bottom: 8px;
-    display: block;
   }
-  .sec-title h2 {
-    font-size: 2.2rem;
-    font-weight: 800;
-    color: #fff;
+  .phone-airport { font-size: 1.3rem; font-weight: 900; color: var(--penn-blue); }
+  .phone-city { font-size: .62rem; color: var(--muted); font-weight: 500; }
+  .phone-arrow {
+    width: 36px; height: 36px; background: var(--neon-blue);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    color: white; font-size: .9rem;
   }
-
-  /* Destinations */
-  .dest-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 24px;
+  .phone-field {
+    background: var(--lavender); border-radius: 10px; padding: 8px 12px;
+    margin-bottom: 8px;
   }
-  .dest-card {
-    position: relative;
-    border-radius: 16px;
-    overflow: hidden;
-    height: 280px;
-    cursor: pointer;
-    transition: all 0.3s;
-  }
-  .dest-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
-  }
-  .dest-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: all 0.5s;
-  }
-  .dest-card:hover .dest-img {
-    transform: scale(1.05);
-  }
-  .dest-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      to top,
-      rgba(15, 31, 61, 0.9) 0%,
-      transparent 60%
-    );
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    padding: 20px;
-  }
-  .dest-badge {
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    padding: 4px 10px;
-    border-radius: 8px;
-    font-size: 0.75rem;
-    font-weight: 700;
-  }
-  .badge-hot {
-    background: #ff4757;
-    color: #fff;
-  }
-  .badge-new {
-    background: #2ed573;
-    color: #fff;
-  }
-  .badge-deal {
-    background: #ffa502;
-    color: #fff;
-  }
-  .dest-info {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-  }
-  .dest-name {
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: #fff;
-  }
-  .dest-sub {
-    font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.7);
-  }
-  .dest-price {
-    text-align: right;
-  }
-  .dest-price span {
-    display: block;
-    font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.6);
-  }
-  .dest-price strong {
-    font-size: 1.1rem;
-    color: var(--c-cyan);
-  }
-
-  /* Features */
-  .feat-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 32px;
-  }
-  .feat-card {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 20px;
-    padding: 32px;
-    text-align: left;
-  }
-  .feat-icon {
-    width: 56px;
-    height: 56px;
-    border-radius: 14px;
-    background: rgba(0, 180, 216, 0.1);
-    color: var(--c-cyan);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    margin-bottom: 24px;
-  }
-  .feat-card h3 {
-    font-size: 1.2rem;
-    font-weight: 700;
-    margin-bottom: 12px;
-  }
-  .feat-card p {
-    font-size: 0.95rem;
-    color: rgba(255, 255, 255, 0.6);
-    line-height: 1.6;
-  }
-
-  /* Newsletter */
-  .newsletter {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 24px;
-    padding: 60px 5%;
+  .phone-field-label { font-size: .58rem; color: var(--muted); text-transform: uppercase; font-weight: 700; }
+  .phone-field-value { font-size: .8rem; color: var(--penn-blue); font-weight: 600; }
+  .phone-btn {
+    width: 100%; background: var(--neon-blue); color: white;
+    border: none; border-radius: 12px; padding: 11px;
+    font-size: .82rem; font-weight: 700; cursor: pointer;
     text-align: center;
-    margin: 60px auto 100px;
-    max-width: 1080px;
   }
-  .nl-icon {
-    font-size: 2rem;
-    margin-bottom: 16px;
+  /* Flight cards in phone */
+  .phone-flight-card {
+    background: white; border-radius: 14px; padding: 12px;
+    margin-bottom: 8px; box-shadow: 0 2px 8px rgba(57,96,251,.08);
   }
-  .newsletter h2 {
-    font-size: 2rem;
-    font-weight: 800;
-    margin-bottom: 12px;
+  .phone-airline-row {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 8px;
   }
-  .newsletter p {
-    color: rgba(255, 255, 255, 0.6);
-    margin-bottom: 32px;
-    max-width: 500px;
-    margin-inline: auto;
+  .phone-airline-name { font-size: .7rem; font-weight: 700; color: var(--penn-blue); }
+  .phone-price { font-size: .85rem; font-weight: 800; color: var(--neon-blue); }
+  .phone-route-info {
+    display: flex; align-items: center; gap: 4px;
+    font-size: .65rem; color: var(--muted);
   }
-  .nl-form {
-    display: flex;
-    gap: 12px;
-    max-width: 480px;
-    margin: 0 auto;
+  .phone-dot-line { flex: 1; height: 1px; background: var(--periwinkle); position: relative; margin: 0 6px; }
+  .phone-dot-line::before, .phone-dot-line::after {
+    content: ''; position: absolute; top: 50%; transform: translateY(-50%);
+    width: 4px; height: 4px; border-radius: 50%; background: var(--neon-blue);
   }
-  .nl-input {
-    flex: 1;
-    padding: 14px 20px;
-    border-radius: 12px;
-    background: var(--c-dark-input);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #fff;
-    font-size: 0.95rem;
-    outline: none;
-  }
-  .btn-nl {
-    padding: 14px 28px;
-    border-radius: 12px;
-    background: var(--c-cyan);
-    color: #fff;
-    font-weight: 700;
-    border: none;
-    cursor: pointer;
-    transition: 0.2s;
-  }
-  .btn-nl:hover {
-    background: #0099b8;
+  .phone-dot-line::before { left: 0; }
+  .phone-dot-line::after { right: 0; }
+  .phone-badge {
+    display: inline-block; padding: 2px 8px; border-radius: 99px;
+    font-size: .55rem; font-weight: 700; background: var(--lavender); color: var(--neon-blue);
   }
 
+  /* Floating badge around phone */
+  .float-badge {
+    position: absolute; background: white;
+    border-radius: 14px; padding: 10px 14px;
+    box-shadow: 0 8px 24px rgba(57,96,251,.15);
+    border: 1.5px solid var(--periwinkle);
+    white-space: nowrap;
+    animation: floatBadge 4s ease-in-out infinite;
+  }
+  @keyframes floatBadge {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  .float-badge-1 { top: 10%; left: -80px; animation-delay: 0s; }
+  .float-badge-2 { bottom: 20%; right: -70px; animation-delay: 1.5s; }
+  .float-badge-label { font-size: .62rem; color: var(--muted); font-weight: 500; }
+  .float-badge-val { font-size: .9rem; font-weight: 800; color: var(--penn-blue); }
+
+  /* ── SEARCH BOX ── */
+  .search-section {
+    background: white; padding: 0 5% 60px;
+  }
+  .search-card-new {
+    max-width: 1080px; margin: 0 auto;
+    background: white; border-radius: 24px;
+    border: 1.5px solid var(--periwinkle);
+    box-shadow: 0 8px 40px rgba(57,96,251,.12);
+    padding: 32px 36px;
+  }
+  .s-tabs-new {
+    display: flex; gap: 4px; margin-bottom: 28px;
+    background: var(--lavender); border-radius: 12px; padding: 4px;
+    width: fit-content;
+  }
+  .s-tab-new {
+    padding: 8px 20px; border-radius: 9px;
+    font-weight: 600; font-size: .88rem; color: var(--muted);
+    cursor: pointer; transition: all 0.2s;
+    background: transparent; border: none; font-family: inherit;
+  }
+  .s-tab-new.active { background: var(--neon-blue); color: white; box-shadow: 0 2px 8px rgba(57,96,251,.3); }
+  .s-tab-new:not(.active):hover { color: var(--neon-blue); }
+
+  .search-fields-row {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr 1fr 1fr 1fr;
+    gap: 12px; align-items: end; margin-bottom: 16px;
+  }
+  .sf-group { display: flex; flex-direction: column; gap: 6px; }
+  .sf-label-new {
+    font-size: .72rem; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .06em;
+  }
+  .sf-input-new {
+    width: 100%; padding: 13px 16px; border-radius: 12px;
+    border: 1.5px solid var(--periwinkle);
+    background: var(--lavender); color: var(--penn-blue);
+    font-size: .93rem; font-weight: 600; outline: none;
+    transition: all .18s; font-family: inherit;
+  }
+  .sf-input-new:focus { border-color: var(--neon-blue); background: white; box-shadow: 0 0 0 3px rgba(57,96,251,.10); }
+  .sf-input-new::placeholder { color: var(--muted); font-weight: 400; }
+  .sf-input-new[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.4); cursor: pointer; }
+  .sf-swap-btn {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: white; border: 1.5px solid var(--periwinkle);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--neon-blue); cursor: pointer; margin-bottom: 2px;
+    transition: all .18s; flex-shrink: 0; align-self: flex-end;
+  }
+  .sf-swap-btn:hover { background: var(--neon-blue); color: white; border-color: var(--neon-blue); }
+  .btn-search-new {
+    width: 100%; padding: 15px; border-radius: 12px;
+    font-weight: 700; font-size: 1rem;
+    background: var(--neon-blue); color: white; border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    box-shadow: 0 4px 16px rgba(57,96,251,.35); transition: all .2s;
+    font-family: inherit;
+  }
+  .btn-search-new:hover { background: var(--neon-blue-h); transform: translateY(-1px); box-shadow: 0 8px 24px rgba(57,96,251,.45); }
+
+  /* ── SECTION COMMONS ── */
+  .home-section { padding: 72px 5%; background: white; }
+  .home-section.alt-bg { background: var(--lavender); }
+  .home-section-inner { max-width: 1280px; margin: 0 auto; }
+  .section-header-new { text-align: center; margin-bottom: 48px; }
+  .sec-eyebrow {
+    display: inline-block; font-size: .8rem; font-weight: 700;
+    color: var(--neon-blue); text-transform: uppercase; letter-spacing: .1em;
+    margin-bottom: 10px;
+  }
+  .sec-title-new {
+    font-size: clamp(1.8rem, 3vw, 2.4rem); font-weight: 900;
+    color: var(--penn-blue); font-family: var(--font-heading);
+  }
+  .sec-desc { color: var(--muted); font-size: .97rem; margin-top: 10px; }
+
+  /* ── DESTINATIONS ── */
+  .dest-grid-new {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;
+  }
+  .dest-card-new {
+    position: relative; border-radius: 20px; overflow: hidden;
+    height: 260px; cursor: pointer; transition: all .3s;
+    box-shadow: var(--shadow);
+  }
+  .dest-card-new:hover { transform: translateY(-6px); box-shadow: var(--shadow-lg); }
+  .dest-img-new { width: 100%; height: 100%; object-fit: cover; transition: transform .5s; }
+  .dest-card-new:hover .dest-img-new { transform: scale(1.06); }
+  .dest-overlay-new {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(20,34,88,.92) 0%, rgba(20,34,88,.2) 60%, transparent 100%);
+    display: flex; flex-direction: column; justify-content: flex-end; padding: 20px;
+  }
+  .dest-badge-new {
+    position: absolute; top: 14px; right: 14px;
+    padding: 5px 12px; border-radius: 99px;
+    font-size: .7rem; font-weight: 700;
+  }
+  .badge-hot  { background: #ff4757; color: #fff; }
+  .badge-new  { background: #10b981; color: #fff; }
+  .badge-deal { background: #f59e0b; color: #fff; }
+  .dest-name-new { font-size: 1.15rem; font-weight: 800; color: #fff; margin-bottom: 2px; }
+  .dest-sub-new { font-size: .75rem; color: rgba(255,255,255,.65); }
+  .dest-price-new { margin-top: 8px; }
+  .dest-price-new span { font-size: .72rem; color: rgba(255,255,255,.6); }
+  .dest-price-new strong { font-size: 1.05rem; color: #fff; display: block; }
+
+  /* ── FEATURES ── */
+  .feat-grid-new {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+  }
+  .feat-card-new {
+    background: white; border: 1.5px solid var(--periwinkle);
+    border-radius: 20px; padding: 32px;
+    transition: all .2s; box-shadow: var(--shadow);
+  }
+  .feat-card-new:hover { border-color: var(--neon-blue); box-shadow: var(--shadow-md); transform: translateY(-3px); }
+  .feat-icon-new {
+    width: 56px; height: 56px; border-radius: 16px;
+    background: var(--neon-blue-lt);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; margin-bottom: 20px; color: var(--neon-blue);
+  }
+  .feat-card-new h3 { font-size: 1.1rem; font-weight: 800; color: var(--penn-blue); margin-bottom: 10px; }
+  .feat-card-new p { font-size: .92rem; color: var(--muted); line-height: 1.65; }
+
+  /* ── NEWSLETTER ── */
+  .nl-section {
+    background: linear-gradient(135deg, var(--penn-blue) 0%, #1e3a8a 50%, var(--neon-blue) 100%);
+    padding: 80px 5%;
+  }
+  .nl-inner { max-width: 600px; margin: 0 auto; text-align: center; }
+  .nl-emoji { font-size: 2.5rem; margin-bottom: 16px; }
+  .nl-title { font-size: 2rem; font-weight: 900; color: white; margin-bottom: 10px; font-family: var(--font-heading); }
+  .nl-desc { color: rgba(255,255,255,.7); margin-bottom: 32px; font-size: .97rem; }
+  .nl-form-new { display: flex; gap: 10px; max-width: 440px; margin: 0 auto; }
+  .nl-input-new {
+    flex: 1; padding: 14px 20px; border-radius: 12px;
+    background: rgba(255,255,255,.12); border: 1.5px solid rgba(255,255,255,.2);
+    color: white; font-size: .93rem; outline: none; font-family: inherit;
+    transition: all .18s;
+  }
+  .nl-input-new::placeholder { color: rgba(255,255,255,.5); }
+  .nl-input-new:focus { background: rgba(255,255,255,.2); border-color: rgba(255,255,255,.4); }
+  .btn-nl-new {
+    padding: 14px 24px; border-radius: 12px;
+    background: white; color: var(--neon-blue);
+    font-weight: 700; border: none; cursor: pointer; transition: all .18s;
+    font-family: inherit; white-space: nowrap;
+  }
+  .btn-nl-new:hover { background: var(--lavender); transform: translateY(-1px); }
+
+  /* ── RESPONSIVE ── */
   @media (max-width: 1024px) {
-    .hero-content {
-      grid-template-columns: 1fr;
-      text-align: center;
-    }
-    .hero-img {
-      display: none;
-    }
-    .hero-badges {
-      justify-content: center;
-    }
-    .hero-desc {
-      margin-inline: auto;
-    }
-    .dest-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-    .feat-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
+    .hero-content { grid-template-columns: 1fr; gap: 40px; text-align: center; }
+    .hero-visual { display: none; }
+    .hero-cta-row { justify-content: center; }
+    .hero-stats { justify-content: center; }
+    .hero-desc { margin: 0 auto 36px; }
+    .dest-grid-new { grid-template-columns: repeat(2, 1fr); }
+    .feat-grid-new { grid-template-columns: repeat(2, 1fr); }
   }
   @media (max-width: 768px) {
-    .search-grid,
-    .s-grid-2 {
-      grid-template-columns: 1fr;
-    }
-    .s-swap {
-      display: none;
-    }
-    .feat-grid {
-      grid-template-columns: 1fr;
-    }
-    .dest-grid {
-      grid-template-columns: 1fr;
-    }
-    .hero-title {
-      font-size: 2.5rem;
-    }
-    .nl-form {
-      flex-direction: column;
-    }
-    .hero-badges {
-      flex-direction: column;
-      align-items: center;
-      gap: 16px;
-    }
-    .s-input-group:first-child .s-input-wrapper {
-      margin-bottom: 10px;
-    }
+    .hero-v3 { padding: 100px 5% 60px; min-height: auto; }
+    .search-fields-row { grid-template-columns: 1fr; }
+    .sf-swap-btn { display: none; }
+    .search-card-new { padding: 20px; border-radius: 16px; }
+    .feat-grid-new, .dest-grid-new { grid-template-columns: 1fr; }
+    .nl-form-new { flex-direction: column; }
+    .float-badge { display: none; }
   }
 </style>
-{% endblock %} {% block content %}
+{% endblock %}
 
-<!-- Hero Section -->
+{% block content %}
 
-<section class="hero-v3" style="background: linear-gradient(135deg, var(--navy-950) 0%, var(--navy-900) 50%, var(--navy-800) 100%);">
-  <div class="hero-pattern" style="opacity: 0.12; background-image: radial-gradient(rgba(255, 255, 255, 0.4) 1px, transparent 1px); background-size: 20px 20px;"></div>
-  <!-- Blob glows -->
-  <div style="position: absolute; top: 20%; left: -10%; width: 40%; height: 60%; background: var(--cyan-500); filter: blur(120px); opacity: 0.15; border-radius: 50%;"></div>
-  <div style="position: absolute; bottom: -10%; right: 10%; width: 30%; height: 50%; background: var(--blue-600); filter: blur(120px); opacity: 0.15; border-radius: 50%;"></div>
-  
+<!-- ╔══ HERO ══╗ -->
+<section class="hero-v3">
+  <div class="hero-dot-grid"></div>
+
   <div class="hero-content">
+    <!-- Left: Text -->
     <div class="hero-text">
-      <h1 class="hero-title" style="font-family: var(--font-heading); font-weight: 800;">
-        Hành trình <span style="background: linear-gradient(135deg, var(--cyan-500), var(--blue-600)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">của bạn</span><br />bắt đầu từ đây
+      <div class="hero-eyebrow">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+        Đặt vé máy bay nhanh &amp; tiện
+      </div>
+      <h1 class="hero-title" style="color:#142258; -webkit-text-fill-color:#142258;">
+        <span style="color:#142258; -webkit-text-fill-color:#142258;">Hành trình </span><span class="accent">của bạn</span><br/><span style="color:#142258; -webkit-text-fill-color:#142258;">bắt đầu từ đây</span>
       </h1>
-      
-      <div class="hero-badges">
-        <div class="h-badge">
-          <div class="h-badge-icon">✈</div>
-          <div class="h-badge-info">
-            <strong>2M+ Hành khách</strong>
-          </div>
+      <p class="hero-desc">
+        Tìm kiếm và đặt vé máy bay với hàng trăm chuyến bay mỗi ngày. Giá tốt, đặt nhanh, nhận vé ngay.
+      </p>
+      <div class="hero-cta-row">
+        <a href="{% url 'recommendations' %}" class="btn-hero-cta">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Tìm chuyến bay
+        </a>
+        {% if not user.is_authenticated %}
+        <a href="{% url 'register' %}" class="btn-hero-outline">Đăng ký miễn phí</a>
+        {% else %}
+        <a href="{% url 'my_bookings' %}" class="btn-hero-outline">Vé của tôi</a>
+        {% endif %}
+      </div>
+      <div class="hero-stats">
+        <div class="stat-item">
+          <div class="stat-num">2M+</div>
+          <div class="stat-label">Hành khách hài lòng</div>
         </div>
-        <div class="h-badge">
-          <div class="h-badge-icon">🗺</div>
-          <div class="h-badge-info">
-            <strong>150+ Đường bay</strong>
-          </div>
+        <div class="stat-item">
+          <div class="stat-num">150+</div>
+          <div class="stat-label">Đường bay phủ sóng</div>
         </div>
-        <div class="h-badge">
-          <div class="h-badge-icon">⭐</div>
-          <div class="h-badge-info">
-            <strong>4.9★</strong>
-          </div>
+        <div class="stat-item">
+          <div class="stat-num">4.9⭐</div>
+          <div class="stat-label">Đánh giá trung bình</div>
         </div>
       </div>
     </div>
 
-    <div class="hero-img" style="animation: floatUp 5s ease-in-out infinite;">
-      <!-- SVG Máy bay -->
-      <svg viewBox="0 0 500 300" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:500px;">
-        <!-- Contrail -->
-        <path d="M50 200 Q 150 200 250 160" stroke="rgba(255,255,255,0.2)" stroke-width="4" stroke-dasharray="8 8" fill="none"/>
-        <path d="M70 220 Q 170 220 270 180" stroke="rgba(255,255,255,0.1)" stroke-width="3" stroke-dasharray="6 6" fill="none"/>
-        <!-- Thân máy bay -->
-        <rect x="200" y="130" width="220" height="40" rx="20" fill="#ffffff" />
-        <!-- Đuôi máy bay -->
-        <path d="M200 150 L220 100 L250 100 L240 150 Z" fill="#00b4d8" />
-        <!-- Cánh chính -->
-        <path d="M280 150 L340 220 L380 220 L350 150 Z" fill="#e2e8f0" />
-        <path d="M300 130 L350 70 L390 70 L360 130 Z" fill="#cbd5e1" />
-        <!-- Động cơ -->
-        <rect x="310" y="170" width="30" height="15" rx="5" fill="#94a3b8" />
-        <!-- Cửa sổ -->
-        <circle cx="280" cy="145" r="4" fill="#0f1f3d" />
-        <circle cx="300" cy="145" r="4" fill="#0f1f3d" />
-        <circle cx="320" cy="145" r="4" fill="#0f1f3d" />
-        <circle cx="340" cy="145" r="4" fill="#0f1f3d" />
-        <!-- Buồng lái -->
-        <path d="M390 135 Q 410 135 415 150 L390 150 Z" fill="#0f1f3d" />
-      </svg>
+    <!-- Right: Phone Mockup -->
+    <div class="hero-visual">
+      <div class="hero-phone-mockup">
+        <!-- Floating badges -->
+        <div class="float-badge float-badge-1">
+          <div class="float-badge-label">✈ Chuyến sắp tới</div>
+          <div class="float-badge-val">HAN → SGN</div>
+        </div>
+        <div class="float-badge float-badge-2">
+          <div class="float-badge-label">💳 Giá từ</div>
+          <div class="float-badge-val">649.000 đ</div>
+        </div>
+
+        <!-- Phone frame -->
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="phone-top-bar">
+              <div class="phone-greeting">
+                Xin chào,
+                <strong>{% if user.is_authenticated %}{{ user.username }}{% else %}Khách{% endif %}! 👋</strong>
+              </div>
+              <div class="phone-avatar"></div>
+            </div>
+            <!-- Tabs -->
+            <div class="phone-tabs">
+              <div class="phone-tab active">Khứ hồi</div>
+              <div class="phone-tab">Một chiều</div>
+              <div class="phone-tab">Nhiều chặng</div>
+            </div>
+            <!-- Route card -->
+            <div class="phone-route-card">
+              <div class="phone-route-row">
+                <div>
+                  <div class="phone-airport">HAN</div>
+                  <div class="phone-city">Hà Nội</div>
+                </div>
+                <div class="phone-arrow">⇄</div>
+                <div style="text-align: right;">
+                  <div class="phone-airport">SGN</div>
+                  <div class="phone-city">Hồ Chí Minh</div>
+                </div>
+              </div>
+              <div class="phone-field">
+                <div class="phone-field-label">Ngày đi</div>
+                <div class="phone-field-value">📅 01 tháng 03, 2025</div>
+              </div>
+              <div class="phone-field" style="margin-bottom: 12px;">
+                <div class="phone-field-label">Hành khách · Hạng ghế</div>
+                <div class="phone-field-value">👥 2 hành khách · Thương gia</div>
+              </div>
+              <button class="phone-btn">🔍 TÌM CHUYẾN BAY</button>
+            </div>
+            <!-- Flight cards -->
+            <div class="phone-flight-card">
+              <div class="phone-airline-row">
+                <span class="phone-airline-name">Vietnam Airlines</span>
+                <span class="phone-price">1.180.000 đ</span>
+              </div>
+              <div class="phone-route-info">
+                <span>06:00</span>
+                <div class="phone-dot-line"></div>
+                <span>08:10</span>
+              </div>
+              <div style="margin-top: 6px;"><span class="phone-badge">Hoàn tiền</span> <span class="phone-badge">Bay thẳng</span></div>
+            </div>
+            <div class="phone-flight-card">
+              <div class="phone-airline-row">
+                <span class="phone-airline-name">VietJet Air</span>
+                <span class="phone-price">649.000 đ</span>
+              </div>
+              <div class="phone-route-info">
+                <span>10:20</span>
+                <div class="phone-dot-line"></div>
+                <span>12:25</span>
+              </div>
+              <div style="margin-top: 6px;"><span class="phone-badge">Bay thẳng</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
-
-<!-- Search Section -->
-
-<div class="search-wrapper" style="margin-top: -60px;">
-  <div class="search-card" style="background: rgba(255, 255, 255, 0.06); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 20px;">
-    <div class="s-tabs">
-      <button class="s-tab active" style="background: linear-gradient(135deg, var(--cyan-500), var(--blue-600)); border: none; border-radius: 99px;">⇄ Khứ hồi</button>
-      <button class="s-tab" style="border-radius: 99px;">→ Một chiều</button>
-    </div>
-    <form method="GET" action="{% url 'recommendations' %}">
-      <!-- Grid fields -->
-      <div class="search-grid" style="grid-template-columns: 1fr auto 1fr 1fr 1fr 1fr 1fr; align-items: end;">
-        <!-- Điểm đi -->
-        <div class="s-input-group">
-          <label class="s-label" style="text-transform: uppercase; letter-spacing: 1px;">Điểm đi</label>
-          <input type="text" class="s-input" name="departure" value="{{ departure }}" placeholder="Từ..." style="border-radius: 10px;" />
-        </div>
-        
-        <!-- Mũi tên ⇄ -->
-        <div style="color: var(--cyan-500); font-size: 1.5rem; padding-bottom: 10px; cursor: pointer;">⇄</div>
-        
-        <!-- Điểm đến -->
-        <div class="s-input-group">
-          <label class="s-label" style="text-transform: uppercase; letter-spacing: 1px;">Điểm đến</label>
-          <input type="text" class="s-input" name="arrival" value="{{ arrival }}" placeholder="Đến..." style="border-radius: 10px;" />
-        </div>
-
-        <!-- Ngày đi -->
-        <div class="s-input-group">
-          <label class="s-label" style="text-transform: uppercase; letter-spacing: 1px;">Ngày đi</label>
-          <input type="date" class="s-input" name="date" value="{{ date }}" style="border-radius: 10px;" />
-        </div>
-
-        <!-- Ngày về -->
-        <div class="s-input-group">
-          <label class="s-label" style="text-transform: uppercase; letter-spacing: 1px;">Ngày về</label>
-          <input type="date" class="s-input" name="return_date" style="border-radius: 10px;" />
-        </div>
-
-        <!-- Hành khách -->
-        <div class="s-input-group">
-          <label class="s-label" style="text-transform: uppercase; letter-spacing: 1px;">Hành khách</label>
-          <select class="s-input" style="border-radius: 10px; appearance: none;">
-            <option>1 người lớn</option>
-            <option>2 người lớn</option>
-          </select>
-        </div>
-
-        <!-- Hạng ghế -->
-        <div class="s-input-group">
-          <label class="s-label" style="text-transform: uppercase; letter-spacing: 1px;">Hạng ghế</label>
-          <select class="s-input" style="border-radius: 10px; appearance: none;">
-            <option>Phổ thông</option>
-            <option>Thương gia</option>
-          </select>
-        </div>
+<!-- ╔══ SEARCH BOX ══╗ -->
+<section class="search-section" style="padding-top: 0;">
+  <div style="background: white; padding: 0 5%;">
+    <div class="search-card-new" style="margin-top: -40px; position: relative; z-index: 20;">
+      <div class="s-tabs-new">
+        <button class="s-tab-new active">⇄ Khứ hồi</button>
+        <button class="s-tab-new">→ Một chiều</button>
       </div>
-      
-      <button type="submit" class="btn-search" style="width: 100%; border-radius: 10px; background: linear-gradient(135deg, var(--cyan-500), var(--blue-600)); box-shadow: 0 4px 15px rgba(0, 180, 216, 0.4); border: none;">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        Tìm chuyến bay
-      </button>
-    </form>
-  </div>
-</div>
-
-
-<!-- Popular Destinations -->
-<section class="section">
-  <div class="sec-title">
-    <span class="sec-subtitle">Khám phá</span>
-    <h2>Điểm đến phổ biến</h2>
-  </div>
-  <div class="dest-grid">
-    <div class="dest-card">
-      <img
-        src="https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?w=500&q=80"
-        alt="Đà Nẵng"
-        class="dest-img"
-      />
-      <div class="dest-overlay">
-        <span class="dest-badge badge-hot">Hot</span>
-        <div class="dest-info">
-          <div>
-            <div class="dest-name">Đà Nẵng</div>
-            <div class="dest-sub">Việt Nam · DAD</div>
+      <form method="GET" action="{% url 'recommendations' %}">
+        <div class="search-fields-row">
+          <!-- Điểm đi -->
+          <div class="sf-group">
+            <label class="sf-label-new">✈ Điểm đi</label>
+            <input type="text" class="sf-input-new" name="departure" value="{{ departure }}" placeholder="Thành phố, sân bay..." />
           </div>
-          <div class="dest-price">
+
+          <!-- Swap -->
+          <button type="button" class="sf-swap-btn" onclick="swapAirports(this)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>
+          </button>
+
+          <!-- Điểm đến -->
+          <div class="sf-group">
+            <label class="sf-label-new">🛬 Điểm đến</label>
+            <input type="text" class="sf-input-new" name="arrival" value="{{ arrival }}" placeholder="Thành phố, sân bay..." />
+          </div>
+
+          <!-- Ngày đi -->
+          <div class="sf-group">
+            <label class="sf-label-new">📅 Ngày đi</label>
+            <input type="date" class="sf-input-new" name="date" value="{{ date }}" />
+          </div>
+
+          <!-- Hành khách -->
+          <div class="sf-group">
+            <label class="sf-label-new">👥 Hành khách</label>
+            <select class="sf-input-new" style="appearance: none; cursor: pointer;">
+              <option>1 người lớn</option>
+              <option>2 người lớn</option>
+              <option>3 người lớn</option>
+            </select>
+          </div>
+
+          <!-- Hạng ghế -->
+          <div class="sf-group">
+            <label class="sf-label-new">💺 Hạng ghế</label>
+            <select class="sf-input-new" style="appearance: none; cursor: pointer;">
+              <option>Phổ thông</option>
+              <option>Phổ thông đặc biệt</option>
+              <option>Thương gia</option>
+              <option>Hạng nhất</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-search-new">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Tìm chuyến bay ngay
+        </button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ╔══ DESTINATIONS ══╗ -->
+<section class="home-section">
+  <div class="home-section-inner">
+    <div class="section-header-new">
+      <span class="sec-eyebrow">✈ Khám phá</span>
+      <h2 class="sec-title-new">Điểm đến phổ biến</h2>
+      <p class="sec-desc">Những điểm đến được yêu thích nhất với giá vé tốt nhất</p>
+    </div>
+    <div class="dest-grid-new">
+      <div class="dest-card-new">
+        <img src="https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?w=500&q=80" alt="Đà Nẵng" class="dest-img-new"/>
+        <div class="dest-overlay-new">
+          <span class="dest-badge-new badge-hot">Hot 🔥</span>
+          <div class="dest-name-new">Đà Nẵng</div>
+          <div class="dest-sub-new">Việt Nam · DAD</div>
+          <div class="dest-price-new">
             <span>từ</span>
             <strong>899.000 đ</strong>
           </div>
         </div>
       </div>
-    </div>
-
-    <div class="dest-card">
-      <img
-        src="https://www.vntrip.vn/cam-nang/chum-anh-bien-dao-phu-quoc-qua-ong-kinh-nhiep-anh-743"
-        alt="Phú Quốc"
-        class="dest-img"
-      />
-      <div class="dest-overlay">
-        <span class="dest-badge badge-new">Mới</span>
-        <div class="dest-info">
-          <div>
-            <div class="dest-name">Phú Quốc</div>
-            <div class="dest-sub">Việt Nam · PQC</div>
-          </div>
-          <div class="dest-price">
+      <div class="dest-card-new">
+        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500&q=80" alt="Phú Quốc" class="dest-img-new"/>
+        <div class="dest-overlay-new">
+          <span class="dest-badge-new badge-new">Mới ✨</span>
+          <div class="dest-name-new">Phú Quốc</div>
+          <div class="dest-sub-new">Việt Nam · PQC</div>
+          <div class="dest-price-new">
             <span>từ</span>
             <strong>1.190.000 đ</strong>
           </div>
         </div>
       </div>
-    </div>
-
-    <div class="dest-card">
-      <img
-        src="https://images.unsplash.com/photo-1579705915233-a3d8b375bde1?w=500&q=80"
-        alt="Hội An"
-        class="dest-img"
-      />
-      <div class="dest-overlay">
-        <span class="dest-badge badge-hot">Hot</span>
-        <div class="dest-info">
-          <div>
-            <div class="dest-name">Đà Lạt</div>
-            <div class="dest-sub">Việt Nam · VCS</div>
-          </div>
-          <div class="dest-price">
+      <div class="dest-card-new">
+        <img src="https://images.unsplash.com/photo-1579705915233-a3d8b375bde1?w=500&q=80" alt="Đà Lạt" class="dest-img-new"/>
+        <div class="dest-overlay-new">
+          <span class="dest-badge-new badge-hot">Hot 🔥</span>
+          <div class="dest-name-new">Đà Lạt</div>
+          <div class="dest-sub-new">Việt Nam · DLI</div>
+          <div class="dest-price-new">
             <span>từ</span>
             <strong>750.000 đ</strong>
           </div>
         </div>
       </div>
-    </div>
-
-    <div class="dest-card">
-      <img
-        src="https://images.unsplash.com/photo-1555513681-4eb75be351b6?w=500&q=80"
-        alt="Nha Trang"
-        class="dest-img"
-      />
-      <div class="dest-overlay">
-        <span class="dest-badge badge-deal">Ưu đãi</span>
-        <div class="dest-info">
-          <div>
-            <div class="dest-name">Nha Trang</div>
-            <div class="dest-sub">Việt Nam · CXR</div>
-          </div>
-          <div class="dest-price">
+      <div class="dest-card-new">
+        <img src="https://images.unsplash.com/photo-1555513681-4eb75be351b6?w=500&q=80" alt="Nha Trang" class="dest-img-new"/>
+        <div class="dest-overlay-new">
+          <span class="dest-badge-new badge-deal">Ưu đãi 💸</span>
+          <div class="dest-name-new">Nha Trang</div>
+          <div class="dest-sub-new">Việt Nam · CXR</div>
+          <div class="dest-price-new">
             <span>từ</span>
             <strong>649.000 đ</strong>
           </div>
@@ -779,51 +658,86 @@ trình của bạn bắt đầu từ đây{% endblock %} {% block extra_css %}
   </div>
 </section>
 
-<!-- Features -->
-<section class="section">
-  <div class="sec-title">
-    <span class="sec-subtitle">Lý do chọn chúng tôi</span>
-    <h2>Tại sao chọn SkyBook?</h2>
-  </div>
-  <div class="feat-grid">
-    <div class="feat-card">
-      <div class="feat-icon">✔️</div>
-      <h3>Giá tốt nhất</h3>
-      <p>
-        Cam kết giá vé rẻ nhất thị trường. Nếu bạn tìm thấy giá thấp hơn, chúng
-        tôi sẽ hoàn tiền chênh lệch.
-      </p>
+<!-- ╔══ FEATURES ══╗ -->
+<section class="home-section alt-bg">
+  <div class="home-section-inner">
+    <div class="section-header-new">
+      <span class="sec-eyebrow">💎 Vì sao chọn chúng tôi</span>
+      <h2 class="sec-title-new">Tại sao chọn SkyBook?</h2>
+      <p class="sec-desc">Trải nghiệm đặt vé đơn giản, nhanh chóng và đáng tin cậy</p>
     </div>
-    <div class="feat-card">
-      <div class="feat-icon">⚡</div>
-      <h3>Đặt vé nhanh chóng</h3>
-      <p>
-        Chỉ mất 3 bước để hoàn tất đặt vé. Thanh toán an toàn, nhận vé ngay qua
-        email trong vài giây.
-      </p>
-    </div>
-    <div class="feat-card">
-      <div class="feat-icon">💬</div>
-      <h3>Hỗ trợ 24/7</h3>
-      <p>
-        Đội ngũ hỗ trợ luôn sẵn sàng giải đáp mọi thắc mắc. Chat trực tiếp, gọi
-        điện hoặc email bất kỳ lúc nào.
-      </p>
+    <div class="feat-grid-new">
+      <div class="feat-card-new">
+        <div class="feat-icon-new">💰</div>
+        <h3>Giá tốt nhất đảm bảo</h3>
+        <p>Cam kết giá vé rẻ nhất thị trường. Nếu bạn tìm thấy giá thấp hơn, chúng tôi sẽ hoàn tiền chênh lệch.</p>
+      </div>
+      <div class="feat-card-new">
+        <div class="feat-icon-new">⚡</div>
+        <h3>Đặt vé trong 3 phút</h3>
+        <p>Chỉ mất 3 bước đơn giản để hoàn tất đặt vé. Thanh toán an toàn, nhận vé ngay trong vài giây.</p>
+      </div>
+      <div class="feat-card-new">
+        <div class="feat-icon-new">🛡️</div>
+        <h3>An toàn & Bảo mật</h3>
+        <p>Thông tin thanh toán được mã hóa 256-bit SSL. Chúng tôi không lưu trữ thông tin thẻ của bạn.</p>
+      </div>
+      <div class="feat-card-new">
+        <div class="feat-icon-new">💬</div>
+        <h3>Hỗ trợ 24/7</h3>
+        <p>Đội ngũ hỗ trợ luôn sẵn sàng. Chat trực tiếp, gọi điện hoặc email bất kỳ lúc nào.</p>
+      </div>
+      <div class="feat-card-new">
+        <div class="feat-icon-new">🔄</div>
+        <h3>Đổi / Hoàn vé dễ dàng</h3>
+        <p>Chính sách hoàn tiền linh hoạt. Thay đổi lịch bay hoặc hoàn vé chỉ với vài click.</p>
+      </div>
+      <div class="feat-card-new">
+        <div class="feat-icon-new">📱</div>
+        <h3>Vé điện tử tức thì</h3>
+        <p>Nhận vé điện tử ngay sau khi đặt thành công. Lưu trữ trên app, không cần in giấy.</p>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- Newsletter -->
-<div class="newsletter">
-  <div class="nl-icon">✉️</div>
-  <h2>Nhận ưu đãi độc quyền</h2>
-  <p>
-    Đăng ký ngay để nhận thông báo giá vé rẻ và ưu đãi đặc biệt trước mọi người.
-  </p>
-  <div class="nl-form">
-    <input type="email" class="nl-input" placeholder="email@example.com" />
-    <button class="btn-nl">Đăng ký ngay</button>
+<!-- ╔══ NEWSLETTER ══╗ -->
+<section class="nl-section">
+  <div class="nl-inner">
+    <div class="nl-emoji">✉️</div>
+    <h2 class="nl-title">Nhận ưu đãi độc quyền</h2>
+    <p class="nl-desc">Đăng ký ngay để nhận thông báo giá vé rẻ và ưu đãi đặc biệt trước mọi người.</p>
+    <div class="nl-form-new">
+      <input type="email" class="nl-input-new" placeholder="email@example.com" />
+      <button class="btn-nl-new">Đăng ký ngay</button>
+    </div>
   </div>
-</div>
+</section>
 
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Tab switching
+  document.querySelectorAll('.s-tab-new').forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      document.querySelectorAll('.s-tab-new').forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+
+  // Swap airports
+  function swapAirports(btn) {
+    const form = btn.closest('form');
+    const dep = form.querySelector('[name="departure"]');
+    const arr = form.querySelector('[name="arrival"]');
+    if (dep && arr) {
+      var tmp = dep.value;
+      dep.value = arr.value;
+      arr.value = tmp;
+      btn.style.transform = 'rotate(180deg)';
+      setTimeout(() => btn.style.transform = '', 300);
+    }
+  }
+</script>
 {% endblock %}
