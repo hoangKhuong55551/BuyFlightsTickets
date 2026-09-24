@@ -28,42 +28,13 @@ def payment(request, booking_id):
         booking.status = "paid"
         booking.save()
 
-        # Gửi email xác nhận bằng API của Resend (Không bị Render chặn cổng)
-        import threading
-        import urllib.request
-        import json
-
-        def send_email_bg():
-            try:
-                subject = f"SkyBook - Xác nhận đặt vé {booking.booking_code}"
-                to_email = booking.user.email
-                if not to_email:
-                    return
-                
-                context = {"booking": booking}
-                html_content = render_to_string("emails/ticket_email.html", context)
-                
-                from decouple import config
-                url = "https://api.brevo.com/v3/smtp/email"
-                headers = {
-                    "accept": "application/json",
-                    "api-key": config("BREVO_API_KEY", default=""),
-                    "content-type": "application/json"
-                }
-                data = {
-                    "sender": {"name": "SkyBook Airlines", "email": "khuong206111@gmail.com"},
-                    "to": [{"email": to_email}],
-                    "subject": subject,
-                    "htmlContent": html_content
-                }
-                
-                req = urllib.request.Request(url, data=json.dumps(data).encode("utf-8"), headers=headers)
-                with urllib.request.urlopen(req) as response:
-                    print("Brevo Success:", response.read().decode())
-            except Exception as e:
-                print(f"Brevo Error: {e}")
-                
-        threading.Thread(target=send_email_bg).start()
+        # Gửi email xác nhận bằng SMTP
+        subject = f"SkyBook - Xác nhận đặt vé {booking.booking_code}"
+        to_email = booking.user.email
+        if to_email:
+            from config.utils import send_email_bg
+            html_content = render_to_string("emails/ticket_email.html", {"booking": booking})
+            send_email_bg(to_email, subject, html_content)
 
         messages.success(
             request,

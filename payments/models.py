@@ -108,38 +108,25 @@ class RefundRequest(models.Model):
         booking.status = "cancelled"
         booking.save(update_fields=["status"])
 
-        # Send notification email via Resend API
-        try:
-            to_email = booking.user.email
-            if to_email:
-                import urllib.request
-                import json
-                
-                from decouple import config
-                url = "https://api.brevo.com/v3/smtp/email"
-                headers = {
-                    "accept": "application/json",
-                    "api-key": config("BREVO_API_KEY", default=""),
-                    "content-type": "application/json"
-                }
-                data = {
-                    "sender": {"name": "SkyBook Airlines", "email": "khuong206111@gmail.com"},
-                    "to": [{"email": to_email}],
-                    "subject": f"Refund Successful - {booking.booking_code}",
-                    "htmlContent": (
-                        f"<p>Hello {booking.user.username},</p>"
-                        f"<p>Your refund request has been approved.</p>"
-                        f"<p><strong>Booking Code:</strong> {booking.booking_code}<br>"
-                        f"<strong>Refund Amount:</strong> {self.refund_amount:,.0f} VND</p>"
-                        f"<p>Please allow 3-5 business days for the funds to return to your account.</p>"
-                        f"<p>Thank you for using SkyBook.</p>"
-                    )
-                }
-                req = urllib.request.Request(url, data=json.dumps(data).encode("utf-8"), headers=headers)
-                with urllib.request.urlopen(req) as response:
-                    pass
-        except Exception as e:
-            print(f"Brevo Refund Error: {e}")
+        # Send notification email
+        to_email = booking.user.email
+        if to_email:
+            from config.utils import send_email_bg
+            subject = f"Hoàn tiền thành công - {booking.booking_code}"
+            html_content = (
+                f"<div style='font-family: Arial, sans-serif; padding: 20px; line-height: 1.6;'>"
+                f"<h2 style='color: #0F1F3D;'>SkyBook - Thông báo Hoàn tiền</h2>"
+                f"<p>Xin chào <strong>{booking.user.username}</strong>,</p>"
+                f"<p>Yêu cầu hoàn tiền của bạn đã được quản trị viên duyệt thành công.</p>"
+                f"<div style='background: #f4f7fc; padding: 15px; border-radius: 8px; margin: 15px 0;'>"
+                f"  <p style='margin:0;'><strong>Mã đặt chỗ:</strong> {booking.booking_code}</p>"
+                f"  <p style='margin:0;'><strong>Số tiền hoàn:</strong> <span style='color: #00B4D8; font-weight: bold; font-size: 18px;'>{self.refund_amount:,.0f} VNĐ</span></p>"
+                f"</div>"
+                f"<p>Vui lòng chờ 3-5 ngày làm việc để tiền được hoàn lại vào tài khoản của bạn.</p>"
+                f"<p>Cảm ơn bạn đã sử dụng dịch vụ của SkyBook.</p>"
+                f"</div>"
+            )
+            send_email_bg(to_email, subject, html_content)
 
     def reject(self, note=""):
         """Reject refund."""

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #f4f7fc; margin: 0; padding: 20px; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .header { background: linear-gradient(135deg, #0F1F3D 0%, #1a3a7a 100%); color: #ffffff; padding: 30px 20px; text-align: center; }
+        .header h1 { margin: 0; font-size: 24px; letter-spacing: 2px; text-transform: uppercase; }
+        .content { padding: 32px; text-align: center; line-height: 1.6; }
+        .greeting { font-size: 18px; font-weight: bold; margin-bottom: 16px; color: #0F1F3D; }
+        .btn { display: inline-block; background: #00B4D8; color: #ffffff !important; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 24px 0; font-size: 16px; box-shadow: 0 4px 10px rgba(0,180,216,0.3); }
+        .footer { background: #f8fafc; text-align: center; padding: 24px; font-size: 12px; color: #94a3b8; border-top: 1px solid #f1f5f9; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✈ SkyBook</h1>
+        </div>
+        <div class="content">
+            <div class="greeting">Xin chào {{ user.username }},</div>
+            <p>Cảm ơn bạn đã đăng ký tài khoản tại SkyBook.</p>
+            <p>Vui lòng click vào nút bên dưới để xác thực địa chỉ email và hoàn tất quá trình đăng ký.</p>
+            
+            <a href="{{ verify_url }}" class="btn">Xác thực Email</a>
+            
+            <p style="font-size: 13px; color: #64748b; margin-top: 24px;">Nếu nút bấm không hoạt động, bạn có thể copy đường link sau dán vào trình duyệt:</p>
+            <p style="font-size: 12px; color: #94a3b8; word-break: break-all;">{{ verify_url }}</p>
+        </div>
+        <div class="footer">
+            Đây là email tự động, vui lòng không trả lời.<br>
+            © 2026 SkyBook Airlines.
+        </div>
+    </div>
+</body>
+</html>
