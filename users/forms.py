@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
+from django.contrib.auth.password_validation import validate_password
 
 
 class RegisterForm(forms.Form):
@@ -45,12 +46,19 @@ class RegisterForm(forms.Form):
             raise forms.ValidationError("Email này đã được dùng cho tài khoản khác.")
         return email
 
+    def clean_password(self):
+        password = self.cleaned_data.get("password")
+        if password:
+            # Chạy tất cả AUTH_PASSWORD_VALIDATORS đã cấu hình trong settings.py
+            validate_password(password)
+        return password
+
     def clean(self):
         cleaned_data = super().clean()
         password = cleaned_data.get("password")
         confirm = cleaned_data.get("confirm_password")
         if password and confirm and password != confirm:
-            raise forms.ValidationError("Mật khẩu xác nhận không khớp.")
+            self.add_error("confirm_password", "Mật khẩu xác nhận không khớp.")
         return cleaned_data
 
 

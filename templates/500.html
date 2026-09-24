@@ -1,8 +1,76 @@
-<!doctype html><html lang="vi"><head><meta charset="UTF-8"/><title>500</title>
-<style>body{font-family:system-ui;background:#0c2461;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;}
-.box{text-align:center;padding:48px;color:#fff;}h1{font-size:5rem;font-weight:800;margin-bottom:8px;}
-h2{font-size:1.3rem;margin-bottom:12px;}p{color:rgba(255,255,255,.6);margin-bottom:28px;}
-a{background:#1565c0;color:#fff;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:700;}
-</style></head><body><div class="box"><div style="font-size:4rem;margin-bottom:16px;">⚙️</div>
-<h1>500</h1><h2>Lỗi máy chủ</h2><p>Hệ thống gặp sự cố. Vui lòng thử lại sau.</p>
-<a href="/">← Về trang chủ</a></div></body></html>
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>500 — Lỗi máy chủ</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #e8eaf6 0%, #c5cae9 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 24px;
+    }
+    .box {
+      text-align: center;
+      padding: 48px 32px;
+      background: white;
+      border-radius: 24px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+      max-width: 480px;
+      width: 100%;
+    }
+    .icon {
+      font-size: 3.5rem;
+      margin-bottom: 16px;
+    }
+    h1 {
+      font-size: 4rem;
+      font-weight: 900;
+      color: #1b2a4a;
+      margin-bottom: 8px;
+    }
+    h2 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #1b2a4a;
+      margin-bottom: 12px;
+    }
+    p {
+      color: #6b7fa8;
+      margin-bottom: 28px;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+    .btn-home {
+      display: inline-block;
+      background: linear-gradient(135deg, #3960fb, #6b21a8);
+      color: #fff;
+      padding: 14px 32px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.95rem;
+      box-shadow: 0 6px 20px rgba(57, 96, 251, 0.35);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-home:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(57, 96, 251, 0.45);
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <div class="icon" aria-hidden="true">⚙️</div>
+    <h1>500</h1>
+    <h2>Lỗi máy chủ</h2>
+    <p>Hệ thống đang gặp sự cố. Vui lòng thử lại sau hoặc liên hệ bộ phận hỗ trợ.</p>
+    <a href="/" class="btn-home">← Về trang chủ</a>
+  </div>
+</body>
+</html>

@@ -1,8 +1,10 @@
+import random
 import uuid
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import transaction, IntegrityError
+from django.db.models import F
 from django.shortcuts import render, redirect, get_object_or_404
 
 from .forms import PassengerForm
@@ -21,24 +23,23 @@ def _generate_seats(flight):
             booking__status__in=["pending", "paid"]
         ).values_list("seat_number", flat=True)
     )
-    total = getattr(getattr(flight, "aircraft", None), "total_seats", 180) # default 180 seats for A320
+    total = getattr(getattr(flight, "aircraft", None), "total_seats", 180)
     seat_letters = ["A", "B", "C", "D", "E", "F"]
     seats_per_row = len(seat_letters)
     total_rows = (total + seats_per_row - 1) // seats_per_row
-    
+
     rows = []
     count = 0
     for row in range(1, total_rows + 1):
-        # Determine seat type for coloring
         if row <= 3:
             seat_type = "premium"
         elif row <= 11:
             seat_type = "front"
         else:
             seat_type = "standard"
-            
+
         is_exit = row in [11, 12, 26, 27]
-        
+
         row_seats = []
         for letter in seat_letters:
             if count >= total:
@@ -50,15 +51,26 @@ def _generate_seats(flight):
                 "taken": code in taken,
             })
             count += 1
-            
+
         rows.append({
             "row_number": row,
             "type": seat_type,
             "is_exit": is_exit,
             "seats": row_seats
         })
-        
+
     return rows
+
+
+def _get_available_seats(flight):
+    """Trả về danh sách mã ghế còn trống cho chuyến bay."""
+    all_seats_data = _generate_seats(flight)
+    available = []
+    for row in all_seats_data:
+        for seat in row["seats"]:
+            if not seat["taken"]:
+                available.append(seat["code"])
+    return available
 
 
 @login_required
@@ -69,11 +81,16 @@ def create_booking(request, flight_id):
     if request.method == "POST":
         seat_number = request.POST.get("seat_number", "").strip()
 
+        # Fix #5: Nếu người dùng bấm "Bỏ qua, để hãng tự xếp ghế"
+        # thì tự động chọn ngẫu nhiên một ghế trống
         if not seat_number:
-            messages.error(request, "Vui lÃ²ng chá»n gháº¿ trÆ°á»›c khi Ä‘áº·t vÃ©.")
-            return redirect("create_booking", flight_id=flight.id)
+            available = _get_available_seats(flight)
+            if not available:
+                messages.error(request, "Rất tiếc, chuyến bay này đã hết ghế trống.")
+                return redirect("create_booking", flight_id=flight.id)
+            seat_number = random.choice(available)
 
-        # KhoÃ¡ dÃ²ng Ä‘á»ƒ trÃ¡nh race condition â€” hai user chá»n cÃ¹ng gháº¿ Ä‘á»“ng thá»i
+        # Khoá dòng để tránh race condition – hai user chọn cùng ghế đồng thời
         already_taken = (
             Ticket.objects
             .select_for_update()
@@ -87,7 +104,7 @@ def create_booking(request, flight_id):
         if already_taken:
             messages.error(
                 request,
-                f"Gháº¿ {seat_number} vá»«a Ä‘Æ°á»£c ngÆ°á»i khÃ¡c Ä‘áº·t. Vui lÃ²ng chá»n gháº¿ khÃ¡c."
+                f"Ghế {seat_number} vừa được người khác đặt. Vui lòng chọn ghế khác."
             )
             return redirect("create_booking", flight_id=flight.id)
 
@@ -112,7 +129,6 @@ def create_booking(request, flight_id):
     )
 
 
-
 @login_required(login_url="/users/login/")
 def seat_selection(request, flight_id):
     flight = get_object_or_404(Flight, id=flight_id)
@@ -125,6 +141,7 @@ def seat_selection(request, flight_id):
 
 
 @login_required(login_url="/users/login/")
+@transaction.atomic
 def passenger(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id, user=request.user)
 
@@ -141,13 +158,31 @@ def passenger(request, booking_id):
             )
             seat_number = request.session.pop("selected_seat", "N/A")
             if booking.flight:
-                Ticket.objects.create(
-                    booking=booking,
-                    passenger=p,
-                    flight=booking.flight,
-                    seat_number=seat_number,
-                    price=booking.total_price
-                )
+                # Fix #1: Bọc trong try/except IntegrityError để xử lý
+                # race condition khi 2 user đặt cùng ghế đồng thời
+                try:
+                    Ticket.objects.create(
+                        booking=booking,
+                        passenger=p,
+                        flight=booking.flight,
+                        seat_number=seat_number,
+                        price=booking.total_price
+                    )
+                    # Giảm số ghế trống sau khi đặt vé thành công
+                    Flight.objects.filter(
+                        id=booking.flight.id, available_seats__gt=0
+                    ).update(available_seats=F("available_seats") - 1)
+                except IntegrityError:
+                    # Ghế đã bị người khác đặt trước
+                    p.delete()
+                    booking.status = "cancelled"
+                    booking.save(update_fields=["status"])
+                    messages.error(
+                        request,
+                        f"Ghế {seat_number} vừa được người khác đặt trước. "
+                        f"Vui lòng chọn ghế khác."
+                    )
+                    return redirect("create_booking", flight_id=booking.flight.id)
             return redirect("payment", booking_id=booking.id)
     else:
         form = PassengerForm()
@@ -177,16 +212,14 @@ def my_bookings(request):
         "flight__airline"
     ).order_by("-booking_date")
 
-    # Count for each tab
-    # Count for each tab
     # Sắp bay: Chưa tới giờ bay VÀ đã thanh toán (paid)
-    upcoming_qs   = all_bookings.filter(status="paid", flight__departure_time__gte=now)
+    upcoming_qs = all_bookings.filter(status="paid", flight__departure_time__gte=now)
     # Đã hoàn thành: Đã qua giờ bay VÀ đã thanh toán (paid)
-    completed_qs  = all_bookings.filter(status="paid", flight__departure_time__lt=now)
+    completed_qs = all_bookings.filter(status="paid", flight__departure_time__lt=now)
     # Đã huỷ: Trạng thái là cancelled (hoặc pending quá hạn nếu có)
-    cancelled_qs  = all_bookings.filter(status="cancelled")
+    cancelled_qs = all_bookings.filter(status="cancelled")
 
-    count_upcoming  = upcoming_qs.count()
+    count_upcoming = upcoming_qs.count()
     count_completed = completed_qs.count()
     count_cancelled = cancelled_qs.count()
 
@@ -230,13 +263,13 @@ def cancel_booking(request, booking_id):
 def change_seat(request, ticket_id):
     ticket = get_object_or_404(Ticket, id=ticket_id, booking__user=request.user)
     flight = ticket.flight
-    
+
     if request.method == "POST":
         new_seat = request.POST.get("seat_number", "").strip()
         if not new_seat:
             messages.error(request, "Vui lòng chọn ghế mới.")
             return redirect("change_seat", ticket_id=ticket.id)
-            
+
         if new_seat == ticket.seat_number:
             messages.info(request, "Bạn vẫn đang giữ ghế cũ.")
             return redirect("ticket", booking_id=ticket.booking.id)
@@ -252,24 +285,24 @@ def change_seat(request, ticket_id):
             )
             .exists()
         )
-        
+
         if already_taken:
             messages.error(request, f"Ghế {new_seat} đã có người đặt. Vui lòng chọn ghế khác.")
             return redirect("change_seat", ticket_id=ticket.id)
-            
+
         ticket.seat_number = new_seat
         ticket.save(update_fields=["seat_number"])
-        
+
         messages.success(request, f"Đổi ghế thành công! Ghế mới của bạn là {new_seat}.")
         return redirect("ticket", booking_id=ticket.booking.id)
-        
+
     all_seats = _generate_seats(flight)
     # Highlight current seat so the template knows
     for row in all_seats:
         for seat in row["seats"]:
             if seat["code"] == ticket.seat_number:
                 seat["is_current"] = True
-                seat["taken"] = False # Cho phép chọn lại chính ghế của mình (dù có thể bị check ở backend)
+                seat["taken"] = False  # Cho phép chọn lại chính ghế của mình
 
     return render(
         request,
