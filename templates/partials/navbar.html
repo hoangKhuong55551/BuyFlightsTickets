@@ -53,20 +53,23 @@
     <div class="nav-actions">
       {% if user.is_authenticated %}
         <!-- User pill -->
-        <div class="nav-user-pill">
+        <a href="{% url 'profile' %}" class="nav-user-pill" style="text-decoration: none; color: inherit;">
           <div class="nav-avatar">{{ user.username|slice:":1"|upper }}</div>
           <div class="nav-user-info">
             <span class="nav-user-greeting">Xin chào,</span>
             <span class="nav-username">{{ user.username }}</span>
           </div>
-        </div>
-        <!-- Logout -->
-        <a href="{% url 'logout' %}" class="btn-nav-logout" title="Đăng xuất">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>
-          </svg>
-          Đăng xuất
         </a>
+        <!-- Logout -->
+        <form method="post" action="{% url 'logout' %}" style="display: inline;">
+          {% csrf_token %}
+          <button type="submit" class="btn-nav-logout" title="Đăng xuất">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>
+            </svg>
+            Đăng xuất
+          </button>
+        </form>
       {% else %}
         <a href="{% url 'login' %}" class="btn-nav-login">Đăng nhập</a>
         <a href="{% url 'register' %}" class="btn-nav-register">
@@ -97,10 +100,13 @@
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
     <span>Hỗ trợ</span>
   </button>
-  <a href="{% url 'logout' %}" class="taskbar-item">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-    <span>Thoát</span>
-  </a>
+  <form method="post" action="{% url 'logout' %}" class="taskbar-item" style="background:transparent; border:none;">
+    {% csrf_token %}
+    <button type="submit" style="background:transparent; border:none; outline:none; padding:0; cursor:pointer; font-family:inherit; color:inherit; display:flex; flex-direction:column; align-items:center; gap:2px;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+      <span>Thoát</span>
+    </button>
+  </form>
   {% else %}
   <button type="button" class="taskbar-item" onclick="toggleMobileSupport()" style="background:transparent; border:none; outline:none; padding:0; cursor:pointer; font-family:inherit;">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
