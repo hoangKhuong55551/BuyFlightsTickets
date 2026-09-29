@@ -12,7 +12,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
-from config.utils import send_email_bg
+from NguyenNgocHoangKhuong_CNPM24CT1.utils import send_email_bg
 
 def register(request):
     if request.method == "POST":

@@ -111,7 +111,7 @@ class RefundRequest(models.Model):
         # Send notification email
         to_email = booking.user.email
         if to_email:
-            from config.utils import send_email_bg
+            from NguyenNgocHoangKhuong_CNPM24CT1.utils import send_email_bg
             subject = f"Hoàn tiền thành công - {booking.booking_code}"
             html_content = (
                 f"<div style='font-family: Arial, sans-serif; padding: 20px; line-height: 1.6;'>"

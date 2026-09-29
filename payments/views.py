@@ -32,7 +32,7 @@ def payment(request, booking_id):
         subject = f"SkyBook - Xác nhận đặt vé {booking.booking_code}"
         to_email = booking.user.email
         if to_email:
-            from config.utils import send_email_bg
+            from NguyenNgocHoangKhuong_CNPM24CT1.utils import send_email_bg
             html_content = render_to_string("emails/ticket_email.html", {"booking": booking})
             send_email_bg(to_email, subject, html_content)
 
