@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Thông tin cá nhân — SkyBook{% endblock %}
+
+{% block content %}
+<section style="max-width: 800px; margin: 40px auto; padding: 0 20px;">
+  <h1 style="font-size: 1.8rem; color: var(--penn-blue); margin-bottom: 8px;">👤 Thông tin cá nhân</h1>
+  <p style="color: var(--text-muted); margin-bottom: 30px;">Quản lý thông tin tài khoản của bạn</p>
+
+  <!-- Thống kê -->
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin-bottom: 30px;">
+    <div style="background: var(--lavender); padding: 20px; border-radius: 16px; text-align: center;">
+      <div style="font-size: 1.8rem; font-weight: 800; color: var(--neon-blue);">{{ total_bookings }}</div>
+      <div style="font-size: .85rem; color: var(--text-muted); margin-top: 4px;">Tổng đặt chỗ</div>
+    </div>
+    <div style="background: #d1fae5; padding: 20px; border-radius: 16px; text-align: center;">
+      <div style="font-size: 1.8rem; font-weight: 800; color: #065f46;">{{ paid_bookings }}</div>
+      <div style="font-size: .85rem; color: var(--text-muted); margin-top: 4px;">Đã thanh toán</div>
+    </div>
+    <div style="background: #fee2e2; padding: 20px; border-radius: 16px; text-align: center;">
+      <div style="font-size: 1.8rem; font-weight: 800; color: #991b1b;">{{ cancelled_bookings }}</div>
+      <div style="font-size: .85rem; color: var(--text-muted); margin-top: 4px;">Đã huỷ</div>
+    </div>
+  </div>
+
+  <!-- Form -->
+  <div style="background: white; border: 1.5px solid var(--periwinkle); border-radius: 16px; padding: 30px;">
+    <form method="post">
+      {% csrf_token %}
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        {% for field in form %}
+        <div style="{% if field.name == 'email' %}grid-column: 1 / -1;{% endif %}">
+          <label style="display: block; font-weight: 600; color: var(--penn-blue); margin-bottom: 6px; font-size: .9rem;">{{ field.label }}</label>
+          <input type="{{ field.field.widget.input_type|default:'text' }}"
+                 name="{{ field.html_name }}"
+                 value="{{ field.value|default_if_none:'' }}"
+                 placeholder="{{ field.field.widget.attrs.placeholder|default:'' }}"
+                 {% if field.field.required %}required{% endif %}
+                 style="width: 100%; padding: 12px 16px; border: 1.5px solid var(--periwinkle); border-radius: 10px; font-size: .95rem; transition: border-color .2s; outline: none; box-sizing: border-box;"
+                 onfocus="this.style.borderColor='var(--neon-blue)'"
+                 onblur="this.style.borderColor='var(--periwinkle)'">
+          {% if field.errors %}
+          <div style="color: #dc3545; font-size: .82rem; margin-top: 4px;">{{ field.errors.0 }}</div>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+
+      <div style="display: flex; gap: 12px; margin-top: 30px; flex-wrap: wrap;">
+        <button type="submit" class="btn btn-primary" style="padding: 12px 32px; background: var(--neon-blue); color: white; border: none; font-weight: 600; cursor: pointer;">Lưu thay đổi</button>
+        <a href="{% url 'password_change' %}" style="padding: 12px 24px; border: 1.5px solid var(--periwinkle); border-radius: 10px; color: var(--penn-blue); text-decoration: none; font-weight: 500; display: inline-flex; align-items: center; gap: 6px;">
+          🔒 Đổi mật khẩu
+        </a>
+      </div>
+    </form>
+  </div>
+
+  <p style="text-align: center; margin-top: 20px; color: var(--text-muted); font-size: .85rem;">Tài khoản: <strong>{{ user.username }}</strong> · Tham gia từ {{ user.date_joined|date:"d/m/Y" }}</p>
+</section>
+{% endblock %}

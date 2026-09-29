@@ -75,3 +75,49 @@ class LoginForm(forms.Form):
         widget=forms.PasswordInput(attrs={"placeholder": "Mật khẩu"})
     )
 
+
+class ProfileForm(forms.Form):
+    first_name = forms.CharField(
+        max_length=150,
+        label="Họ",
+        required=False,
+        widget=forms.TextInput(attrs={"placeholder": "Nhập họ"})
+    )
+    last_name = forms.CharField(
+        max_length=150,
+        label="Tên",
+        required=False,
+        widget=forms.TextInput(attrs={"placeholder": "Nhập tên"})
+    )
+    email = forms.EmailField(
+        label="Email",
+        widget=forms.EmailInput(attrs={"placeholder": "example@email.com"})
+    )
+    phone = forms.CharField(
+        max_length=20,
+        label="Số điện thoại",
+        required=False,
+        widget=forms.TextInput(attrs={"placeholder": "0912 345 678"})
+    )
+    date_of_birth = forms.DateField(
+        label="Ngày sinh",
+        required=False,
+        widget=forms.DateInput(attrs={"type": "date"})
+    )
+    national_id = forms.CharField(
+        max_length=30,
+        label="CCCD / Passport",
+        required=False,
+        widget=forms.TextInput(attrs={"placeholder": "Số CCCD hoặc Passport"})
+    )
+
+    def __init__(self, *args, user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.user = user
+
+    def clean_email(self):
+        email = self.cleaned_data.get("email")
+        if self.user and User.objects.filter(email=email).exclude(pk=self.user.pk).exists():
+            raise forms.ValidationError("Email này đã được dùng cho tài khoản khác.")
+        return email
+

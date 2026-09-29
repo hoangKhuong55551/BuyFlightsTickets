@@ -3,7 +3,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 
-from .forms import RegisterForm, LoginForm
+from django.contrib.auth.decorators import login_required
+from .forms import RegisterForm, LoginForm, ProfileForm
 
 
 from django.contrib.auth.tokens import default_token_generator
@@ -98,6 +99,54 @@ def login_view(request):
 
 
 def logout_view(request):
-    logout(request)
-    messages.info(request, "Bạn đã đăng xuất.")
+    if request.method == "POST":
+        logout(request)
+        messages.info(request, "Bạn đã đăng xuất.")
     return redirect("home")
+
+
+@login_required
+def profile(request):
+    """Trang xem/sửa thông tin cá nhân."""
+    user = request.user
+    user_profile = user.profile
+
+    if request.method == "POST":
+        form = ProfileForm(request.POST, user=user)
+        if form.is_valid():
+            # Cập nhật User
+            user.first_name = form.cleaned_data["first_name"]
+            user.last_name = form.cleaned_data["last_name"]
+            user.email = form.cleaned_data["email"]
+            user.save()
+
+            # Cập nhật UserProfile
+            user_profile.phone = form.cleaned_data["phone"]
+            user_profile.date_of_birth = form.cleaned_data.get("date_of_birth")
+            user_profile.national_id = form.cleaned_data.get("national_id", "")
+            user_profile.save()
+
+            messages.success(request, "Cập nhật thông tin thành công!")
+            return redirect("profile")
+    else:
+        form = ProfileForm(initial={
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "email": user.email,
+            "phone": user_profile.phone,
+            "date_of_birth": user_profile.date_of_birth,
+            "national_id": user_profile.national_id,
+        }, user=user)
+
+    # Thống kê booking
+    from bookings.models import Booking
+    total_bookings = Booking.objects.filter(user=user).count()
+    paid_bookings = Booking.objects.filter(user=user, status="paid").count()
+    cancelled_bookings = Booking.objects.filter(user=user, status="cancelled").count()
+
+    return render(request, "users/profile.html", {
+        "form": form,
+        "total_bookings": total_bookings,
+        "paid_bookings": paid_bookings,
+        "cancelled_bookings": cancelled_bookings,
+    })

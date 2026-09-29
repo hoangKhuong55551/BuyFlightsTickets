@@ -47,6 +47,9 @@
         {% endif %}
       </div>
       {% endfor %}
+      <div style="text-align: right; margin-bottom: 16px; margin-top: -6px;">
+        <a href="{% url 'password_reset' %}" style="color: var(--neon-blue); text-decoration: none; font-size: .9rem;">Quên mật khẩu?</a>
+      </div>
       <button type="submit" class="btn btn-primary btn-full btn-lg" style="margin-top: 8px; background: var(--neon-blue); border: none; box-shadow: 0 6px 20px rgba(57,96,251,.35); font-weight: 700; border-radius: 12px;">
         Đăng nhập ngay →
       </button>
