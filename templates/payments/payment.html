@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}Thanh toán — {{ booking.booking_code }}{% endblock %}
 {% block content %}
 <div style="max-width:640px;margin:0 auto;">
@@ -47,26 +48,50 @@
   </div>
   {% endif %}
 
-  <!-- Payment method -->
-  <div class="card" style="background:var(--navy);border-color:var(--navy);">
-    <h2 style="color:#fff;margin-bottom:16px;">Phương thức thanh toán</h2>
-    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px;">
-      <div style="background:rgba(255,255,255,.12);border-radius:var(--radius-sm);padding:12px 16px;display:flex;align-items:center;gap:12px;color:#fff;cursor:pointer;border:1px solid rgba(255,255,255,.2);">
-        <span>💳</span><span style="font-weight:500;">Thẻ tín dụng / Ghi nợ</span><span style="margin-left:auto;">›</span>
-      </div>
-      <div style="background:rgba(255,255,255,.12);border-radius:var(--radius-sm);padding:12px 16px;display:flex;align-items:center;gap:12px;color:#fff;cursor:pointer;">
-        <span>📱</span><span style="font-weight:500;">Ví điện tử (Momo, ZaloPay)</span><span style="margin-left:auto;">›</span>
-      </div>
-      <div style="background:rgba(255,255,255,.12);border-radius:var(--radius-sm);padding:12px 16px;display:flex;align-items:center;gap:12px;color:#fff;cursor:pointer;">
-        <span>🏦</span><span style="font-weight:500;">Chuyển khoản ngân hàng</span><span style="margin-left:auto;">›</span>
-      </div>
+  <!-- Payment method: QR Code -->
+  <div class="card" style="text-align: center; border: 2px solid var(--neon-blue); overflow: hidden; padding: 0;">
+    <div style="background: var(--penn-blue); color: white; padding: 16px; font-weight: 700; font-size: 1.1rem;">
+      Chuyển khoản qua mã QR
     </div>
-    <form method="POST" style="background:none;border:none;box-shadow:none;padding:0;gap:0;max-width:100%;">
-      {% csrf_token %}
-      <button type="submit" class="btn btn-full btn-lg" style="background:#fff;color:var(--navy);font-weight:800;">
-        🔒 Xác nhận thanh toán {{ booking.total_price|floatformat:0 }} ₫
-      </button>
-    </form>
+    
+    <div style="padding: 30px 20px;">
+      <p style="color: var(--text-muted); margin-bottom: 20px;">
+        Vui lòng quét mã QR dưới đây bằng ứng dụng ngân hàng hoặc ví điện tử để thanh toán.
+      </p>
+
+      <div style="display: inline-block; padding: 20px; background: #fff; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); margin-bottom: 24px;">
+        <img src="https://img.vietqr.io/image/vcb-1050009149-compact2.jpg?amount={{ booking.total_price|floatformat:'0' }}&addInfo={{ booking.booking_code }}&accountName=NGUYEN%20NGOC%20HOANG%20KHUONG" 
+             alt="Mã QR Thanh Toán" 
+             style="max-width: 100%; width: 280px; height: auto; border-radius: 12px; display: block;"
+             onerror="this.src='{% static 'img/my_qr.jpg' %}'">
+      </div>
+
+      <div style="background: var(--lavender); border-radius: 12px; padding: 16px; text-align: left; margin-bottom: 24px;">
+        <div style="display: grid; grid-template-columns: 140px 1fr; gap: 8px; font-size: .95rem;">
+          <div style="color: var(--text-muted);">Ngân hàng:</div>
+          <div style="font-weight: 700; color: var(--penn-blue);">Vietcombank (VCB)</div>
+          
+          <div style="color: var(--text-muted);">Tên tài khoản:</div>
+          <div style="font-weight: 700; color: var(--penn-blue);">NGUYEN NGOC HOANG KHUONG</div>
+          
+          <div style="color: var(--text-muted);">Số tài khoản:</div>
+          <div style="font-weight: 700; color: var(--penn-blue); font-size: 1.1rem;">1050009149</div>
+          
+          <div style="color: var(--text-muted);">Số tiền:</div>
+          <div style="font-weight: 800; color: var(--neon-blue); font-size: 1.2rem;">{{ booking.total_price|floatformat:0 }} VNĐ</div>
+          
+          <div style="color: var(--text-muted);">Nội dung (Bắt buộc):</div>
+          <div style="font-weight: 700; color: var(--penn-blue); background: #fff; padding: 4px 8px; border-radius: 4px; display: inline-block;">{{ booking.booking_code }}</div>
+        </div>
+      </div>
+
+      <form method="POST" style="background:none;border:none;box-shadow:none;padding:0;gap:0;max-width:100%;">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-full btn-lg" style="background: var(--neon-blue); color: white; font-weight: 700; font-size: 1.05rem;">
+          ✅ Tôi đã chuyển khoản thành công
+        </button>
+      </form>
+    </div>
   </div>
 </div>
 {% endblock %}
