@@ -9,11 +9,54 @@
         @media (max-width: 480px) {
             .boarding-h1 { font-size: 1.6rem; }
         }
+        .tip-item { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--border); }
+        .tip-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .tip-icon { font-size: 2.5rem; flex-shrink: 0; }
+        .tip-content h3 { margin-bottom: 8px; color: #142258; font-weight: 700; font-size: 1.25rem; }
+        .tip-content p { color: #6b7fa8; line-height: 1.6; margin: 0; font-size: 1rem; }
     </style>
     <h1 class="boarding-h1">Những lưu ý khi lên máy bay</h1>
     
-    <div style="background: white; border: 1px solid var(--border); border-radius: 16px; padding: 32px; box-shadow: var(--shadow); min-height: 300px;">
-        <p style="color: var(--muted); text-align: center;">Đang cập nhật nội dung...</p>
+    <div style="background: white; border: 1px solid var(--border); border-radius: 16px; padding: 32px; box-shadow: 0 4px 24px rgba(0,0,0,0.04); min-height: 300px;">
+        <div class="tip-item">
+            <div class="tip-icon">🪪</div>
+            <div class="tip-content">
+                <h3>1. Chuẩn bị giấy tờ tùy thân</h3>
+                <p>Đối với chuyến bay nội địa, bạn cần mang theo bản gốc <strong>CCCD/CMND</strong> hoặc <strong>Hộ chiếu</strong> còn hạn sử dụng. Trẻ em dưới 14 tuổi cần có <strong>Giấy khai sinh</strong> bản gốc hoặc bản sao trích lục. Đối với chuyến bay quốc tế, bắt buộc phải có Hộ chiếu và Visa (nếu nước đến yêu cầu).</p>
+            </div>
+        </div>
+        
+        <div class="tip-item">
+            <div class="tip-icon">⏱️</div>
+            <div class="tip-content">
+                <h3>2. Thời gian có mặt tại sân bay</h3>
+                <p>Quầy làm thủ tục thường đóng cửa trước 40 phút (nội địa) và 50 phút (quốc tế) so với giờ bay. Do đó, bạn nên có mặt tại sân bay ít nhất <strong>90 - 120 phút</strong> (nội địa) và <strong>180 phút</strong> (quốc tế) để dư dả thời gian gửi hành lý và qua cửa an ninh.</p>
+            </div>
+        </div>
+
+        <div class="tip-item">
+            <div class="tip-icon">🧳</div>
+            <div class="tip-content">
+                <h3>3. Quy định về hành lý</h3>
+                <p>Tuân thủ đúng trọng lượng hành lý xách tay (thường là 7kg) và kích thước quy định. Tuyệt đối <strong>không mang</strong> các vật sắc nhọn, dao kéo, chất dễ cháy nổ. Đối với chuyến bay quốc tế, chất lỏng mang theo trong hành lý xách tay không được vượt quá 100ml mỗi lọ và phải bọc kín.</p>
+            </div>
+        </div>
+
+        <div class="tip-item">
+            <div class="tip-icon">🛂</div>
+            <div class="tip-content">
+                <h3>4. Qua cổng kiểm tra an ninh</h3>
+                <p>Khi qua khu vực soi chiếu an ninh, hãy chủ động tháo áo khoác ngoài, thắt lưng, giày dép (nếu được yêu cầu), và lấy laptop/máy tính bảng ra khỏi balo để vào khay riêng biệt.</p>
+            </div>
+        </div>
+
+        <div class="tip-item">
+            <div class="tip-icon">🚪</div>
+            <div class="tip-content">
+                <h3>5. Theo dõi Cửa ra máy bay (Boarding Gate)</h3>
+                <p>Cửa ra máy bay có thể thay đổi so với thông tin in trên vé. Sau khi qua cửa an ninh, hãy thường xuyên nhìn lên <strong>màn hình điện tử</strong> và chú ý lắng nghe loa thông báo để đảm bảo bạn đến đúng cửa lên máy bay.</p>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
