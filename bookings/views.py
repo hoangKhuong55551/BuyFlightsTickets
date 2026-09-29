@@ -78,6 +78,18 @@ def _get_available_seats(flight):
 def create_booking(request, flight_id):
     flight = get_object_or_404(Flight, id=flight_id)
 
+    # Kiểm tra chuyến bay còn nhận đặt chỗ không
+    from django.utils import timezone
+    if flight.status != "scheduled":
+        messages.error(request, "Chuyến bay này không còn nhận đặt chỗ.")
+        return redirect("home")
+    if flight.departure_time <= timezone.now():
+        messages.error(request, "Chuyến bay này đã qua thời gian khởi hành.")
+        return redirect("home")
+    if flight.available_seats <= 0:
+        messages.error(request, "Chuyến bay này đã hết ghế.")
+        return redirect("home")
+
     if request.method == "POST":
         seat_number = request.POST.get("seat_number", "").strip()
 
@@ -243,13 +255,23 @@ def my_bookings(request):
 
 
 @login_required
+@transaction.atomic
 def cancel_booking(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id, user=request.user)
 
     if request.method == "POST":
         if booking.status == "pending":
             booking.status = "cancelled"
-            booking.save()
+            booking.save(update_fields=["status"])
+
+            # Giải phóng ghế: tăng available_seats và xoá tickets
+            ticket_count = booking.tickets.count()
+            if ticket_count > 0 and booking.flight:
+                Flight.objects.filter(id=booking.flight.id).update(
+                    available_seats=F("available_seats") + ticket_count
+                )
+            booking.tickets.all().delete()
+
             messages.success(request, f"Đã huỷ vé {booking.booking_code}. Ghế đã được giải phóng.")
         else:
             messages.error(request, "Chỉ có thể huỷ vé đang ở trạng thái chờ thanh toán.")
