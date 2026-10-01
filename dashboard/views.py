@@ -39,7 +39,7 @@ def dashboard_home(request):
         # End of month is start of next month
         end = start + relativedelta(months=1)
         
-        m_bookings = bookings.filter(created_at__gte=start, created_at__lt=end)
+        m_bookings = bookings.filter(booking_date__gte=start, booking_date__lt=end)
         total = m_bookings.aggregate(Sum('total_price'))['total_price__sum'] or 0
         
         months_labels.append(m.strftime('%m/%Y'))
