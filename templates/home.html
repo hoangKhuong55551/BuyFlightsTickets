@@ -435,15 +435,15 @@
       </div>
       <div class="hero-stats">
         <div class="stat-item">
-          <div class="stat-num">2M+</div>
+          <div class="stat-num">{{ passenger_count|default:"0" }}</div>
           <div class="stat-label">Hành khách hài lòng</div>
         </div>
         <div class="stat-item">
-          <div class="stat-num">150+</div>
+          <div class="stat-num">{{ route_count|default:"0" }}</div>
           <div class="stat-label">Đường bay phủ sóng</div>
         </div>
         <div class="stat-item">
-          <div class="stat-num">4.9⭐</div>
+          <div class="stat-num">{{ avg_rating }}⭐</div>
           <div class="stat-label">Đánh giá trung bình</div>
         </div>
       </div>
