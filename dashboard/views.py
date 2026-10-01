@@ -1,4 +1,4 @@
-﻿from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum, Count
 from django.utils import timezone
@@ -10,10 +10,10 @@ import json
 @login_required
 def dashboard_home(request):
     user = request.user
-    is_airline_manager = hasattr(user, 'profile') and user.profile.managed_airline is not None
-    
-    if not (user.is_superuser or is_airline_manager):
+    if not (user.is_staff or user.is_superuser):
         return HttpResponseForbidden("Bạn không có quyền truy cập trang này.")
+
+    is_airline_manager = hasattr(user, 'profile') and user.profile.managed_airline is not None
         
     airline = None
     if is_airline_manager and not user.is_superuser:
