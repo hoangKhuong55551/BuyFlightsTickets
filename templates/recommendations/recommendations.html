@@ -247,9 +247,9 @@
             {% if ap.airline__code in filter_airlines %}checked{% endif %}
             {% if not ap.min_price %}disabled{% endif %}
             onchange="document.getElementById('filter-form').submit()">
-          {% if ap.airline__logo %}
+          <!-- {% if ap.airline__logo %}
           <img src="{{ ap.airline__logo }}" alt="{{ ap.airline__name }}" style="width:20px;height:20px;object-fit:contain;">
-          {% endif %}
+          {% endif %} -->
           {{ ap.airline__name }}
         </label>
         {% if ap.min_price %}
@@ -305,9 +305,9 @@
       <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px;">
         {% for ap in airline_prices %}
         <div style="background: white; border-radius: 12px; padding: 16px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1px solid #f1f5f9;">
-          {% if ap.airline__logo %}
+          <!-- {% if ap.airline__logo %}
           <img src="{{ ap.airline__logo }}" alt="{{ ap.airline__name }}" style="width:40px; height:40px; object-fit:contain; margin-bottom: 8px;">
-          {% endif %}
+          {% endif %} -->
           <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-dark);">{{ ap.airline__name }}</div>
         </div>
         {% endfor %}
