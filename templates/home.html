@@ -436,7 +436,7 @@
       <div class="hero-stats">
         <div class="stat-item">
           <div class="stat-num">{{ passenger_count|default:"0" }}</div>
-          <div class="stat-label">Hành khách hài lòng</div>
+          <div class="stat-label">Hành khách đã đặt vé</div>
         </div>
         <div class="stat-item">
           <div class="stat-num">{{ route_count|default:"0" }}</div>
@@ -756,6 +756,12 @@
       }
     });
   });
+
+  // Khởi tạo trạng thái tab ban đầu
+  const activeTab = document.querySelector('.s-tab-new.active');
+  if (activeTab) {
+    activeTab.click();
+  }
 
   // Swap airports
   function swapAirports(btn) {
