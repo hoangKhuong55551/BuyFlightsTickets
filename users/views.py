@@ -2,9 +2,11 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
+from django.http import JsonResponse
 
 from django.contrib.auth.decorators import login_required
 from .forms import RegisterForm, LoginForm, ProfileForm
+from .models import NewsletterSubscriber
 
 
 from django.contrib.auth.tokens import default_token_generator
@@ -150,3 +152,17 @@ def profile(request):
         "paid_bookings": paid_bookings,
         "cancelled_bookings": cancelled_bookings,
     })
+
+
+def newsletter_subscribe(request):
+    if request.method == "POST":
+        email = request.POST.get("email", "").strip()
+        if not email:
+            return JsonResponse({"success": False, "message": "Vui lòng nhập địa chỉ email."})
+        try:
+            NewsletterSubscriber.objects.create(email=email)
+            return JsonResponse({"success": True, "message": "Đăng ký thành công! Cảm ơn bạn."})
+        except Exception:
+            return JsonResponse({"success": False, "message": "Email này đã đăng ký nhận tin rồi!"})
+    return JsonResponse({"success": False, "message": "Phương thức không hợp lệ."})
+

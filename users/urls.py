@@ -88,4 +88,7 @@ urlpatterns = [
         name="password_reset_complete"
     ),
 
+    # Newsletter
+    path("newsletter/", views.newsletter_subscribe, name="newsletter_subscribe"),
+
 ]
