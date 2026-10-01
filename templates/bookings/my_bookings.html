@@ -40,6 +40,9 @@
 .booking-tab.tab-cancelled .tab-count { background: #fee2e2; color: #dc2626; }
 .booking-tab.tab-cancelled.active { color: #dc2626; background: #fff5f5; }
 .booking-tab.tab-cancelled.active .tab-count { background: #dc2626; color: white; }
+.booking-tab.tab-pending .tab-count { background: #fef3c7; color: #92400e; }
+.booking-tab.tab-pending.active { color: #92400e; background: #fffbeb; }
+.booking-tab.tab-pending.active .tab-count { background: #d97706; color: white; }
 
 /* ── Booking card (new style) ── */
 .booking-card {
@@ -232,6 +235,9 @@
   <a href="?tab=upcoming" class="booking-tab {% if active_tab == 'upcoming' %}active{% endif %}">
     ✈️ Sắp bay <span class="tab-count">{{ count_upcoming }}</span>
   </a>
+  <a href="?tab=pending" class="booking-tab tab-pending {% if active_tab == 'pending' %}active{% endif %}">
+    ⏳ Chờ thanh toán <span class="tab-count">{{ count_pending }}</span>
+  </a>
   <a href="?tab=completed" class="booking-tab {% if active_tab == 'completed' %}active{% endif %}">
     ✅ Đã hoàn thành <span class="tab-count">{{ count_completed }}</span>
   </a>
@@ -363,6 +369,9 @@
     <h3>Không có vé sắp bay</h3>
     <p>Hãy tìm và đặt chuyến bay ngay!</p>
     <a href="{% url 'recommendations' %}" class="btn btn-primary" style="margin-top: 16px; border-radius: 10px;">Tìm chuyến bay</a>
+  {% elif active_tab == "pending" %}
+    <h3>Không có vé nào đang chờ thanh toán</h3>
+    <p>Bạn không có vé nào đang ở trạng thái chờ thanh toán.</p>
   {% elif active_tab == "completed" %}
     <h3>Chưa có chuyến bay hoàn thành</h3>
     <p>Các chuyến đã bay sẽ xuất hiện ở đây.</p>

@@ -216,6 +216,14 @@ def ticket(request, booking_id):
 def my_bookings(request):
     from django.utils import timezone
     now = timezone.now()
+
+    # Tự động hủy các booking pending đã quá giờ bay
+    Booking.objects.filter(
+        user=request.user,
+        status='pending',
+        flight__departure_time__lt=now
+    ).update(status='cancelled')
+
     all_bookings = Booking.objects.filter(
         user=request.user
     ).select_related(
@@ -226,18 +234,23 @@ def my_bookings(request):
 
     # Sắp bay: Chưa tới giờ bay VÀ đã thanh toán (paid)
     upcoming_qs = all_bookings.filter(status="paid", flight__departure_time__gte=now)
+    # Chờ thanh toán: pending và chưa quá giờ bay
+    pending_qs = all_bookings.filter(status="pending", flight__departure_time__gte=now)
     # Đã hoàn thành: Đã qua giờ bay VÀ đã thanh toán (paid)
     completed_qs = all_bookings.filter(status="paid", flight__departure_time__lt=now)
-    # Đã huỷ: Trạng thái là cancelled (hoặc pending quá hạn nếu có)
+    # Đã huỷ: Trạng thái là cancelled
     cancelled_qs = all_bookings.filter(status="cancelled")
 
     count_upcoming = upcoming_qs.count()
+    count_pending = pending_qs.count()
     count_completed = completed_qs.count()
     count_cancelled = cancelled_qs.count()
 
     # Active tab from query param
     active_tab = request.GET.get("tab", "upcoming")
-    if active_tab == "completed":
+    if active_tab == "pending":
+        bookings = pending_qs
+    elif active_tab == "completed":
         bookings = completed_qs
     elif active_tab == "cancelled":
         bookings = cancelled_qs
@@ -249,6 +262,7 @@ def my_bookings(request):
         "bookings": bookings,
         "active_tab": active_tab,
         "count_upcoming": count_upcoming,
+        "count_pending": count_pending,
         "count_completed": count_completed,
         "count_cancelled": count_cancelled,
     })
