@@ -226,7 +226,10 @@
       </div>
 
       {% if booking.flight %}
-      <!-- Route -->
+      <!-- Chuyến đi -->
+      <div style="font-size:.65rem;font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;">
+        {% if booking.return_flight %}✈ Chuyến đi{% endif %}
+      </div>
       <div class="bp-route-row">
         <div>
           <div class="bp-iata">{{ booking.flight.departure_airport.code }}</div>
@@ -245,7 +248,33 @@
           <div class="bp-date-dep">{{ booking.flight.arrival_time|date:"d/m/Y" }}</div>
         </div>
       </div>
+
+      {% if booking.return_flight %}
+      <!-- Chuyến về -->
+      <div style="margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,.15);">
+        <div style="font-size:.65rem;font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;">🔄 Chuyến về</div>
+        <div class="bp-route-row">
+          <div>
+            <div class="bp-iata">{{ booking.return_flight.departure_airport.code }}</div>
+            <div class="bp-city-name">{{ booking.return_flight.departure_airport.city }}</div>
+            <div class="bp-time-dep">{{ booking.return_flight.departure_time|date:"H:i" }}</div>
+            <div class="bp-date-dep">{{ booking.return_flight.departure_time|date:"d/m/Y" }}</div>
+          </div>
+          <div class="bp-flight-arrow">
+            <div class="bp-arrow-line"></div>
+            <div class="bp-duration">bay thẳng</div>
+          </div>
+          <div>
+            <div class="bp-iata">{{ booking.return_flight.arrival_airport.code }}</div>
+            <div class="bp-city-name">{{ booking.return_flight.arrival_airport.city }}</div>
+            <div class="bp-time-dep">{{ booking.return_flight.arrival_time|date:"H:i" }}</div>
+            <div class="bp-date-dep">{{ booking.return_flight.arrival_time|date:"d/m/Y" }}</div>
+          </div>
+        </div>
+      </div>
       {% endif %}
+      {% endif %}
+
     </div>
 
     <!-- Perforation divider -->

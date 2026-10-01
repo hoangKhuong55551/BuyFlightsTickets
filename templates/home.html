@@ -541,7 +541,8 @@
         <button class="s-tab-new active">⇄ Khứ hồi</button>
         <button class="s-tab-new">→ Một chiều</button>
       </div>
-      <form method="GET" action="{% url 'recommendations' %}">
+      <form method="GET" action="{% url 'recommendations' %}" id="search-form">
+        <input type="hidden" name="trip_type" id="trip_type_input" value="round">
         <div class="search-fields-row">
           <!-- Điểm đi -->
           <div class="sf-group">
@@ -730,18 +731,22 @@
     tab.addEventListener('click', function() {
       document.querySelectorAll('.s-tab-new').forEach(t => t.classList.remove('active'));
       this.classList.add('active');
+      const isRoundTrip = this.textContent.includes('⇄') || this.textContent.includes('Khứ hồi');
       // Toggle return date field
       const returnGroup = document.getElementById('return-date-group');
       if (returnGroup) {
-        const isRoundTrip = this.textContent.includes('⇄') || this.textContent.includes('Khứ hồi');
         returnGroup.style.display = isRoundTrip ? 'flex' : 'none';
-        // Adjust grid columns
         const row = document.querySelector('.search-fields-row');
         if (row) {
           row.style.gridTemplateColumns = isRoundTrip
             ? '1fr auto 1fr 1fr 1fr 1fr 1fr'
             : '1fr auto 1fr 1fr 1fr 1fr';
         }
+      }
+      // Cập nhật trip_type hidden input
+      const tripTypeInput = document.getElementById('trip_type_input');
+      if (tripTypeInput) {
+        tripTypeInput.value = isRoundTrip ? 'round' : 'one_way';
       }
     });
   });

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load flight_extras %}
-{% block title %}Chọn ghế · {{ flight.flight_number }}{% endblock %}
+{% block title %}Chọn ghế về · {{ return_flight.flight_number }}{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -41,13 +41,50 @@ main.contained {
 .seat-page-header .sep { color: var(--periwinkle); }
 .seat-page-header strong { color: var(--penn-blue); white-space: nowrap; }
 
+/* ── Progress bar ── */
+.progress-bar-wrap {
+  background: white;
+  border-bottom: 1.5px solid var(--periwinkle);
+  padding: 0 40px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  position: sticky;
+  top: 124px;
+  z-index: 99;
+  box-shadow: 0 2px 6px rgba(57,96,251,.04);
+}
+.progress-step {
+  display: flex; align-items: center; gap: 6px;
+  font-size: .78rem; font-weight: 600;
+  color: var(--muted); white-space: nowrap;
+}
+.progress-step.done { color: #059669; }
+.progress-step.active { color: var(--neon-blue); }
+.progress-step .step-num {
+  width: 22px; height: 22px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .72rem; font-weight: 800;
+  background: var(--periwinkle); color: var(--muted);
+}
+.progress-step.done .step-num { background: #059669; color: white; }
+.progress-step.active .step-num { background: var(--neon-blue); color: white; }
+.progress-sep {
+  width: 32px; height: 2px;
+  background: var(--periwinkle); margin: 0 4px;
+  flex-shrink: 0;
+}
+.progress-sep.done { background: #059669; }
+
 /* ══════════════════════════════
    TWO-COLUMN LAYOUT
 ══════════════════════════════ */
 .seat-page-body {
   display: grid;
-  grid-template-columns: 1fr 340px;
-  min-height: calc(100vh - 124px);
+  grid-template-columns: 1fr 360px;
+  min-height: calc(100vh - 168px);
 }
 
 /* ── LEFT: Seat map ── */
@@ -152,14 +189,14 @@ main.contained {
   background: white;
   border-left: 1.5px solid var(--periwinkle);
   position: sticky;
-  top: 124px;
-  height: calc(100vh - 124px);
+  top: 168px;
+  height: calc(100vh - 168px);
   overflow-y: auto;
   display: flex;
   flex-direction: column;
 }
 .sidebar-inner {
-  padding: 28px 24px;
+  padding: 22px 20px;
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -170,39 +207,58 @@ main.contained {
 .sidebar-back {
   display: flex; align-items: center; gap: 6px;
   font-size: .85rem; font-weight: 600; color: var(--muted);
-  text-decoration: none; margin-bottom: 22px; transition: color .15s;
+  text-decoration: none; margin-bottom: 16px; transition: color .15s;
 }
 .sidebar-back:hover { color: var(--neon-blue); text-decoration: none; }
 
-/* Flight strip */
-.flight-strip {
-  background: linear-gradient(135deg, var(--penn-blue), var(--neon-blue));
-  color: white; border-radius: 14px; padding: 14px 16px; margin-bottom: 18px;
+/* ── Summary blocks ── */
+.trip-summary-block {
+  border: 1.5px solid var(--periwinkle);
+  border-radius: 12px;
+  margin-bottom: 12px;
+  overflow: hidden;
 }
-.flight-strip-route {
+.trip-summary-header {
   display: flex; align-items: center; justify-content: space-between;
-  font-size: 1.1rem; font-weight: 900; margin-bottom: 5px;
-  font-family: var(--font-heading);
+  padding: 9px 13px;
+  font-size: .75rem; font-weight: 800;
+  text-transform: uppercase; letter-spacing: .05em;
 }
-.flight-strip-meta { font-size: .72rem; opacity: .7; display: flex; gap: 8px; flex-wrap: wrap; }
-
-/* Seat info rows */
-.summary-rows { margin-bottom: 18px; }
-.summary-row {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 10px 0; border-bottom: 1px solid var(--periwinkle);
-  font-size: .88rem;
+.trip-summary-header.outbound {
+  background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+  color: #065f46;
+  border-bottom: 1.5px solid #a7f3d0;
 }
-.summary-row:last-child { border-bottom: none; }
-.summary-row .label { color: var(--muted); }
-.summary-row .value { font-weight: 700; color: var(--penn-blue); }
+.trip-summary-header.return-hdr {
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+  color: #1e3a8a;
+  border-bottom: 1.5px solid #bfdbfe;
+}
+.trip-block-body {
+  padding: 11px 13px;
+  font-size: .82rem;
+}
+.trip-block-route {
+  display: flex; align-items: center; gap: 6px;
+  font-weight: 800; font-size: .95rem; color: var(--penn-blue);
+  font-family: var(--font-heading); margin-bottom: 4px;
+}
+.trip-block-meta {
+  font-size: .72rem; color: var(--muted); display: flex; flex-wrap: wrap; gap: 5px;
+}
+.trip-block-seat {
+  margin-top: 7px; padding: 5px 9px;
+  background: var(--lavender); border-radius: 8px;
+  font-size: .78rem; display: flex; justify-content: space-between;
+}
+.trip-block-seat .seat-val { font-weight: 700; color: var(--neon-blue); }
 
-/* Big seat display */
+/* Seat big display */
 .seat-display-box {
   background: var(--lavender);
   border: 2px solid var(--periwinkle);
-  border-radius: 16px; padding: 16px 12px;
-  text-align: center; margin-bottom: 18px;
+  border-radius: 14px; padding: 13px 10px;
+  text-align: center; margin-bottom: 14px;
   transition: all .2s;
 }
 .seat-display-box.chosen {
@@ -210,27 +266,28 @@ main.contained {
   border-color: var(--neon-blue);
 }
 .seat-code-big {
-  font-size: 2.2rem; font-weight: 900;
+  font-size: 2rem; font-weight: 900;
   color: var(--muted); font-family: var(--font-heading); line-height: 1;
   transition: color .2s;
 }
 .seat-code-big.chosen { color: var(--neon-blue); }
-.seat-hint { font-size: .72rem; color: var(--muted); margin-top: 5px; }
+.seat-hint { font-size: .7rem; color: var(--muted); margin-top: 5px; }
 
 /* Price row */
 .price-row {
   display: flex; justify-content: space-between; align-items: center;
-  padding: 14px 0; border-top: 2px solid var(--periwinkle); margin-bottom: 16px;
+  padding: 12px 0; border-top: 2px solid var(--periwinkle); margin-bottom: 14px;
 }
-.price-label { font-size: .85rem; color: var(--muted); font-weight: 600; }
-.price-value { font-size: 1.3rem; font-weight: 900; color: var(--neon-blue); font-family: var(--font-heading); }
+.price-label { font-size: .82rem; color: var(--muted); font-weight: 600; }
+.price-value { font-size: 1.2rem; font-weight: 900; color: var(--neon-blue); font-family: var(--font-heading); }
+.price-note { font-size: .68rem; color: var(--muted); text-align: right; margin-top: -10px; margin-bottom: 14px; }
 
 /* Confirm button */
 .btn-confirm {
-  width: 100%; padding: 15px;
+  width: 100%; padding: 14px;
   background: var(--neon-blue); color: white;
   border: none; border-radius: 14px; cursor: pointer;
-  font-size: 1rem; font-weight: 700;
+  font-size: .95rem; font-weight: 700;
   display: flex; align-items: center; justify-content: center; gap: 8px;
   box-shadow: 0 4px 16px rgba(57,96,251,.35); transition: all .2s;
   font-family: inherit; margin-bottom: 10px;
@@ -270,6 +327,7 @@ main.contained {
   .seat-map-area { padding: 20px 16px; }
   .plane-wings-svg { display: none; }
   .seat-page-header { padding: 0 16px; }
+  .progress-bar-wrap { padding: 0 16px; top: 124px; }
 }
 </style>
 {% endblock %}
@@ -278,12 +336,40 @@ main.contained {
 
 <!-- ── Header strip ── -->
 <div class="seat-page-header">
-  <a href="{% url 'flight_detail' flight.id %}">
+  <a href="{% url 'flight_detail' return_flight.id %}">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
     Quay lại
   </a>
   <span class="sep">›</span>
-  <strong>Chọn ghế · {{ flight.airline.code|default:"VN" }} {{ flight.flight_number }} · {{ flight.departure_airport.code }} → {{ flight.arrival_airport.code }} · {{ flight.departure_time|date:"d/m/Y" }}</strong>
+  <strong>
+    Chuyến về:
+    {{ return_flight.airline.code|default:"VN" }} {{ return_flight.flight_number }}
+    · {{ return_flight.departure_airport.code }} → {{ return_flight.arrival_airport.code }}
+    · {{ return_flight.departure_time|date:"d/m/Y" }}
+  </strong>
+</div>
+
+<!-- ── Progress bar ── -->
+<div class="progress-bar-wrap">
+  <div class="progress-step done">
+    <div class="step-num">✓</div>
+    Chọn ghế đi
+  </div>
+  <div class="progress-sep done"></div>
+  <div class="progress-step active">
+    <div class="step-num">②</div>
+    Chọn ghế về
+  </div>
+  <div class="progress-sep"></div>
+  <div class="progress-step">
+    <div class="step-num">③</div>
+    Thông tin
+  </div>
+  <div class="progress-sep"></div>
+  <div class="progress-step">
+    <div class="step-num">④</div>
+    Thanh toán
+  </div>
 </div>
 
 <!-- ── Two column body ── -->
@@ -320,8 +406,6 @@ main.contained {
         <form method="POST" id="booking-form">
           {% csrf_token %}
           <input type="hidden" name="seat_number" id="seat_number_input" value="" />
-          <input type="hidden" name="return_flight_id" value="{{ return_flight_id }}" />
-          <input type="hidden" name="trip_type" value="{{ trip_type }}" />
 
           <!-- Column letters -->
           <div class="col-labels">
@@ -381,44 +465,70 @@ main.contained {
     <div class="sidebar-inner">
 
       <!-- Back -->
-      <a href="{% url 'flight_detail' flight.id %}" class="sidebar-back">
+      <a href="{% url 'flight_detail' return_flight.id %}" class="sidebar-back">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-        Quay lại chuyến bay
+        Quay lại chuyến về
       </a>
 
-      <!-- Flight strip -->
-      <div class="flight-strip">
-        <div class="flight-strip-route">
-          <span>{{ flight.departure_airport.code }}</span>
-          <svg width="28" height="14" viewBox="0 0 28 14" fill="none">
-            <path d="M0 7h24M18 1l6 6-6 6" stroke="rgba(255,255,255,.7)" stroke-width="1.5"/>
-          </svg>
-          <span>{{ flight.arrival_airport.code }}</span>
+      <!-- ── Outbound summary ── -->
+      <div class="trip-summary-block">
+        <div class="trip-summary-header outbound">
+          <span>✈ Chuyến đi</span>
+          <span style="font-weight:600;font-size:.7rem;opacity:.8;">Đã xác nhận</span>
         </div>
-        <div class="flight-strip-meta">
-          <span>{{ flight.flight_number }}</span>
-          <span>·</span>
-          <span>{{ flight.departure_time|date:"d/m/Y" }}</span>
-          <span>·</span>
-          <span>{{ flight.departure_time|date:"H:i" }}</span>
-          <span>·</span>
-          <span>{{ flight.airline.name }}</span>
+        <div class="trip-block-body">
+          <div class="trip-block-route">
+            <span>{{ outbound_flight.departure_airport.code }}</span>
+            <svg width="22" height="11" viewBox="0 0 28 14" fill="none">
+              <path d="M0 7h24M18 1l6 6-6 6" stroke="var(--neon-blue)" stroke-width="1.5"/>
+            </svg>
+            <span>{{ outbound_flight.arrival_airport.code }}</span>
+          </div>
+          <div class="trip-block-meta">
+            <span>{{ outbound_flight.flight_number }}</span>
+            <span>·</span>
+            <span>{{ outbound_flight.departure_time|date:"d/m/Y" }}</span>
+            <span>·</span>
+            <span>{{ outbound_flight.departure_time|date:"H:i" }}</span>
+            <span>·</span>
+            <span>{{ outbound_flight.airline.name }}</span>
+          </div>
+          <div class="trip-block-seat">
+            <span>Ghế đã chọn</span>
+            <span class="seat-val">
+              {% if booking.seat_number %}{{ booking.seat_number }}{% else %}<em style="font-weight:400;color:var(--muted);">Hãng xếp</em>{% endif %}
+            </span>
+          </div>
         </div>
       </div>
 
-      <!-- Summary rows -->
-      <div class="summary-rows">
-        <div class="summary-row">
-          <span class="label">Chuyến bay</span>
-          <span class="value">{{ flight.flight_number }}</span>
+      <!-- ── Return summary ── -->
+      <div class="trip-summary-block">
+        <div class="trip-summary-header return-hdr">
+          <span>🔄 Chuyến về</span>
+          <span style="font-weight:600;font-size:.7rem;opacity:.8;">Đang chọn ghế</span>
         </div>
-        <div class="summary-row">
-          <span class="label">Hành trình</span>
-          <span class="value">{{ flight.departure_airport.city }} → {{ flight.arrival_airport.city }}</span>
-        </div>
-        <div class="summary-row">
-          <span class="label">Ghế đã chọn</span>
-          <span class="value" id="selected-seat-display" style="color:var(--muted);">Chưa chọn</span>
+        <div class="trip-block-body">
+          <div class="trip-block-route">
+            <span>{{ return_flight.departure_airport.code }}</span>
+            <svg width="22" height="11" viewBox="0 0 28 14" fill="none">
+              <path d="M0 7h24M18 1l6 6-6 6" stroke="#3b82f6" stroke-width="1.5"/>
+            </svg>
+            <span>{{ return_flight.arrival_airport.code }}</span>
+          </div>
+          <div class="trip-block-meta">
+            <span>{{ return_flight.flight_number }}</span>
+            <span>·</span>
+            <span>{{ return_flight.departure_time|date:"d/m/Y" }}</span>
+            <span>·</span>
+            <span>{{ return_flight.departure_time|date:"H:i" }}</span>
+            <span>·</span>
+            <span>{{ return_flight.airline.name }}</span>
+          </div>
+          <div class="trip-block-seat">
+            <span>Ghế đang chọn</span>
+            <span class="seat-val" id="selected-seat-display" style="color:var(--muted);">Chưa chọn</span>
+          </div>
         </div>
       </div>
 
@@ -430,14 +540,15 @@ main.contained {
 
       <!-- Price -->
       <div class="price-row">
-        <span class="price-label">Tổng tiền</span>
-        <span class="price-value">{{ flight.price|vnd_format }} đ</span>
+        <span class="price-label">Tổng dự kiến</span>
+        <span class="price-value">{{ booking.total_price|add:return_flight.price|vnd_format }} đ</span>
       </div>
+      <div class="price-note">Chuyến đi + Chuyến về (chưa gồm phí)</div>
 
       <!-- Confirm button -->
       <button type="submit" form="booking-form" id="submit-btn" class="btn-confirm" disabled>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
-        Chọn ghế để tiếp tục
+        Chọn ghế để tiếp tục →
       </button>
 
       <!-- Skip -->

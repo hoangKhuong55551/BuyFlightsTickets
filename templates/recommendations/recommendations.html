@@ -193,6 +193,8 @@
         {% if arrival %}<input type="hidden" name="arrival" value="{{ arrival }}">{% endif %}
         {% if date %}<input type="hidden" name="date" value="{{ date }}">{% endif %}
         <input type="hidden" name="sort" value="{{ sort_by }}">
+        {% if trip_type %}<input type="hidden" name="trip_type" value="{{ trip_type }}">{% endif %}
+        {% if return_date %}<input type="hidden" name="return_date" value="{{ return_date }}">{% endif %}
 
         <div class="filter-row">
           <label class="filter-label">
@@ -290,8 +292,11 @@
           {% if departure %}{{ departure }}{% else %}Tất cả{% endif %}
           →
           {% if arrival %}{{ arrival }}{% else %}Tất cả điểm đến{% endif %}
+          {% if trip_type == 'round' %}
+          <span style="background:#3960FB;color:white;padding:3px 10px;border-radius:99px;font-size:.75rem;font-weight:700;vertical-align:middle;margin-left:6px;">⇄ Khứ hồi</span>
+          {% endif %}
         </div>
-        <div class="result-count">Tìm thấy {{ total_count }} chuyến bay</div>
+        <div class="result-count">Tìm thấy {{ total_count }} chuyến bay{% if trip_type == 'round' and return_date %} · Về: {{ return_date }}{% endif %}</div>
       </div>
     </div>
 
@@ -368,7 +373,11 @@
         <!-- Price + Button -->
         <div class="flight-right">
           <div class="flight-price">{{ flight.price|vnd_format }} đ</div>
+          {% if trip_type == 'round' %}
+          <a href="{% url 'create_booking' flight.id %}" class="btn-select btn-outbound" data-outbound-id="{{ flight.id }}">Chọn</a>
+          {% else %}
           <a href="{% url 'create_booking' flight.id %}" class="btn-select">Chọn</a>
+          {% endif %}
         </div>
 
       </div>

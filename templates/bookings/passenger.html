@@ -147,16 +147,26 @@
   
   <div class="col-right">
     <div class="summary-card">
-      <div style="font-size: 1.2rem; font-weight: 800; margin-bottom: 8px;">
+      {% if booking.return_flight %}
+      <div style="font-size:.7rem;font-weight:700;color:var(--cyan-500);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;">✈ Chuyến đi</div>
+      {% endif %}
+      <div style="font-size: 1.1rem; font-weight: 800; margin-bottom: 6px;">
         {{ booking.flight.departure_airport.city }} → {{ booking.flight.arrival_airport.city }}
       </div>
-      <div style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px dashed #e2e8f0;">
+      <div style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px dashed #e2e8f0;">
         {{ booking.flight.flight_number }} · {{ booking.flight.departure_time|date:"H:i" }} · {{ booking.flight.departure_time|date:"d/m/Y" }}
       </div>
-      <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
-        <span style="color: var(--text-muted);">Ghế đã chọn:</span>
-        <strong>{{ booking.seat_number|default:"Chưa chọn" }}</strong>
+
+      {% if booking.return_flight %}
+      <div style="font-size:.7rem;font-weight:700;color:#10b981;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;">🔄 Chuyến về</div>
+      <div style="font-size: 1.1rem; font-weight: 800; margin-bottom: 6px;">
+        {{ booking.return_flight.departure_airport.city }} → {{ booking.return_flight.arrival_airport.city }}
       </div>
+      <div style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px dashed #e2e8f0;">
+        {{ booking.return_flight.flight_number }} · {{ booking.return_flight.departure_time|date:"H:i" }} · {{ booking.return_flight.departure_time|date:"d/m/Y" }}
+      </div>
+      {% endif %}
+
       <div style="display: flex; justify-content: space-between; margin-bottom: 24px; font-size: 1.2rem;">
         <span style="font-weight: 600;">Tổng tiền:</span>
         <strong style="color: var(--cyan-500);">{{ booking.total_price|vnd_format }} đ</strong>
@@ -167,6 +177,7 @@
     </div>
   </div>
 </div>
+
 
 <script>
   // Quick fix for django form inputs

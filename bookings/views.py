@@ -73,12 +73,12 @@ def _get_available_seats(flight):
     return available
 
 
+
 @login_required
 @transaction.atomic
 def create_booking(request, flight_id):
     flight = get_object_or_404(Flight, id=flight_id)
 
-    # Kiểm tra chuyến bay còn nhận đặt chỗ không
     from django.utils import timezone
     if flight.status != "scheduled":
         messages.error(request, "Chuyến bay này không còn nhận đặt chỗ.")
@@ -90,11 +90,15 @@ def create_booking(request, flight_id):
         messages.error(request, "Chuyến bay này đã hết ghế.")
         return redirect("home")
 
+    # Round-trip params từ GET (khi user click "Chọn" từ trang kết quả)
+    return_flight_id = request.GET.get("return_flight_id", "").strip()
+    trip_type = request.GET.get("trip_type", "one_way")
+
     if request.method == "POST":
         seat_number = request.POST.get("seat_number", "").strip()
+        return_flight_id = request.POST.get("return_flight_id", "").strip()
+        trip_type = request.POST.get("trip_type", "one_way")
 
-        # Fix #5: Nếu người dùng bấm "Bỏ qua, để hãng tự xếp ghế"
-        # thì tự động chọn ngẫu nhiên một ghế trống
         if not seat_number:
             available = _get_available_seats(flight)
             if not available:
@@ -102,7 +106,6 @@ def create_booking(request, flight_id):
                 return redirect("create_booking", flight_id=flight.id)
             seat_number = random.choice(available)
 
-        # Khoá dòng để tránh race condition – hai user chọn cùng ghế đồng thời
         already_taken = (
             Ticket.objects
             .select_for_update()
@@ -121,7 +124,6 @@ def create_booking(request, flight_id):
             return redirect("create_booking", flight_id=flight.id)
 
         booking_code = uuid.uuid4().hex[:10].upper()
-
         booking = Booking.objects.create(
             user=request.user,
             flight=flight,
@@ -131,14 +133,85 @@ def create_booking(request, flight_id):
         )
 
         request.session["selected_seat"] = seat_number
+
+        # Khứ hồi → chuyển sang bước chọn ghế chuyến về
+        if trip_type == "round" and return_flight_id:
+            request.session["trip_type"] = "round"
+            return redirect("select_return_flight",
+                            booking_id=booking.id,
+                            return_flight_id=int(return_flight_id))
+
         return redirect("passenger", booking_id=booking.id)
 
     all_seats = _generate_seats(flight)
-    return render(
-        request,
-        "bookings/create.html",
-        {"flight": flight, "all_seats": all_seats}
-    )
+    return render(request, "bookings/create.html", {
+        "flight": flight,
+        "all_seats": all_seats,
+        "return_flight_id": return_flight_id,
+        "trip_type": trip_type,
+    })
+
+
+@login_required
+@transaction.atomic
+def select_return_flight(request, booking_id, return_flight_id):
+    """Bước 2 (khứ hồi): chọn ghế cho chuyến về."""
+    booking = get_object_or_404(Booking, id=booking_id, user=request.user)
+    return_flight = get_object_or_404(Flight, id=return_flight_id)
+
+    from django.utils import timezone
+    if return_flight.status != "scheduled" or return_flight.departure_time <= timezone.now():
+        messages.error(request, "Chuyến về không còn nhận đặt chỗ.")
+        return redirect("my_bookings")
+    if return_flight.available_seats <= 0:
+        messages.error(request, "Chuyến về đã hết ghế.")
+        return redirect("my_bookings")
+
+    if request.method == "POST":
+        return_seat = request.POST.get("seat_number", "").strip()
+
+        if not return_seat:
+            available = _get_available_seats(return_flight)
+            if not available:
+                messages.error(request, "Chuyến về đã hết ghế trống.")
+                return redirect("select_return_flight",
+                                booking_id=booking.id,
+                                return_flight_id=return_flight.id)
+            return_seat = random.choice(available)
+
+        already_taken = (
+            Ticket.objects
+            .select_for_update()
+            .filter(
+                flight=return_flight,
+                seat_number=return_seat,
+                booking__status__in=["pending", "paid"]
+            )
+            .exists()
+        )
+        if already_taken:
+            messages.error(request,
+                           f"Ghế {return_seat} vừa được người khác đặt. Vui lòng chọn ghế khác.")
+            return redirect("select_return_flight",
+                            booking_id=booking.id,
+                            return_flight_id=return_flight.id)
+
+        # Gán chuyến về vào booking + cộng giá
+        booking.return_flight = return_flight
+        booking.total_price = booking.total_price + return_flight.price
+        booking.save(update_fields=["return_flight", "total_price"])
+
+        request.session["selected_return_seat"] = return_seat
+        return redirect("passenger", booking_id=booking.id)
+
+    all_seats = _generate_seats(return_flight)
+    outbound_flight = booking.flight
+    return render(request, "bookings/select_return.html", {
+        "booking": booking,
+        "return_flight": return_flight,
+        "outbound_flight": outbound_flight,
+        "all_seats": all_seats,
+    })
 
 
 @login_required(login_url="/users/login/")
@@ -169,23 +242,21 @@ def passenger(request, booking_id):
                 phone_number=form.cleaned_data.get("phone_number", "")
             )
             seat_number = request.session.pop("selected_seat", "N/A")
+            return_seat = request.session.pop("selected_return_seat", None)
+
             if booking.flight:
-                # Fix #1: Bọc trong try/except IntegrityError để xử lý
-                # race condition khi 2 user đặt cùng ghế đồng thời
                 try:
                     Ticket.objects.create(
                         booking=booking,
                         passenger=p,
                         flight=booking.flight,
                         seat_number=seat_number,
-                        price=booking.total_price
+                        price=booking.flight.price
                     )
-                    # Giảm số ghế trống sau khi đặt vé thành công
                     Flight.objects.filter(
                         id=booking.flight.id, available_seats__gt=0
                     ).update(available_seats=F("available_seats") - 1)
                 except IntegrityError:
-                    # Ghế đã bị người khác đặt trước
                     p.delete()
                     booking.status = "cancelled"
                     booking.save(update_fields=["status"])
@@ -195,6 +266,28 @@ def passenger(request, booking_id):
                         f"Vui lòng chọn ghế khác."
                     )
                     return redirect("create_booking", flight_id=booking.flight.id)
+
+            # Tạo ticket cho chuyến về (khứ hồi)
+            if booking.return_flight and return_seat:
+                try:
+                    Ticket.objects.create(
+                        booking=booking,
+                        passenger=p,
+                        flight=booking.return_flight,
+                        seat_number=return_seat,
+                        price=booking.return_flight.price
+                    )
+                    Flight.objects.filter(
+                        id=booking.return_flight.id, available_seats__gt=0
+                    ).update(available_seats=F("available_seats") - 1)
+                except IntegrityError:
+                    messages.error(
+                        request,
+                        f"Ghế {return_seat} (chuyến về) vừa được người khác đặt. "
+                        f"Vui lòng đổi ghế chuyến về."
+                    )
+                    # Không hủy booking — vẫn tiến đến thanh toán
+
             return redirect("payment", booking_id=booking.id)
     else:
         form = PassengerForm()
@@ -204,6 +297,7 @@ def passenger(request, booking_id):
         "bookings/passenger.html",
         {"booking": booking, "form": form}
     )
+
 
 
 @login_required(login_url="/users/login/")
