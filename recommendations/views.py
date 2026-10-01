@@ -91,7 +91,7 @@ def recommendations(request):
         airline_data.append({
             "airline__code": al.code,
             "airline__name": al.name,
-            "airline__logo": al.logo.url if al.logo else "",
+            "airline__logo": al.logo if al.logo else "",
             "min_price": airline_min_prices.get(al.code, None)
         })
 
