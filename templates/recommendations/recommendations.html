@@ -487,6 +487,7 @@
 
 
 {% block extra_js %}
+{% if trip_type == 'round' %}
 <script>
 var selectedReturnId = null;
 
@@ -547,4 +548,5 @@ document.querySelectorAll('.btn-outbound').forEach(function(btn) {
   });
 });
 </script>
+{% endif %}
 {% endblock %}
