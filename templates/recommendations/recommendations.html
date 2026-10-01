@@ -241,17 +241,22 @@
     <div class="sidebar-card">
       <h4>Hãng hàng không <span class="chevron">▾</span></h4>
       {% for ap in airline_prices %}
-      <div class="filter-row">
+      <div class="filter-row" {% if not ap.min_price %}style="opacity: 0.5;"{% endif %}>
         <label class="filter-label">
           <input type="checkbox" form="filter-form" class="fc" name="airline" value="{{ ap.airline__code }}"
             {% if ap.airline__code in filter_airlines %}checked{% endif %}
+            {% if not ap.min_price %}disabled{% endif %}
             onchange="document.getElementById('filter-form').submit()">
           {% if ap.airline__logo %}
           <img src="{{ ap.airline__logo }}" alt="{{ ap.airline__name }}" style="width:20px;height:20px;object-fit:contain;">
           {% endif %}
           {{ ap.airline__name }}
         </label>
+        {% if ap.min_price %}
         <span class="filter-price">{{ ap.min_price|vnd_format }} đ</span>
+        {% else %}
+        <span class="filter-price">Hết chuyến</span>
+        {% endif %}
       </div>
       {% endfor %}
     </div>
@@ -292,6 +297,23 @@
 
   <!-- ─── MAIN RESULTS ─── -->
   <div class="main-area">
+
+    {% if not departure and not arrival %}
+    <!-- Banner Hãng Hàng Không Đối Tác -->
+    <div style="margin-bottom: 24px;">
+      <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--penn-blue); margin-bottom: 12px;">Các đối tác hàng không</h3>
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px;">
+        {% for ap in airline_prices %}
+        <div style="background: white; border-radius: 12px; padding: 16px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1px solid #f1f5f9;">
+          {% if ap.airline__logo %}
+          <img src="{{ ap.airline__logo }}" alt="{{ ap.airline__name }}" style="width:40px; height:40px; object-fit:contain; margin-bottom: 8px;">
+          {% endif %}
+          <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-dark);">{{ ap.airline__name }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
 
     <!-- Result header -->
     <div class="result-header">

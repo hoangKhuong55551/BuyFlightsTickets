@@ -78,11 +78,22 @@ def recommendations(request):
     baggage_min = base_qs.filter(has_checked_baggage=True).aggregate(m=Min("price"))["m"]
     no_baggage_min = base_qs.filter(has_checked_baggage=False).aggregate(m=Min("price"))["m"]
 
-    airline_prices = (
-        base_qs.values("airline__code", "airline__name", "airline__logo")
-        .annotate(min_price=Min("price"))
-        .order_by("min_price")
-    )
+    # Lấy TẤT CẢ các hãng hàng không để hiển thị ở sidebar (kể cả không có chuyến bay)
+    all_airlines = Airline.objects.all().order_by("name")
+    
+    # Tính giá thấp nhất cho mỗi hãng dựa trên base_qs
+    airline_min_prices = {}
+    for ap in base_qs.values("airline__code").annotate(min_price=Min("price")):
+        airline_min_prices[ap["airline__code"]] = ap["min_price"]
+
+    airline_data = []
+    for al in all_airlines:
+        airline_data.append({
+            "airline__code": al.code,
+            "airline__name": al.name,
+            "airline__logo": al.logo.url if al.logo else "",
+            "min_price": airline_min_prices.get(al.code, None)
+        })
 
     # --- Chuyến về (Round-trip) ---
     return_flights = None
@@ -123,7 +134,7 @@ def recommendations(request):
         "multi_stop_min": multi_stop_min,
         "baggage_min": baggage_min,
         "no_baggage_min": no_baggage_min,
-        "airline_prices": airline_prices,
+        "airline_prices": airline_data,
         # Round-trip
         "return_flights": return_flights,
         "return_total_count": return_total_count,
