@@ -28,6 +28,14 @@ class UserProfile(models.Model):
         blank=True,
         verbose_name="Avatar URL"
     )
+    managed_airline = models.ForeignKey(
+        'flights.Airline',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name="Hãng hàng không quản lý (Dành cho Đối tác)",
+        related_name="managers"
+    )
 
     class Meta:
         verbose_name = "User Profile"

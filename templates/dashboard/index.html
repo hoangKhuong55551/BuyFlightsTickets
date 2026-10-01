@@ -1,0 +1,159 @@
+﻿{% extends "base.html" %}
+{% load flight_extras %}
+{% block title %}Dashboard Quản Trị - SkyBook{% endblock %}
+
+{% block extra_css %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  body { background-color: var(--bg-light); }
+  .dash-container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+  .dash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
+  .dash-title { font-size: 1.8rem; font-weight: 900; color: var(--penn-blue); }
+  .dash-subtitle { color: var(--muted); font-size: 0.95rem; }
+  
+  .stat-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px; margin-bottom: 32px; }
+  .stat-card { background: white; padding: 24px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+  .stat-card h3 { font-size: 0.85rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .stat-card .val { font-size: 2rem; font-weight: 800; color: var(--neon-blue); }
+  
+  .charts-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-bottom: 40px; }
+  @media(max-width: 900px) { .charts-grid { grid-template-columns: 1fr; } }
+  .chart-card { background: white; padding: 24px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+  .chart-card h3 { font-size: 1.1rem; font-weight: 800; color: var(--penn-blue); margin-bottom: 16px; }
+  
+  .btn-manage { padding: 10px 20px; background: var(--neon-blue); color: white; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 0.9rem; }
+  .btn-manage:hover { background: var(--neon-blue-h); color: white; text-decoration: none; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dash-container">
+  <div class="dash-header">
+    <div>
+      <h1 class="dash-title">
+        {% if airline %}
+        Dashboard Quản trị - {{ airline.name }}
+        {% else %}
+        Dashboard Tổng quan (Admin)
+        {% endif %}
+      </h1>
+      <p class="dash-subtitle">Thống kê doanh thu và tình hình đặt vé</p>
+    </div>
+    <div>
+      <a href="/admin/flights/flight/" class="btn-manage">Quản lý Chuyến bay ✈</a>
+    </div>
+  </div>
+  
+  <div class="stat-cards">
+    <div class="stat-card">
+      <h3>Tổng doanh thu</h3>
+      <div class="val">{{ total_revenue|vnd_format }}</div>
+    </div>
+    <div class="stat-card">
+      <h3>Tổng số vé bán ra</h3>
+      <div class="val">{{ total_bookings }}</div>
+    </div>
+    {% if airline %}
+    <div class="stat-card">
+      <h3>Hãng hàng không</h3>
+      <div class="val" style="font-size:1.5rem; margin-top: 8px; color: var(--penn-blue)">{{ airline.name }}</div>
+    </div>
+    {% endif %}
+  </div>
+  
+  <div class="charts-grid">
+    <!-- Doanh thu theo tháng -->
+    <div class="chart-card">
+      <h3>Doanh thu 6 tháng gần nhất</h3>
+      <canvas id="revenueChart" height="100"></canvas>
+    </div>
+    
+    <!-- Top Hãng Bay (Chỉ Admin) -->
+    {% if not airline %}
+    <div class="chart-card">
+      <h3>Top Hãng Bay (Theo số lượng)</h3>
+      <canvas id="airlinesChart" height="200"></canvas>
+    </div>
+    {% else %}
+    <!-- Thay bằng Tuyến bay hot nhất nếu là Airline Manager -->
+    <div class="chart-card">
+      <h3>Tuyến bay "hot" nhất</h3>
+      <canvas id="routesChart" height="200"></canvas>
+    </div>
+    {% endif %}
+  </div>
+
+  {% if not airline %}
+  <div class="charts-grid" style="grid-template-columns: 1fr;">
+    <div class="chart-card">
+      <h3>Tuyến bay "hot" nhất toàn hệ thống</h3>
+      <canvas id="routesChart" height="80"></canvas>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Revenue Chart
+  const revCtx = document.getElementById('revenueChart').getContext('2d');
+  new Chart(revCtx, {
+    type: 'bar',
+    data: {
+      labels: {{ months_labels_json|safe }},
+      datasets: [{
+        label: 'Doanh thu (VNĐ)',
+        data: {{ revenue_data_json|safe }},
+        backgroundColor: '#3960FB',
+        borderRadius: 6
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true } }
+    }
+  });
+
+  // Top Airlines Chart (If exists)
+  const airCanvas = document.getElementById('airlinesChart');
+  if (airCanvas) {
+    const airCtx = airCanvas.getContext('2d');
+    new Chart(airCtx, {
+      type: 'doughnut',
+      data: {
+        labels: {{ top_airlines_labels_json|safe }},
+        datasets: [{
+          data: {{ top_airlines_data_json|safe }},
+          backgroundColor: ['#3960FB', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'],
+        }]
+      },
+      options: { responsive: true }
+    });
+  }
+
+  // Top Routes Chart
+  const routeCanvas = document.getElementById('routesChart');
+  if (routeCanvas) {
+    const routeCtx = routeCanvas.getContext('2d');
+    new Chart(routeCtx, {
+      type: 'bar',
+      data: {
+        labels: {{ top_routes_labels_json|safe }},
+        datasets: [{
+          label: 'Số lượng vé',
+          data: {{ top_routes_data_json|safe }},
+          backgroundColor: '#10b981',
+          borderRadius: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true } }
+      }
+    });
+  }
+</script>
+{% endblock %}
