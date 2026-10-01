@@ -124,6 +124,7 @@ def recommendations(request):
         # Round-trip
         "return_flights": return_flights,
         "return_total_count": return_total_count,
+        "trip_type": trip_type,
     }
 
     return render(request, "recommendations/recommendations.html", context)

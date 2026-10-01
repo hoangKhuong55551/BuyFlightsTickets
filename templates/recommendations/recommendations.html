@@ -202,6 +202,8 @@
         <input type="hidden" name="sort" value="{{ sort_by }}">
         {% if trip_type %}<input type="hidden" name="trip_type" value="{{ trip_type }}">{% endif %}
         {% if return_date %}<input type="hidden" name="return_date" value="{{ return_date }}">{% endif %}
+        {% if passengers %}<input type="hidden" name="passengers" value="{{ passengers }}">{% endif %}
+        {% if seat_class %}<input type="hidden" name="seat_class" value="{{ seat_class }}">{% endif %}
 
         <div class="filter-row">
           <label class="filter-label">
@@ -309,16 +311,16 @@
 
     <!-- Sort bar -->
     <div class="sort-bar">
-      <a href="?departure={{ departure }}&arrival={{ arrival }}&date={{ date }}{% for s in filter_stops %}&stops={{ s }}{% endfor %}{% for a in filter_airlines %}&airline={{ a }}{% endfor %}{% if filter_baggage %}&has_baggage={{ filter_baggage }}{% endif %}&sort=price"
+      <a href="?departure={{ departure }}&arrival={{ arrival }}&date={{ date }}&return_date={{ return_date }}&trip_type={{ trip_type }}&passengers={{ passengers }}&seat_class={{ seat_class }}{% for s in filter_stops %}&stops={{ s }}{% endfor %}{% for a in filter_airlines %}&airline={{ a }}{% endfor %}{% if filter_baggage %}&has_baggage={{ filter_baggage }}{% endif %}&sort=price"
          class="sort-btn {% if sort_by == 'price' or not sort_by %}active{% endif %}">
         Giá thấp nhất
         {% with flights|first as f %}{% if f %}<span class="sort-meta">{{ f.price|vnd_format }} đ · {{ f.departure_time|flight_duration:f.arrival_time }}</span>{% endif %}{% endwith %}
       </a>
-      <a href="?departure={{ departure }}&arrival={{ arrival }}&date={{ date }}{% for s in filter_stops %}&stops={{ s }}{% endfor %}{% for a in filter_airlines %}&airline={{ a }}{% endfor %}{% if filter_baggage %}&has_baggage={{ filter_baggage }}{% endif %}&sort=duration"
+      <a href="?departure={{ departure }}&arrival={{ arrival }}&date={{ date }}&return_date={{ return_date }}&trip_type={{ trip_type }}&passengers={{ passengers }}&seat_class={{ seat_class }}{% for s in filter_stops %}&stops={{ s }}{% endfor %}{% for a in filter_airlines %}&airline={{ a }}{% endfor %}{% if filter_baggage %}&has_baggage={{ filter_baggage }}{% endif %}&sort=duration"
          class="sort-btn {% if sort_by == 'duration' %}active{% endif %}">
         Thời gian bay ngắn nhất
       </a>
-      <a href="?departure={{ departure }}&arrival={{ arrival }}&date={{ date }}{% for s in filter_stops %}&stops={{ s }}{% endfor %}{% for a in filter_airlines %}&airline={{ a }}{% endfor %}{% if filter_baggage %}&has_baggage={{ filter_baggage }}{% endif %}&sort=airline"
+      <a href="?departure={{ departure }}&arrival={{ arrival }}&date={{ date }}&return_date={{ return_date }}&trip_type={{ trip_type }}&passengers={{ passengers }}&seat_class={{ seat_class }}{% for s in filter_stops %}&stops={{ s }}{% endfor %}{% for a in filter_airlines %}&airline={{ a }}{% endfor %}{% if filter_baggage %}&has_baggage={{ filter_baggage }}{% endif %}&sort=airline"
          class="sort-btn {% if sort_by == 'airline' %}active{% endif %}">
         ↕ Ưu tiên bay thẳng
       </a>
