@@ -176,6 +176,13 @@
     .results-layout { flex-direction: column; }
     .sidebar { flex: none; width: 100%; }
   }
+
+  .flight-card.selected-return { border-left: 4px solid #10b981 !important; background: #f0fdf4; }
+  #return-section { transition: box-shadow 0.3s; }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
 </style>
 {% endblock %}
 
@@ -392,6 +399,152 @@
     </div>
     {% endfor %}
 
+    <!-- ─── RETURN FLIGHTS SECTION ─── -->
+    {% if trip_type == 'round' and return_flights is not None %}
+    <div id="return-section" style="transition: box-shadow 0.3s;">
+      <div class="result-header" style="margin-top:32px;border-top:3px solid var(--neon-blue);padding-top:24px;background:transparent;box-shadow:none;padding-left:0;padding-right:0;">
+        <div>
+          <div class="result-title">🔄 {{ arrival }} → {{ departure }} <span style="font-size:.85rem;font-weight:500;color:var(--text-muted);">(Chuyến về)</span></div>
+          <div class="result-count">Tìm thấy {{ return_total_count }} chuyến về · {{ return_date }}</div>
+        </div>
+        <div style="font-size:.8rem;color:var(--text-muted);background:#fef3c7;padding:6px 12px;border-radius:8px;border:1px solid #fde68a;">
+          ⚠ Vui lòng chọn chuyến về trước
+        </div>
+      </div>
+
+      {% for flight in return_flights %}
+      <div class="flight-card return-card" style="border-left:3px solid transparent;transition:all .2s;">
+        <div class="flight-card-inner">
+
+          <!-- Logo -->
+          <div class="airline-logo">
+            {% if flight.airline.logo %}
+            <img src="{{ flight.airline.logo }}" alt="{{ flight.airline.name }}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="airline-logo-fallback" style="display:none;">{{ flight.airline.code }}</div>
+            {% else %}
+            <div class="airline-logo-fallback">{{ flight.airline.code }}</div>
+            {% endif %}
+          </div>
+
+          <!-- Times -->
+          <div class="flight-times">
+            <div class="time-block">
+              <div class="time-big">{{ flight.departure_time|date:"H:i" }}</div>
+              <div class="time-code">{{ flight.departure_airport.code }}</div>
+              <div class="time-city">{{ flight.departure_airport.city }}</div>
+            </div>
+
+            <div class="duration-line">
+              <div class="duration-text">{{ flight.departure_time|flight_duration:flight.arrival_time }}</div>
+              <div class="line-track">
+                {% if flight.stops > 0 %}<div class="line-dot"></div>{% endif %}
+              </div>
+              <div class="stops-text">
+                {% if flight.stops == 0 %}Bay thẳng{% elif flight.stops == 1 %}1 điểm dừng{% else %}{{ flight.stops }} điểm dừng{% endif %}
+              </div>
+            </div>
+
+            <div class="time-block">
+              <div class="time-big">{{ flight.arrival_time|date:"H:i" }}</div>
+              <div class="time-code">{{ flight.arrival_airport.code }}</div>
+              <div class="time-city">{{ flight.arrival_airport.city }}</div>
+            </div>
+          </div>
+
+          <!-- Tags & Info -->
+          <div style="display:flex;flex-direction:column;gap:8px;min-width:140px;">
+            <div style="font-size:0.8rem;color:var(--text-muted);">📅 {{ flight.departure_time|date:"d/m/Y" }}</div>
+            <div class="flight-tags">
+              {% if forloop.first %}<span class="tag-cheapest">Giá thấp nhất</span>{% endif %}
+              {% if flight.stops == 0 %}<span class="tag-nonstop">Bay thẳng</span>{% endif %}
+              {% if flight.has_checked_baggage %}<span class="tag-baggage">✓ HLK miễn phí</span>{% endif %}
+              {% if flight.available_seats < 10 %}<span class="tag-low-seat">Còn {{ flight.available_seats }} ghế</span>{% endif %}
+            </div>
+            <div style="font-size:0.78rem;color:var(--text-muted);">{{ flight.airline.name }} · {{ flight.flight_number }}</div>
+          </div>
+
+          <!-- Price + Button -->
+          <div class="flight-right">
+            <div class="flight-price">{{ flight.price|vnd_format }} đ</div>
+            <a href="#" class="btn-select btn-return" data-return-id="{{ flight.id }}" style="background:linear-gradient(135deg,#059669,#0d9488);">Chọn về</a>
+          </div>
+
+        </div>
+      </div>
+      {% empty %}
+      <div class="empty-results">
+        <div style="font-size:2.5rem;margin-bottom:12px;">🔄</div>
+        <h3 style="margin-bottom:8px;">Không tìm thấy chuyến về phù hợp</h3>
+        <p style="color:var(--text-muted);">Hãy thử thay đổi ngày về hoặc tìm kiếm tuyến đường khác.</p>
+      </div>
+      {% endfor %}
+    </div><!-- /#return-section -->
+    {% endif %}
+
   </div>
 </div>
+{% endblock %}
+
+
+{% block extra_js %}
+<script>
+var selectedReturnId = null;
+
+document.querySelectorAll('.btn-return').forEach(function(btn) {
+  btn.addEventListener('click', function(e) {
+    e.preventDefault();
+    selectedReturnId = this.dataset.returnId;
+
+    // Highlight selected return card
+    document.querySelectorAll('.return-card').forEach(function(c) {
+      c.classList.remove('selected-return');
+    });
+    this.closest('.flight-card').classList.add('selected-return');
+    this.textContent = '✓ Đã chọn';
+    this.style.background = '#10b981';
+
+    // Update all outbound buttons with return_flight_id
+    document.querySelectorAll('.btn-outbound').forEach(function(ob) {
+      var fid = ob.dataset.outboundId;
+      ob.href = '/bookings/create/' + fid + '/?return_flight_id=' + selectedReturnId + '&trip_type=round';
+    });
+
+    // Scroll up to outbound section
+    var mainArea = document.querySelector('.main-area');
+    if (mainArea) {
+      mainArea.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Show toast notification
+    var toast = document.createElement('div');
+    toast.textContent = '✓ Đã chọn chuyến về! Hãy chọn chuyến đi bên trên.';
+    toast.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#10b981;color:white;padding:12px 20px;border-radius:10px;font-weight:600;font-size:.9rem;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,.2);animation:fadeInUp .3s ease;';
+    document.body.appendChild(toast);
+    setTimeout(function() { toast.style.opacity = '0'; toast.style.transition = 'opacity .4s'; setTimeout(function(){ toast.remove(); }, 400); }, 3000);
+  });
+});
+
+// Outbound buttons: check if return is selected first
+document.querySelectorAll('.btn-outbound').forEach(function(btn) {
+  btn.addEventListener('click', function(e) {
+    if (!selectedReturnId) {
+      e.preventDefault();
+      // Scroll to return section and highlight it
+      var returnSection = document.getElementById('return-section');
+      if (returnSection) {
+        returnSection.scrollIntoView({ behavior: 'smooth' });
+        returnSection.style.boxShadow = '0 0 0 3px #f59e0b';
+        setTimeout(function() { returnSection.style.boxShadow = ''; }, 2000);
+      }
+      // Show alert
+      var alertBox = document.createElement('div');
+      alertBox.textContent = '⚠ Vui lòng chọn chuyến về trước!';
+      alertBox.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#f59e0b;color:white;padding:12px 20px;border-radius:10px;font-weight:600;font-size:.9rem;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,.2);';
+      document.body.appendChild(alertBox);
+      setTimeout(function() { alertBox.style.opacity = '0'; alertBox.style.transition = 'opacity .4s'; setTimeout(function(){ alertBox.remove(); }, 400); }, 2500);
+    }
+    // else: href was already updated by btn-return click handler
+  });
+});
+</script>
 {% endblock %}
