@@ -570,7 +570,7 @@
           <!-- Ngày về (chỉ hiện khi Khứ hồi) -->
           <div class="sf-group" id="return-date-group" style="display:none;">
             <label class="sf-label-new">📅 Ngày về</label>
-            <input type="date" class="sf-input-new" name="return_date" value="{{ return_date }}" />
+            <input type="date" class="sf-input-new" name="return_date" value="{{ return_date }}" required />
           </div>
 
           <!-- Hành khách -->
@@ -747,6 +747,12 @@
       const tripTypeInput = document.getElementById('trip_type_input');
       if (tripTypeInput) {
         tripTypeInput.value = isRoundTrip ? 'round' : 'one_way';
+      }
+      
+      const returnDateInput = document.querySelector('input[name="return_date"]');
+      if (returnDateInput) {
+        if (isRoundTrip) returnDateInput.setAttribute('required', 'required');
+        else returnDateInput.removeAttribute('required');
       }
     });
   });

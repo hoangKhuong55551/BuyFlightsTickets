@@ -491,8 +491,57 @@
 {% block extra_js %}
 {% if trip_type == 'round' %}
 <script>
+var selectedOutboundId = null;
 var selectedReturnId = null;
 
+function checkAndNavigate() {
+  if (selectedOutboundId && selectedReturnId) {
+    // Both selected! Navigate!
+    var btn = document.querySelector('.btn-outbound[data-outbound-id="' + selectedOutboundId + '"]');
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Đang xử lý...';
+    window.location.href = '/bookings/create/' + selectedOutboundId + '/?return_flight_id=' + selectedReturnId + '&trip_type=round';
+  }
+}
+
+// Outbound buttons
+document.querySelectorAll('.btn-outbound').forEach(function(btn) {
+  btn.addEventListener('click', function(e) {
+    e.preventDefault();
+    selectedOutboundId = this.dataset.outboundId;
+
+    // Highlight selected outbound card
+    document.querySelectorAll('.flight-card').forEach(function(c) {
+      if (!c.querySelector('.btn-return')) {
+        c.style.borderLeft = '3px solid transparent';
+        c.style.background = '#fff';
+        var b = c.querySelector('.btn-outbound');
+        if(b) { b.textContent = 'Chọn'; b.style.background = ''; }
+      }
+    });
+    this.closest('.flight-card').style.borderLeft = '4px solid var(--blue-600)';
+    this.closest('.flight-card').style.background = '#f0f4f8';
+    this.textContent = '✓ Đã chọn đi';
+    this.style.background = 'var(--blue-600)';
+
+    if (!selectedReturnId) {
+      // Scroll to return section
+      var returnSection = document.getElementById('return-section');
+      if (returnSection) {
+        returnSection.scrollIntoView({ behavior: 'smooth' });
+        
+        var toast = document.createElement('div');
+        toast.textContent = 'Tiếp theo, hãy chọn chuyến về!';
+        toast.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#f59e0b;color:white;padding:12px 20px;border-radius:10px;font-weight:600;font-size:.9rem;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,.2);animation:fadeInUp .3s ease;';
+        document.body.appendChild(toast);
+        setTimeout(function() { toast.style.opacity = '0'; toast.style.transition = 'opacity .4s'; setTimeout(function(){ toast.remove(); }, 400); }, 3000);
+      }
+    } else {
+      checkAndNavigate();
+    }
+  });
+});
+
+// Return buttons
 document.querySelectorAll('.btn-return').forEach(function(btn) {
   btn.addEventListener('click', function(e) {
     e.preventDefault();
@@ -501,52 +550,28 @@ document.querySelectorAll('.btn-return').forEach(function(btn) {
     // Highlight selected return card
     document.querySelectorAll('.return-card').forEach(function(c) {
       c.classList.remove('selected-return');
+      var b = c.querySelector('.btn-return');
+      if(b) { b.textContent = 'Chọn về'; b.style.background = 'linear-gradient(135deg,#059669,#0d9488)'; }
     });
     this.closest('.flight-card').classList.add('selected-return');
-    this.textContent = '✓ Đã chọn';
+    this.textContent = '✓ Đã chọn về';
     this.style.background = '#10b981';
 
-    // Update all outbound buttons with return_flight_id
-    document.querySelectorAll('.btn-outbound').forEach(function(ob) {
-      var fid = ob.dataset.outboundId;
-      ob.href = '/bookings/create/' + fid + '/?return_flight_id=' + selectedReturnId + '&trip_type=round';
-    });
-
-    // Scroll up to outbound section
-    var mainArea = document.querySelector('.main-area');
-    if (mainArea) {
-      mainArea.scrollIntoView({ behavior: 'smooth' });
-    }
-
-    // Show toast notification
-    var toast = document.createElement('div');
-    toast.textContent = '✓ Đã chọn chuyến về! Hãy chọn chuyến đi bên trên.';
-    toast.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#10b981;color:white;padding:12px 20px;border-radius:10px;font-weight:600;font-size:.9rem;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,.2);animation:fadeInUp .3s ease;';
-    document.body.appendChild(toast);
-    setTimeout(function() { toast.style.opacity = '0'; toast.style.transition = 'opacity .4s'; setTimeout(function(){ toast.remove(); }, 400); }, 3000);
-  });
-});
-
-// Outbound buttons: check if return is selected first
-document.querySelectorAll('.btn-outbound').forEach(function(btn) {
-  btn.addEventListener('click', function(e) {
-    if (!selectedReturnId) {
-      e.preventDefault();
-      // Scroll to return section and highlight it
-      var returnSection = document.getElementById('return-section');
-      if (returnSection) {
-        returnSection.scrollIntoView({ behavior: 'smooth' });
-        returnSection.style.boxShadow = '0 0 0 3px #f59e0b';
-        setTimeout(function() { returnSection.style.boxShadow = ''; }, 2000);
+    if (!selectedOutboundId) {
+      // Scroll up to outbound section
+      var mainArea = document.querySelector('.main-area');
+      if (mainArea) {
+        mainArea.scrollIntoView({ behavior: 'smooth' });
+        
+        var toast = document.createElement('div');
+        toast.textContent = 'Bây giờ hãy chọn chuyến đi ở trên cùng!';
+        toast.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#f59e0b;color:white;padding:12px 20px;border-radius:10px;font-weight:600;font-size:.9rem;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,.2);animation:fadeInUp .3s ease;';
+        document.body.appendChild(toast);
+        setTimeout(function() { toast.style.opacity = '0'; toast.style.transition = 'opacity .4s'; setTimeout(function(){ toast.remove(); }, 400); }, 3000);
       }
-      // Show alert
-      var alertBox = document.createElement('div');
-      alertBox.textContent = '⚠ Vui lòng chọn chuyến về trước!';
-      alertBox.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#f59e0b;color:white;padding:12px 20px;border-radius:10px;font-weight:600;font-size:.9rem;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,.2);';
-      document.body.appendChild(alertBox);
-      setTimeout(function() { alertBox.style.opacity = '0'; alertBox.style.transition = 'opacity .4s'; setTimeout(function(){ alertBox.remove(); }, 400); }, 2500);
+    } else {
+      checkAndNavigate();
     }
-    // else: href was already updated by btn-return click handler
   });
 });
 </script>

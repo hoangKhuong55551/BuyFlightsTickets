@@ -19,6 +19,9 @@ def recommendations(request):
     date = request.GET.get("date", "").strip()
     return_date = request.GET.get("return_date", "").strip()
     trip_type = request.GET.get("trip_type", "one_way")  # "round" | "one_way"
+    if trip_type == "round" and not return_date:
+        trip_type = "one_way"
+        
     passengers = request.GET.get("passengers", "1").strip()
     seat_class = request.GET.get("seat_class", "economy").strip()
 
