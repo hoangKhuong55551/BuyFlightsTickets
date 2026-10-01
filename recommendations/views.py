@@ -17,6 +17,9 @@ def recommendations(request):
     departure = request.GET.get("departure", "").strip()
     arrival = request.GET.get("arrival", "").strip()
     date = request.GET.get("date", "").strip()
+    return_date = request.GET.get("return_date", "").strip()
+    passengers = request.GET.get("passengers", "1").strip()
+    seat_class = request.GET.get("seat_class", "economy").strip()
 
     if departure:
         base_qs = base_qs.filter(departure_airport__city__icontains=departure)
@@ -82,6 +85,9 @@ def recommendations(request):
         "departure": departure,
         "arrival": arrival,
         "date": date,
+        "return_date": return_date,
+        "passengers": passengers,
+        "seat_class": seat_class,
         # Filter state
         "filter_stops": filter_stops,
         "filter_airlines": filter_airlines,
