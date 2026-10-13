@@ -5,12 +5,6 @@ from django.contrib.auth.password_validation import validate_password
 
 class RegisterForm(forms.Form):
 
-    username = forms.CharField(
-        max_length=150,
-        label="Tên đăng nhập",
-        widget=forms.TextInput(attrs={"placeholder": "Nhập tên đăng nhập"})
-    )
-
     email = forms.EmailField(
         label="Email",
         widget=forms.EmailInput(attrs={"placeholder": "example@email.com"})
@@ -33,12 +27,6 @@ class RegisterForm(forms.Form):
         label="Xác nhận mật khẩu",
         widget=forms.PasswordInput(attrs={"placeholder": "Nhập lại mật khẩu"})
     )
-
-    def clean_username(self):
-        username = self.cleaned_data.get("username")
-        if User.objects.filter(username=username).exists():
-            raise forms.ValidationError("Tên đăng nhập đã tồn tại.")
-        return username
 
     def clean_email(self):
         email = self.cleaned_data.get("email")
@@ -64,10 +52,9 @@ class RegisterForm(forms.Form):
 
 class LoginForm(forms.Form):
 
-    username = forms.CharField(
-        max_length=150,
-        label="Tên đăng nhập",
-        widget=forms.TextInput(attrs={"placeholder": "Tên đăng nhập"})
+    login_id = forms.CharField(
+        label="Email hoặc Mã định danh (ID)",
+        widget=forms.TextInput(attrs={"placeholder": "Nhập email hoặc mã ID (SKB-...)"})
     )
 
     password = forms.CharField(
@@ -120,4 +107,3 @@ class ProfileForm(forms.Form):
         if self.user and User.objects.filter(email=email).exclude(pk=self.user.pk).exists():
             raise forms.ValidationError("Email này đã được dùng cho tài khoản khác.")
         return email
-

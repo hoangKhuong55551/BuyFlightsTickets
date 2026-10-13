@@ -1,13 +1,28 @@
+import uuid
+
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+
+
+def generate_user_id():
+    """Generate a unique user ID in the format SKB-XXXXXXXX."""
+    return f"SKB-{uuid.uuid4().hex[:8].upper()}"
+
 
 class UserProfile(models.Model):
     user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
         related_name="profile"
+    )
+    member_id = models.CharField(
+        max_length=12,
+        unique=True,
+        default=generate_user_id,
+        editable=False,
+        verbose_name="Mã định danh (User ID)"
     )
     phone = models.CharField(
         max_length=20,
@@ -42,7 +57,7 @@ class UserProfile(models.Model):
         verbose_name_plural = "User Profiles"
 
     def __str__(self):
-        return f"Profile of {self.user.username}"
+        return f"{self.member_id} - {self.user.email}"
 
 
 class NewsletterSubscriber(models.Model):
@@ -79,4 +94,5 @@ class Review(models.Model):
         verbose_name_plural = "Reviews"
 
     def __str__(self):
-        return f"Review by {self.user.username if self.user else 'Anonymous'} - {self.rating}*"
+        user_display = self.user.profile.member_id if self.user and hasattr(self.user, 'profile') else 'Anonymous'
+        return f"Review by {user_display} - {self.rating}*"

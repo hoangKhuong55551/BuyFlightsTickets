@@ -468,7 +468,7 @@
             <div class="phone-top-bar">
               <div class="phone-greeting">
                 Xin chào,
-                <strong>{% if user.is_authenticated %}{{ user.username }}{% else %}Khách{% endif %}! 👋</strong>
+                <strong>{% if user.is_authenticated %}{{ user.profile.member_id }}{% else %}Khách{% endif %}! 👋</strong>
               </div>
               <div class="phone-avatar"></div>
             </div>

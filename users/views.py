@@ -1,3 +1,5 @@
+import uuid
+
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
@@ -20,13 +22,15 @@ def register(request):
     if request.method == "POST":
         form = RegisterForm(request.POST)
         if form.is_valid():
-            # Tạo user nhưng chưa cho phép đăng nhập
+            email = form.cleaned_data["email"]
+            # Tạo username nội bộ từ UUID (người dùng không cần biết)
+            internal_username = uuid.uuid4().hex[:30]
             user = User.objects.create_user(
-                username=form.cleaned_data["username"],
-                email=form.cleaned_data["email"],
+                username=internal_username,
+                email=email,
                 password=form.cleaned_data["password"],
             )
-            user.is_active = False # Khóa tài khoản
+            user.is_active = False  # Khóa tài khoản
             user.save()
             
             # Lưu số điện thoại vào profile
@@ -75,26 +79,38 @@ def login_view(request):
     if request.method == "POST":
         form = LoginForm(request.POST)
         if form.is_valid():
+            login_id = form.cleaned_data["login_id"].strip()
+            password = form.cleaned_data["password"]
+            
+            # Tìm user qua email, mã ID (member_id), hoặc username
+            from django.db.models import Q
+            user_obj = User.objects.filter(
+                Q(email__iexact=login_id) | 
+                Q(profile__member_id__iexact=login_id) |
+                Q(username__iexact=login_id)
+            ).first()
+
+            if not user_obj:
+                messages.error(request, "Thông tin đăng nhập hoặc mật khẩu không đúng.")
+                return render(request, "users/login.html", {"form": form})
+            
+            # Authenticate bằng username nội bộ
             user = authenticate(
                 request,
-                username=form.cleaned_data["username"],
-                password=form.cleaned_data["password"]
+                username=user_obj.username,
+                password=password
             )
             if user is not None:
                 login(request, user)
-                messages.success(request, f"Chào mừng, {user.username}!")
+                display_name = user.profile.member_id if hasattr(user, 'profile') else user.email
+                messages.success(request, f"Chào mừng, {display_name}!")
                 return redirect("home")
             else:
-                # Kiểm tra xem user có tồn tại nhưng bị vô hiệu hóa (is_active=False) không
-                username = form.cleaned_data["username"]
-                try:
-                    u = User.objects.get(username=username)
-                    if not u.is_active:
-                        messages.error(request, "Tài khoản của bạn chưa được xác thực. Vui lòng kiểm tra email để kích hoạt.")
-                    else:
-                        messages.error(request, "Tên đăng nhập hoặc mật khẩu không đúng.")
-                except User.DoesNotExist:
-                    messages.error(request, "Tên đăng nhập hoặc mật khẩu không đúng.")
+                # Kiểm tra xem user bị vô hiệu hóa không
+                if not user_obj.is_active:
+                    messages.error(request, "Tài khoản của bạn chưa được xác thực. Vui lòng kiểm tra email để kích hoạt.")
+                else:
+                    messages.error(request, "Thông tin đăng nhập hoặc mật khẩu không đúng.")
     else:
         form = LoginForm()
     return render(request, "users/login.html", {"form": form})
@@ -165,4 +181,3 @@ def newsletter_subscribe(request):
         except Exception:
             return JsonResponse({"success": False, "message": "Email này đã đăng ký nhận tin rồi!"})
     return JsonResponse({"success": False, "message": "Phương thức không hợp lệ."})
-

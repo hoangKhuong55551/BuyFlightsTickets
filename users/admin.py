@@ -1,10 +1,30 @@
+from django import forms
 from django.contrib import admin
+from django.contrib.admin.forms import AdminAuthenticationForm
 from .models import UserProfile, NewsletterSubscriber
+
+
+class CustomAdminAuthenticationForm(AdminAuthenticationForm):
+    username = forms.CharField(
+        label="Email / Mã ID / Username",
+        widget=forms.TextInput(attrs={
+            "autofocus": True,
+            "placeholder": "Email, Mã ID (SKB-...) hoặc Username"
+        }),
+    )
+
+
+admin.site.login_form = CustomAdminAuthenticationForm
 
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
-    list_display = ["user", "phone", "date_of_birth"]
-    search_fields = ["user__username", "phone"]
+    list_display = ["member_id", "user", "get_email", "phone", "date_of_birth"]
+    search_fields = ["member_id", "user__email", "phone"]
+    readonly_fields = ["member_id"]
+
+    @admin.display(description="Email")
+    def get_email(self, obj):
+        return obj.user.email
 
 @admin.register(NewsletterSubscriber)
 class NewsletterSubscriberAdmin(admin.ModelAdmin):
@@ -27,14 +47,23 @@ admin.site.unregister(User)
 
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
-    # Thêm cột is_active vào danh sách hiển thị
-    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active_display')
+    # Thêm cột user_id vào danh sách hiển thị
+    list_display = ('get_user_id', 'email', 'first_name', 'last_name', 'is_staff', 'is_active_display')
     
     # Cho phép lọc theo trạng thái xác thực
     list_filter = ('is_active', 'is_staff', 'is_superuser', 'groups')
     
+    # Tìm kiếm theo email và member_id
+    search_fields = ('email', 'profile__member_id', 'first_name', 'last_name')
+    
     # Đăng ký các action thủ công
     actions = ['action_verify_users', 'action_resend_verification']
+
+    @admin.display(description="Mã định danh (ID)")
+    def get_user_id(self, obj):
+        if hasattr(obj, 'profile'):
+            return obj.profile.member_id
+        return '-'
 
     @admin.display(boolean=True, description="Đã xác thực (Active)")
     def is_active_display(self, obj):

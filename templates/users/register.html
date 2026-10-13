@@ -25,7 +25,7 @@
       {% endif %}
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
         {% for field in form %}
-          <div style="margin-bottom:12px; {% if field.name in 'username,email,password' %}grid-column:1/-1;{% endif %}">
+          <div style="margin-bottom:12px; {% if field.name in 'email,password' %}grid-column:1/-1;{% endif %}">
             <label for="{{ field.id_for_label }}" style="display:block;font-size:0.85rem;font-weight:700;color:#334155;margin-bottom:6px;">{{ field.label }}</label>
             {% if "password" in field.name %}
             <div class="password-wrapper" style="position: relative;">

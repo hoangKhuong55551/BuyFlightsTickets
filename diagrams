@@ -1,0 +1,25 @@
+# Biểu Đồ Tuần Tự (Sequence Diagram) - Chức Năng Tìm Kiếm Chuyến Bay
+
+```mermaid
+sequenceDiagram
+    actor Khach as Người dùng
+    participant GiaoDien as templates/home.html
+    participant Backend as flights/views.py (home)
+    participant Database as PostgreSQL / flights_flight, flights_airport
+    
+    Khach->>GiaoDien: Nhập điểm đi, điểm đến, ngày bay và nhấn Tìm kiếm
+    GiaoDien->>Backend: Gửi dữ liệu (GET)
+    
+    Backend->>Database: Truy vấn danh sách chuyến bay theo điều kiện filter
+    Database-->>Backend: Trả về dữ liệu chuyến bay (QuerySet)
+    
+    Backend->>Backend: Phân trang kết quả (Paginator) và tính toán thống kê (review, số khách)
+    Backend-->>GiaoDien: Trả về template home.html với dữ liệu động
+    GiaoDien-->>Khach: Hiển thị danh sách kết quả tìm kiếm chuyến bay
+```
+
+### Giải thích các thành phần:
+- **Người dùng**: Khách hàng nhập thông tin tìm kiếm trên trang chủ.
+- **`templates/home.html`**: Giao diện chính của website, nơi chứa form tìm kiếm và danh sách chuyến bay.
+- **`flights/views.py` (home)**: Backend nhận các tham số tìm kiếm qua phương thức GET, tiến hành filter cơ sở dữ liệu và phân trang kết quả để trả về.
+- **`flights_flight`, `flights_airport`**: Các bảng trong PostgreSQL lưu trữ dữ liệu thông tin về chuyến bay (thời gian, giá vé, trạng thái) và sân bay (điểm đi/đến).

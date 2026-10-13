@@ -116,7 +116,7 @@ class RefundRequest(models.Model):
             html_content = (
                 f"<div style='font-family: Arial, sans-serif; padding: 20px; line-height: 1.6;'>"
                 f"<h2 style='color: #0F1F3D;'>SkyBook - Thông báo Hoàn tiền</h2>"
-                f"<p>Xin chào <strong>{booking.user.username}</strong>,</p>"
+                f"<p>Xin chào <strong>{booking.user.profile.member_id}</strong>,</p>"
                 f"<p>Yêu cầu hoàn tiền của bạn đã được quản trị viên duyệt thành công.</p>"
                 f"<div style='background: #f4f7fc; padding: 15px; border-radius: 8px; margin: 15px 0;'>"
                 f"  <p style='margin:0;'><strong>Mã đặt chỗ:</strong> {booking.booking_code}</p>"

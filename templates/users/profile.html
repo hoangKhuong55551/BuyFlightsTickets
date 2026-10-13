@@ -54,6 +54,6 @@
     </form>
   </div>
 
-  <p style="text-align: center; margin-top: 20px; color: var(--text-muted); font-size: .85rem;">Tài khoản: <strong>{{ user.username }}</strong> · Tham gia từ {{ user.date_joined|date:"d/m/Y" }}</p>
+  <p style="text-align: center; margin-top: 20px; color: var(--text-muted); font-size: .85rem;">Mã định danh: <strong>{{ user.profile.member_id }}</strong> · Email: <strong>{{ user.email }}</strong> · Tham gia từ {{ user.date_joined|date:"d/m/Y" }}</p>
 </section>
 {% endblock %}

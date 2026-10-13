@@ -54,10 +54,10 @@
       {% if user.is_authenticated %}
         <!-- User pill -->
         <a href="{% url 'profile' %}" class="nav-user-pill" style="text-decoration: none; color: inherit;">
-          <div class="nav-avatar">{{ user.username|slice:":1"|upper }}</div>
+          <div class="nav-avatar">{{ user.profile.member_id|slice:"4:5"|upper }}</div>
           <div class="nav-user-info">
             <span class="nav-user-greeting">Xin chào,</span>
-            <span class="nav-username">{{ user.username }}</span>
+            <span class="nav-username">{{ user.profile.member_id }}</span>
           </div>
         </a>
 
