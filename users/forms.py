@@ -5,6 +5,20 @@ from django.contrib.auth.password_validation import validate_password
 
 class RegisterForm(forms.Form):
 
+    first_name = forms.CharField(
+        max_length=150,
+        label="Họ & tên đệm",
+        required=True,
+        widget=forms.TextInput(attrs={"placeholder": "Nguyễn Văn"})
+    )
+
+    last_name = forms.CharField(
+        max_length=150,
+        label="Tên",
+        required=True,
+        widget=forms.TextInput(attrs={"placeholder": "An"})
+    )
+
     email = forms.EmailField(
         label="Email",
         widget=forms.EmailInput(attrs={"placeholder": "example@email.com"})
@@ -15,6 +29,12 @@ class RegisterForm(forms.Form):
         label="Số điện thoại",
         required=False,
         widget=forms.TextInput(attrs={"placeholder": "0912 345 678 (tuỳ chọn)"})
+    )
+
+    date_of_birth = forms.DateField(
+        label="Ngày / Năm sinh",
+        required=False,
+        widget=forms.DateInput(attrs={"type": "date"})
     )
 
     password = forms.CharField(

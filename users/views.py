@@ -23,20 +23,29 @@ def register(request):
         form = RegisterForm(request.POST)
         if form.is_valid():
             email = form.cleaned_data["email"]
+            first_name = form.cleaned_data.get("first_name", "").strip()
+            last_name = form.cleaned_data.get("last_name", "").strip()
+            phone = form.cleaned_data.get("phone", "").strip()
+            date_of_birth = form.cleaned_data.get("date_of_birth")
+
             # Tạo username nội bộ từ UUID (người dùng không cần biết)
             internal_username = uuid.uuid4().hex[:30]
             user = User.objects.create_user(
                 username=internal_username,
                 email=email,
                 password=form.cleaned_data["password"],
+                first_name=first_name,
+                last_name=last_name,
             )
             user.is_active = False  # Khóa tài khoản
             user.save()
             
-            # Lưu số điện thoại vào profile
-            phone = form.cleaned_data.get("phone", "")
-            if phone:
-                user.profile.phone = phone
+            # Lưu số điện thoại và ngày/năm sinh vào profile
+            if hasattr(user, "profile"):
+                if phone:
+                    user.profile.phone = phone
+                if date_of_birth:
+                    user.profile.date_of_birth = date_of_birth
                 user.profile.save()
 
             # Tạo link xác thực
@@ -68,7 +77,18 @@ def verify_email(request, uidb64, token):
     if user is not None and default_token_generator.check_token(user, token):
         user.is_active = True
         user.save()
-        messages.success(request, "Tài khoản của bạn đã được xác thực thành công. Bạn có thể đăng nhập ngay!")
+
+        # Đảm bảo Profile đã kích hoạt và cập nhật
+        if hasattr(user, 'profile'):
+            user.profile.save()
+
+        member_id = user.profile.member_id if hasattr(user, 'profile') else ""
+        full_name = user.get_full_name()
+        greeting = f" {full_name}" if full_name else ""
+        messages.success(
+            request,
+            f"Chúc mừng{greeting}! Tài khoản (Mã ID: {member_id}) của bạn đã được xác thực thành công và thông tin cá nhân đã được kích hoạt. Bạn có thể đăng nhập ngay!"
+        )
         return redirect("login")
     else:
         messages.error(request, "Link xác thực không hợp lệ hoặc đã hết hạn.")
